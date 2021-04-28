@@ -153,23 +153,23 @@ func (r *Runner) Run(ctx context.Context) error {
                 return errors.New("failed to read from second ticket channel")
             }
 
-            r := &telemetry.Report{
-                Observed: ptypes.TimestampNow(),
-                Details: &telemetry.Report_System_{
-                    System: &telemetry.Report_System{
-                        Endurance: ptypes.DurationProto(time.Minute * 30),
-                    },
-                },
-            }
-            r.Identities = identities
+            // r := &telemetry.Report{
+            //     Observed: ptypes.TimestampNow(),
+            //     Details: &telemetry.Report_System_{
+            //         System: &telemetry.Report_System{
+            //             Endurance: ptypes.DurationProto(time.Minute * 30),
+            //         },
+            //     },
+            // }
+            // r.Identities = identities
 
-            if err := stream.Send(&telemetry.Update_FromProvider{
-                Details: &telemetry.Update_FromProvider_Report{
-                    Report: r,
-                },
-            }); err != nil {
-                return err
-            }
+            // if err := stream.Send(&telemetry.Update_FromProvider{
+            //     Details: &telemetry.Update_FromProvider_Report{
+            //         Report: r,
+            //     },
+            // }); err != nil {
+            //     return err
+            // }
         case <-newContext.Done():
             return nil
         case err = <-errCh:

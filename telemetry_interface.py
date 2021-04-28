@@ -47,19 +47,36 @@ class TelemetryInterface(object):
 		self.tele_reports.append(tele_report)
 		print(tele_report)
 
-	def authentify(self, token, flight_key):
-		self.TOKEN = token
-		channel_credentials = grpc.ChannelCredentials(token)
-		self.channel = google_auth_transport_grpc.secure_authorized_channel(
-			target='api.airmap.com:443', credentials=channel_credentials, request=None)
+	def authentify(self, token):
+		self.call_credientials = grpc.access_token_call_credentials("authorization: Bearer "+ str(token))
+		self.empty_channel_credentials = grpc.ssl_channel_credentials()
+		self.channel_credentials = grpc.composite_channel_credentials(
+			self.empty_channel_credentials,
+			self.call_credientials)
+		self.channel = grpc.secure_channel(
+			target='api.airmap.com:443', credentials=self.channel_credentials)
+		# print(self.channel.ChannelConnectivity())
 		self.stub = telemetry_pb2_grpc.CollectorStub(self.channel)
+		print(self.stub)
 		#test connection
 		status = status_pb2.Status()
 		status.level = 1
 		feature = self.stub.ConnectProvider(status)
 		print(feature)
+		self.channel.close()
 
+		# self.TOKEN = token
+		# channel_credentials = grpc.ChannelCredentials(token)
+		# self.channel = google_auth_transport_grpc.secure_authorized_channel(
+		# 	target='api.airmap.com:443', credentials=channel_credentials, request=None)
+		# print(self.channel)
+		# print(grpc.StatusCode(self.channel))
+		# self.stub = telemetry_pb2_grpc.CollectorStub(self.channel)
+		# print(self.stub)
+		# #test connection
+		# status = status_pb2.Status()
+		# status.level = 1
+		# # self.channel.close()
+		# feature = self.stub.ConnectProvider(status)
+		# print(feature)
 
-if __name__ == '__main__':
-	telemetry_interface = TelemetryInterface()
-	telemetry_interface.test_grpc()
