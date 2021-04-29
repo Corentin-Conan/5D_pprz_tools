@@ -1,0 +1,68 @@
+// Copyright 2018-2020 AirMap, Inc.  All rights reserved.
+
+syntax = "proto3";
+
+// package units;
+
+// option go_package = "github.com/airmap/interfaces/src/go/units";
+
+// Degrees models an angular quantity in degrees [°].
+message Degrees {
+  double value = 1; // The value of the quantity.
+}
+
+// Celsius models a quantity in degrees Celsius [°C].
+message Celsius {
+  double value = 1; // The value of the quantity.
+}
+
+// Volts models a quantity in volts [V].
+message Volts {
+  double value = 1; // The value of the quantity.
+}
+
+// Amperes models a quantity in Amperes [A].
+message Amperes {
+  double value = 1; // The value of the quantity.
+}
+
+// AmpereHours models a quantity in Ampere-hours [Ah].
+message AmpereHours {
+  double value = 1; // The value of the quantity.
+}
+
+// Meters models a quantity in meters.
+message Meters {
+  double value = 1; // The value of the quantity.
+}
+
+// MetersPerSecond models a quantity in meters per second [m/s].
+message MetersPerSecond {
+  double value = 1; // The value of the quantity.
+}
+
+// MetersPerSecondSquared models a quantity in meters per second squared
+// [m/s^2].
+message MetersPerSecondSquared {
+  double value = 1; // The value of the quantity.
+}
+
+// RPM models a quantity in revolutions per minute
+message RPM {
+  double value = 1; // The value of the quantity.
+}
+
+// Pascals models a quantity in Pascals [Pa].
+message Pascals {
+  double value = 1; // The value of the quantity.
+}
+
+// Decibels models a quantity in Decibels [dB].
+message Decibels {
+  double value = 1; // The value of the quantity.
+}
+
+// Percent models a quantity as a percentage [%].
+message Percent {
+  double value = 1; // The value of the quantity [0.0-1.0].
+}

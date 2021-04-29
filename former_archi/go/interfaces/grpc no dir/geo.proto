@@ -1,0 +1,49 @@
+// Copyright 2018-2020 AirMap, Inc.  All rights reserved.
+
+syntax = "proto3";
+
+import "extensions.proto";
+import "units.proto";
+import "units_ext.proto";
+import "measurements.proto";
+import "google/protobuf/timestamp.proto";
+
+// package geo;
+
+// option go_package = "github.com/airmap/interfaces/src/go/geo";
+
+// Coordinate2D models a WGS84 latitude and longitude.
+message Coordinate2D {
+    units.Degrees latitude   = 1 [(units.min_degrees).value = -90.0, (units.max_degrees).value = 90.0];    // The latitude component.
+    units.Degrees longitude  = 2 [(units.min_degrees).value = -180.0, (units.max_degrees).value = 180.0];  // The longitude component.
+    Error error              = 3 [(grpc.nullable) = true];  // The error in the measurement.
+
+    // Error models the inherent error in a coordinate measurement.
+    message Error {
+        units.Degrees latitude   = 1 [(units.min_degrees).value = 0.0];  // The error estimate on the latitude measurement.
+        units.Degrees longitude  = 2 [(units.min_degrees).value = 0.0];  // The error estimate on the longitude measurement.
+    }
+}
+
+// Position models a postion in time
+message Position4D {
+    google.protobuf.Timestamp timestamp     = 1;  // The time applicability of the position
+    measurements.Position.Absolute position = 2;  // The position at a given time
+}
+
+// BoundingBox models a geographic bounds
+message BoundingBox {
+    Coordinate2D southwest = 1;  // The southwest-most extent of the bounds
+    Coordinate2D northeast = 2;  // The northeast-most extent of the bounds
+}
+
+// LinearRing models an array of point coordinates where the first and last point as equal.
+message LinearRing {
+    repeated Coordinate2D coordinates = 1;
+}
+
+// Polygon models an array of LinearRings where the first ring is the exterior ring and subsequent rings
+// represent the interior rings/cutouts.
+message Polygon {
+    repeated LinearRing rings = 1;
+}

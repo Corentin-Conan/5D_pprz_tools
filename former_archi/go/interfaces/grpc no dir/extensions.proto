@@ -1,0 +1,24 @@
+// Copyright 2018-2020 AirMap, Inc.  All rights reserved.
+
+syntax = "proto3";
+
+import "google/protobuf/descriptor.proto";
+import "google/protobuf/duration.proto";
+
+// package grpc;
+
+// option go_package = "github.com/airmap/interfaces/src/go";
+
+extend google.protobuf.FieldOptions {
+  // All fields in a message are considered optional and it is left up to application code
+  // to handle a field missing properly. For that, we introduce the extension 'nullable' and
+  // the following semantic in the context of this proto:
+  // Any field that is missing and that is not marked with 'nullable = true' is considered an error.
+  bool nullable                                     = 60000;
+  // Helps to further specify string formats
+  string format                                     = 60001;
+  // We put the following extensions here and reserve them for future use.
+  google.protobuf.Duration default_duration         = 60017;
+  google.protobuf.Duration min_duration             = 60018;
+  google.protobuf.Duration max_duration             = 60019;
+}
