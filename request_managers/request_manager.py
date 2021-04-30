@@ -17,3 +17,9 @@ class RequestManager(object):
 		self.fint_request_manager = FintRequestManager()
 		self.pprz_request_manager = PprzRequestManager()
 
+	def log_in_to_airmap_API(self, client_id, user_name, password, connection_status_label):
+		self.airmap_request_manager.update_credentials(client_id, user_name, password)
+		self.airmap_request_manager.log_in(connection_status_label)
+
+	def print_airmap_connection_detail(self):
+		self.airmap_request_manager.print_connection_detail()
