@@ -36,7 +36,7 @@ class AirmapRequestManager(object):
 			connection_status_label.setStyleSheet("color: rgb(50,200,50)")
 			connection_status_label.setText("Connected")
 			refresh_thread = threading.Thread(target = self.thread_refresh, 
-				args = (self.auth_response.json()["expires_in"] - 17995, connection_status_label,), 
+				args = (self.auth_response.json()["expires_in"] - 100, connection_status_label,), 
 				daemon = True)
 			refresh_thread.start()
 		else :
