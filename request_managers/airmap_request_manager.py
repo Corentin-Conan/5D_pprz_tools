@@ -13,7 +13,6 @@ class AirmapRequestManager(object):
 		super().__init__()
 		self.airmap_user_profile = AirmapUserProfile()
 
-
 	def update_credentials(self, client_id, user_name, password):
 		self.airmap_user_profile.client_id = client_id
 		self.airmap_user_profile.user_name = user_name
@@ -65,11 +64,9 @@ class AirmapRequestManager(object):
 				connection_status_label.setStyleSheet("color: rgb(50,200,50)")
 				connection_status_label.setText("Connected")
 			else:
-				print("Failing to refresh token ; status code = " + resp.status_code)
+				print("Failing to refresh token ; status code = " + str(resp.status_code))
 				connection_status_label.setStyleSheet("color: rgb(255,0,0)")
 				connection_status_label.setText("Refresh Token Failed")
 
 
-	def print_connection_detail(self):
-		print("\nAPI Key : " + self.airmap_user_profile.api_key + "\nToken : " + self.airmap_user_profile.token)
 		

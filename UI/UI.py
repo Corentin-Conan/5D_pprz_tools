@@ -11,7 +11,7 @@ class UI(QtWidgets.QWidget):
 		super().__init__()
 		self.request_manager = req_manager
 
-		#UI init
+		#UI layout init
 		self.setWindowTitle("GGCS")
 		self.main_layout = QtWidgets.QVBoxLayout(self)
 		self.top_layout = QtWidgets.QHBoxLayout()
@@ -62,14 +62,29 @@ class UI(QtWidgets.QWidget):
 		self.user_info_layout = QtWidgets.QFormLayout()
 		self.log_in_button = QtWidgets.QPushButton("Log In")
 		self.log_in_button.clicked.connect(self.log_in_to_airmap_API)
-		self.print_connection_details_button = QtWidgets.QPushButton("Print Connection Details")
-		self.print_connection_details_button.clicked.connect(self.print_airmap_connection_detail)
 		self.refresh_connection_button = QtWidgets.QPushButton("Refresh Connection")
 		self.user_info_box.setLayout(self.user_info_layout)
 		self.user_info_layout.addRow(self.label_client_id, self.line_edit_client_id)
 		self.user_info_layout.addRow(self.label_user_name, self.line_edit_user_name)
 		self.user_info_layout.addRow(self.label_password, self.line_edit_password)
-		self.user_info_layout.addRow(self.log_in_button, self.print_connection_details_button)
+		self.user_info_layout.addWidget(self.log_in_button)
+		self.log_in_button.setFixedWidth(100)
+
+		#fint api connection
+		self.label_user_name_fint = QtWidgets.QLabel("User Name")
+		self.line_edit_user_name_fint = QtWidgets.QLineEdit()
+		self.line_edit_user_name_fint.setText(self.request_manager.fint_request_manager.fint_user_profile.user_name)
+		self.label_password_fint = QtWidgets.QLabel("Password")
+		self.line_edit_password_fint = QtWidgets.QLineEdit()
+		self.line_edit_password_fint.setText(self.request_manager.fint_request_manager.fint_user_profile.password)
+		self.user_info_layout_fint = QtWidgets.QFormLayout()
+		self.log_in_button_fint = QtWidgets.QPushButton("Log In")
+		self.log_in_button_fint.clicked.connect(self.log_in_to_fint_API)
+		self.fint_connection_box.setLayout(self.user_info_layout_fint)
+		self.user_info_layout_fint.addRow(self.label_user_name_fint, self.line_edit_user_name_fint)
+		self.user_info_layout_fint.addRow(self.label_password_fint, self.line_edit_password_fint)
+		self.user_info_layout_fint.addWidget(self.log_in_button_fint)
+		self.log_in_button_fint.setFixedWidth(100)
 
 		#connection status
 		self.label_airmap = QtWidgets.QLabel("Airmap Connection Status")
@@ -83,8 +98,6 @@ class UI(QtWidgets.QWidget):
 		self.connection_status_layout.addRow(self.label_airmap, self.label_airmap_status)
 		self.connection_status_layout.addRow(self.label_fint, self.label_fint_status)
 
-
-
 	def log_in_to_airmap_API(self):
 		self.request_manager.log_in_to_airmap_API(
 			self.line_edit_client_id.text(), 
@@ -92,5 +105,8 @@ class UI(QtWidgets.QWidget):
 			self.line_edit_password.text(),
 			self.label_airmap_status)
 
-	def print_airmap_connection_detail(self):
-		self.request_manager.print_airmap_connection_detail()
+	def log_in_to_fint_API(self):
+		self.request_manager.log_in_to_fint_API(
+			self.line_edit_user_name_fint.text(),
+			self.line_edit_password_fint.text(),
+			self.label_fint_status)
