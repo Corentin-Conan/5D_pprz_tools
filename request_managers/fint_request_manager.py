@@ -18,6 +18,7 @@ class FintRequestManager(object):
 		self.fint_user_profile.password = password
 
 	def log_in(self, connection_status_label):
+		print("\nLogging in ...")
 		user_payload = {
 			'loginId': self.fint_user_profile.user_name, 
 			'password': self.fint_user_profile.password
@@ -25,11 +26,10 @@ class FintRequestManager(object):
 		self.auth_response = requests.post(
 			"https://api.5daerosafe.finot.cloud/auth/jwt/login",
 			json = user_payload)
-		print(self.auth_response.json())
 		if self.auth_response.status_code == 200:
 			self.fint_user_profile.token = self.auth_response.json()["result"]["token"]
 			self.fint_user_profile.refresh_token = self.auth_response.json()["result"]["refreshToken"]
-			print("User logged in")
+			print("User logged in to FINT API")
 			connection_status_label.setStyleSheet("color: rgb(50,200,50)")
 			connection_status_label.setText("Connected")
 			refresh_thread = threading.Thread(target = self.thread_refresh, 

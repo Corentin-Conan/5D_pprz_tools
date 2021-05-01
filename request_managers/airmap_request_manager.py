@@ -19,6 +19,7 @@ class AirmapRequestManager(object):
 		self.airmap_user_profile.password = password
 
 	def log_in(self, connection_status_label):
+		print("\nLogging in ...")
 		user_payload = {
 			'grant_type': 'password',
 			'client_id': self.airmap_user_profile.client_id,
@@ -31,7 +32,7 @@ class AirmapRequestManager(object):
 		if self.auth_response.status_code == 200:
 			self.airmap_user_profile.token = self.auth_response.json()["access_token"]
 			self.airmap_user_profile.refresh_token = self.auth_response.json()["refresh_token"]
-			print("User logged in")
+			print("User logged in to Airmap API")
 			connection_status_label.setStyleSheet("color: rgb(50,200,50)")
 			connection_status_label.setText("Connected")
 			refresh_thread = threading.Thread(target = self.thread_refresh, 
