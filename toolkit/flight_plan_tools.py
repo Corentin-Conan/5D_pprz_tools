@@ -5,18 +5,24 @@ import shapely.geometry
 import json
 from geojson import Polygon
 from geojson_rewind import rewind
+import geopy
+# import LatLon
 
 from matplotlib import pyplot
 
-def pprz_flight_plan_to_geojson(pprz_flight_plan, d_buffer):
+def pprz_flight_plan_to_geojson(wp_list, d_buffer):
 	geojson_geometry = None
-	waypoints = [(0, 0), (10, 0), (10, 10), (20, 10), (20, 20)]
-	line_string = shapely.geometry.LineString(waypoints)
+	waypoints_coord = []
+	for wp in wp_list:
+		waypoints_coord.append((float(wp.lat), float(wp.lon)))
+		# waypoints.append((float(wp.lat), float(wp.lon)))
+	line_string = shapely.geometry.LineString(waypoints_coord)
 	buffer = line_string.buffer(d_buffer)
 	geojson_geometry = Polygon([[[i,j] for i,j in buffer.exterior.coords]])
 	geojson_geometry_rewound = rewind(geojson_geometry)
+	print(geojson_geometry_rewound['coordinates'][0])
 	return(geojson_geometry_rewound)
-	# for visualisation purposes
+	# # for visualisation purposes
 	# xs_traj = []
 	# ys_traj = []
 	# xs_buff = []
@@ -29,13 +35,34 @@ def pprz_flight_plan_to_geojson(pprz_flight_plan, d_buffer):
 	# 	ys_buff.append(pt[1])
 	# pyplot.plot(xs_traj, ys_traj, linestyle='dashed')
 	# pyplot.plot(xs_buff, ys_buff, linestyle='dashed')
-	# pyplot.xlim(-10,30)
-	# pyplot.ylim(-10,30)
+	# pyplot.xlim(43,44)
+	# pyplot.ylim(1,2)
 	# pyplot.show()
-	
+
+def dms_to_deg(dms):
+	coord = dms.split(" ")
+	d = float(coord[0])
+	min = float(coord[1])
+	sec = float(coord[2])
+	direction = coord[3]
+	degrees = d + (min/60) + (sec/3600)
+	if direction == 'S' or direction == 'W':
+		dd *= -1
+	return degrees
+
+def deg_to_dms(deg):
+	return 0
+
+def add_lat_and_meters(deg_lat, m):
+	new_lat = deg_lat + (m / 6370994) * (180 / math.pi)
+	return float(new_lat)
+
+def add_lon_and_meters(deg_lon, deg_lat, m):
+	new_lon = deg_lon + (m / 6370994) * (180 / math.pi) / math.cos(deg_lat * math.pi / 180)
+	return float(new_lon)
 
 def main():
-	pprz_flight_plan_to_geojson(None, 3)
+	pprz_flight_plan_to_geojson(None, 0.1)
 
 if __name__ == '__main__':
 	main()

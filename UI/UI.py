@@ -98,6 +98,14 @@ class UI(QtWidgets.QWidget):
 		self.connection_status_layout.addRow(self.label_airmap, self.label_airmap_status)
 		self.connection_status_layout.addRow(self.label_fint, self.label_fint_status)
 
+		#mission request / preparation
+		self.send_flight_plan_to_airmap_button = QtWidgets.QPushButton('Send Flight Plan')
+		self.send_flight_plan_to_airmap_button.clicked.connect(self.send_flight_plan_to_airmap)
+		self.mission_request_box_layout = QtWidgets.QHBoxLayout()
+		self.mission_request_box.setLayout(self.mission_request_box_layout)
+		self.mission_request_box_layout.addWidget(self.send_flight_plan_to_airmap_button)
+
+
 	def log_in_to_airmap_API(self):
 		self.request_manager.log_in_to_airmap_API(
 			self.line_edit_client_id.text(), 
@@ -110,3 +118,12 @@ class UI(QtWidgets.QWidget):
 			self.line_edit_user_name_fint.text(),
 			self.line_edit_password_fint.text(),
 			self.label_fint_status)
+
+	def send_flight_plan_to_airmap(self):
+		self.request_manager.pprz_request_manager.convert_flight_plan_to_geojson()
+		## not implemented yet ##
+		self.request_manager.pprz_request_manager.send_flight_plan_to_airmap()
+		self.request_manager.pprz_request_manager.show_geojson_flight_plan()
+
+
+

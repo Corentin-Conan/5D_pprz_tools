@@ -1,6 +1,14 @@
 #!/usr/bin/python3
 
+import sys
+from os import path, getenv
+
 from .user_profile.airmap_profile import AirmapUserProfile
+
+PPRZ_HOME = getenv("PAPARAZZI_HOME", path.normpath(path.dirname(path.abspath(__file__))))
+sys.path.append(PPRZ_HOME + "/5D_API/toolkit")
+
+from flight_plan_tools import pprz_flight_plan_to_geojson
 
 import requests
 import json
@@ -68,6 +76,5 @@ class AirmapRequestManager(object):
 				print("Failing to refresh token ; status code = " + str(resp.status_code))
 				connection_status_label.setStyleSheet("color: rgb(255,0,0)")
 				connection_status_label.setText("Refresh Token Failed")
-
 
 		

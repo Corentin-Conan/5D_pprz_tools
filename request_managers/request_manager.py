@@ -24,12 +24,13 @@ class RequestManager(object):
 
 	def __init__(self):
 		super().__init__()
+		## initiate ivy interface 
+		self.interface = IvyMessagesInterface("msgInterface")
 		## sub request managers instanciation 
 		self.airmap_request_manager = AirmapRequestManager()
 		self.fint_request_manager = FintRequestManager()
-		self.pprz_request_manager = PprzRequestManager()
-		## initiate and manage ivy interface subscriptions
-		self.interface = IvyMessagesInterface("msgInterface")
+		self.pprz_request_manager = PprzRequestManager(self.interface)
+		## initiate interface subscriptions
 		self.pprzconnect = PprzConnect(notify=self.pprz_request_manager.update_config, ivy=self.interface)
 
 	def log_in_to_airmap_API(self, client_id, user_name, password, connection_status_label):

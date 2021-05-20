@@ -231,6 +231,7 @@ class GGCS(QtWidgets.QWidget):
 	def get_airspaces(self):
 		print("\nGetting airspaces")
 		self.airmap_interface.get_UTM_airspace()
+		self.airmap_interface.show_UTM_airspace()
 
 
 	def get_other_flights(self):
