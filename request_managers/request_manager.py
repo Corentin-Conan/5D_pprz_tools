@@ -40,3 +40,25 @@ class RequestManager(object):
 	def log_in_to_fint_API(self, user_name, password, connection_status_label):
 		self.fint_request_manager.update_credentials(user_name, password)
 		self.fint_request_manager.log_in(connection_status_label)
+
+	def send_flight_plan_to_airmap(self):
+		self.pprz_request_manager.convert_flight_plan_to_geojson()
+		flight_plan = self.pprz_request_manager.fl_geojson
+		if flight_plan is None:
+			print("No GeoJson flight plan")
+			return
+		self.airmap_request_manager.submit_flight_plan(flight_plan)
+		self.pprz_request_manager.show_geojson_flight_plan()
+
+	def show_all_surrounding_airspaces(self):
+		mission_area = self.pprz_request_manager.get_mission_area()
+		airspaces = self.airmap_request_manager.get_airspaces_in_geometry(mission_area)
+		if airspaces is None:
+			print("No airspaces in mission area")
+			return
+		self.pprz_request_manager.send_pprzShapeMessage_from_GeoJSON(airspaces)
+		return
+
+	def show_intersecting_airspaces(self):
+		print("not implemented yet")
+		return

@@ -20,6 +20,7 @@ class AirmapRequestManager(object):
 	def __init__(self):
 		super().__init__()
 		self.airmap_user_profile = AirmapUserProfile()
+		self.headers = None
 
 	def update_credentials(self, client_id, user_name, password):
 		self.airmap_user_profile.client_id = client_id
@@ -40,6 +41,12 @@ class AirmapRequestManager(object):
 		if self.auth_response.status_code == 200:
 			self.airmap_user_profile.token = self.auth_response.json()["access_token"]
 			self.airmap_user_profile.refresh_token = self.auth_response.json()["refresh_token"]
+			self.headers = {
+		    	"Accept": "application/json",
+		    	"Content-Type": "application/json; charset=utf-8",
+		    	"Authorization": "Bearer " + self.airmap_user_profile.token,
+		    	"X-API-KEY": self.airmap_user_profile.api_key
+			}
 			print("User logged in to Airmap API")
 			connection_status_label.setStyleSheet("color: rgb(50,200,50)")
 			connection_status_label.setText("Connected")
@@ -77,4 +84,26 @@ class AirmapRequestManager(object):
 				connection_status_label.setStyleSheet("color: rgb(255,0,0)")
 				connection_status_label.setText("Refresh Token Failed")
 
-		
+	def get_airspaces_in_geometry(self, geojson):
+		if self.airmap_user_profile.token is None:
+			print("User not logged in")
+			return
+		if geojson is None:
+			print("\nNo GeoJson flight plan defined")
+			return 
+		airspaces = []
+		params = (
+			('geometry', json.dumps(geojson)),
+			('types', 'airport,controlled_airspace'),
+			('full', 'true'),
+			('geometry_format', 'geojson')
+		)
+		response = requests.get('https://api.airmap.com/airspace/v2/search', headers=self.headers, params=params)
+		# print(response.text)
+		airspaces = response.json()["data"]
+		return airspaces
+
+
+	def submit_flight_plan(self, flight_plan):
+		print("Submit flight plan function not yet implemented")
+		return 0

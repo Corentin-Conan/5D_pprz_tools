@@ -6,7 +6,6 @@ import json
 from geojson import Polygon
 from geojson_rewind import rewind
 import geopy
-# import LatLon
 
 from matplotlib import pyplot
 
@@ -39,6 +38,26 @@ def pprz_flight_plan_to_geojson(wp_list, d_buffer):
 	# pyplot.ylim(1,2)
 	# pyplot.show()
 
+def add_lat_and_meters(deg_lat, m):
+	# /!\ this method returns an approximate result, but it is enough for what we use them for /!\
+	new_lat = deg_lat + (m / 6378000) * (180 / math.pi)
+	return float("%.6f" % new_lat)
+
+def add_lon_and_meters(deg_lon, deg_lat, m):
+	# /!\ this method returns an approximate result, but it is enough for what we use them for /!\
+	new_lon = deg_lon + (m / 6378000) * (180 / math.pi) / math.cos(deg_lat * math.pi / 180)
+	return float("%.6f" % new_lon)
+
+def sub_lat_and_meters(deg_lat, m):
+	# /!\ this method returns an approximate result, but it is enough for what we use them for /!\
+	new_lat = deg_lat - (m / 6378000) * (180 / math.pi)
+	return float("%.6f" % new_lat)
+
+def sub_lon_and_meters(deg_lon, deg_lat, m):
+	# /!\ this method returns an approximate result, but it is enough for what we use them for /!\
+	new_lon = deg_lon - (m / 6378000) * (180 / math.pi) / math.cos(deg_lat * math.pi / 180)
+	return float("%.6f" % new_lon)
+
 def dms_to_deg(dms):
 	coord = dms.split(" ")
 	d = float(coord[0])
@@ -49,17 +68,6 @@ def dms_to_deg(dms):
 	if direction == 'S' or direction == 'W':
 		dd *= -1
 	return degrees
-
-def deg_to_dms(deg):
-	return 0
-
-def add_lat_and_meters(deg_lat, m):
-	new_lat = deg_lat + (m / 6370994) * (180 / math.pi)
-	return float(new_lat)
-
-def add_lon_and_meters(deg_lon, deg_lat, m):
-	new_lon = deg_lon + (m / 6370994) * (180 / math.pi) / math.cos(deg_lat * math.pi / 180)
-	return float(new_lon)
 
 def main():
 	pprz_flight_plan_to_geojson(None, 0.1)

@@ -101,10 +101,15 @@ class UI(QtWidgets.QWidget):
 		#mission request / preparation
 		self.send_flight_plan_to_airmap_button = QtWidgets.QPushButton('Send Flight Plan')
 		self.send_flight_plan_to_airmap_button.clicked.connect(self.send_flight_plan_to_airmap)
-		self.mission_request_box_layout = QtWidgets.QHBoxLayout()
+		self.show_all_surrounding_airspaces_button = QtWidgets.QPushButton('Show All Airspaces')
+		self.show_all_surrounding_airspaces_button.clicked.connect(self.show_all_surrounding_airspaces)
+		self.show_intersecting_airspaces_button = QtWidgets.QPushButton('Show Intersecting Airspaces Only')
+		self.show_intersecting_airspaces_button.clicked.connect(self.show_intersecting_airspaces)
+		self.mission_request_box_layout = QtWidgets.QVBoxLayout()
 		self.mission_request_box.setLayout(self.mission_request_box_layout)
 		self.mission_request_box_layout.addWidget(self.send_flight_plan_to_airmap_button)
-
+		self.mission_request_box_layout.addWidget(self.show_all_surrounding_airspaces_button)
+		self.mission_request_box_layout.addWidget(self.show_intersecting_airspaces_button)
 
 	def log_in_to_airmap_API(self):
 		self.request_manager.log_in_to_airmap_API(
@@ -120,10 +125,10 @@ class UI(QtWidgets.QWidget):
 			self.label_fint_status)
 
 	def send_flight_plan_to_airmap(self):
-		self.request_manager.pprz_request_manager.convert_flight_plan_to_geojson()
-		## not implemented yet ##
-		self.request_manager.pprz_request_manager.send_flight_plan_to_airmap()
-		self.request_manager.pprz_request_manager.show_geojson_flight_plan()
+		self.request_manager.send_flight_plan_to_airmap()
 
+	def show_all_surrounding_airspaces(self):
+		self.request_manager.show_all_surrounding_airspaces()
 
-
+	def show_intersecting_airspaces(self):
+		self.request_manager.show_intersecting_airspaces()
