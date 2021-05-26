@@ -92,6 +92,7 @@ class AirmapRequestManager(object):
 			print("\nNo GeoJson flight plan defined")
 			return 
 		airspaces = []
+		print("geojson sent to airmap : " + json.dumps(geojson))
 		params = (
 			('geometry', json.dumps(geojson)),
 			('types', 'airport,controlled_airspace'),
@@ -99,7 +100,7 @@ class AirmapRequestManager(object):
 			('geometry_format', 'geojson')
 		)
 		response = requests.get('https://api.airmap.com/airspace/v2/search', headers=self.headers, params=params)
-		# print(response.text)
+		print(response.text)
 		airspaces = response.json()["data"]
 		return airspaces
 

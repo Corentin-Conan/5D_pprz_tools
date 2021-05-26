@@ -60,5 +60,11 @@ class RequestManager(object):
 		return
 
 	def show_intersecting_airspaces(self):
-		print("not implemented yet")
+		self.pprz_request_manager.convert_flight_plan_to_geojson()
+		flight_plan = self.pprz_request_manager.fl_geojson
+		airspaces = self.airmap_request_manager.get_airspaces_in_geometry(flight_plan)
+		if airspaces is None:
+			print("No airspaces in mission area")
+			return
+		self.pprz_request_manager.send_pprzShapeMessage_from_GeoJSON(airspaces)
 		return

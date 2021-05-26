@@ -43,7 +43,7 @@ class PprzRequestManager(object):
 				current_wp.ground_alt = msg["ground_alt"]
 		if not is_already_in_wp_list:
 			self.wp_list.append(wp)
-			self.sorted_wp_list = sorted(self.wp_list, key=lambda wp:wp.id)
+			self.sorted_wp_list = sorted(self.wp_list, key=lambda wp:int(wp.id))
 
 	def convert_flight_plan_to_geojson(self):
 		if self.flight_plan is not None:
@@ -67,12 +67,12 @@ class PprzRequestManager(object):
 			for coord in self.fl_geojson['coordinates'][0]:
 				# latarr.append(int(add_lat_and_meters(lat0, coord[0]) * 10000000))
 				# lonarr.append(int(add_lon_and_meters(lon0, lat0, coord[1]) * 10000000))
-				latarr.append(int(coord[0] * 10000000))
-				lonarr.append(int(coord[1] * 10000000))
+				latarr.append(int(coord[1] * 10000000))
+				lonarr.append(int(coord[0] * 10000000))
 			msg['latarr'] = latarr
 			msg['lonarr'] = lonarr
 			msg['text'] = 'buffer'
-			print('sending message : ' + str(msg))
+			# print('sending message : ' + str(msg))
 			self.interface.send(msg)
 		else:
 			print("Geojson flight plan not defined")
@@ -133,5 +133,5 @@ class PprzRequestManager(object):
 			## radius = 0 if not circle
 			## text
 			msg_shape['text'] = area['name'].replace(" ", "_")
-			print(msg_shape)
+			# print(msg_shape)
 			self.interface.send(msg_shape)
