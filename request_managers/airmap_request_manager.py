@@ -9,6 +9,7 @@ PPRZ_HOME = getenv("PAPARAZZI_HOME", path.normpath(path.dirname(path.abspath(__f
 sys.path.append(PPRZ_HOME + "/5D_API/toolkit")
 
 from flight_plan_tools import pprz_flight_plan_to_geojson
+from flight_plan_tools import dms_to_deg
 
 import requests
 import json
@@ -21,6 +22,7 @@ class AirmapRequestManager(object):
 		super().__init__()
 		self.airmap_user_profile = AirmapUserProfile()
 		self.headers = None
+		self.airmap_flight_plan_id = None
 
 	def update_credentials(self, client_id, user_name, password):
 		self.airmap_user_profile.client_id = client_id
@@ -88,11 +90,7 @@ class AirmapRequestManager(object):
 		if self.airmap_user_profile.token is None:
 			print("User not logged in")
 			return
-		if geojson is None:
-			print("\nNo GeoJson flight plan defined")
-			return 
 		airspaces = []
-		print("geojson sent to airmap : " + json.dumps(geojson))
 		params = (
 			('geometry', json.dumps(geojson)),
 			('types', 'airport,controlled_airspace'),
@@ -104,7 +102,48 @@ class AirmapRequestManager(object):
 		airspaces = response.json()["data"]
 		return airspaces
 
+	def get_user_information(self):
+		if self.airmap_user_profile.token is None:
+			print("User not logged in")
+			return
+		self.airmap_user_profile.pilot_id = requests.get('https://api.airmap.com/pilot/v2/profile', headers=self.headers).json()["data"]["id"]
+		print("Pilot id : " + self.airmap_user_profile.pilot_id)
+		self.airmap_user_profile.aircraft_list = requests.get("https://api.airmap.com/pilot/v2/"+ self.airmap_user_profile.pilot_id +  "/aircraft", headers=self.headers).json()['data']
+		print("Aircraft list : ")
+		for aircraft in self.airmap_user_profile.aircraft_list:
+			print(str(aircraft))
 
-	def submit_flight_plan(self, flight_plan):
-		print("Submit flight plan function not yet implemented")
-		return 0
+	def create_flight_plan(self, flight_plan_geometry, lat0, lon0):
+		if self.airmap_user_profile.token is None:
+			print("User not logged in")
+			return
+		payload = {
+		    "pilot_id": self.airmap_user_profile.pilot_id,
+		    "aircraft_id": self.airmap_user_profile.aircraft_list[0]["id"],
+		    "start_time": "2022-03-23T13:39:52Z",
+		    "end_time": "2022-03-23T16:39:52Z",
+		    "takeoff_latitude": dms_to_deg(lat0),
+		    "takeoff_longitude": dms_to_deg(lon0),
+		    "min_altitude_agl": 18,
+		    "max_altitude_agl": 73,
+		    "buffer": 1,
+		    "geometry": flight_plan_geometry
+		}
+		url = "https://api.airmap.com/flight/v2/plan"
+		response = requests.request("POST", url, json=payload, headers=self.headers)
+		print("\nFlight plan being created")
+		if response.status_code == 200:
+			print("Flight plan created successfully")
+			print("Flight plan ID : " + response.json()["data"]["id"])
+			self.airmap_flight_plan_id = response.json()['data']['id']
+		else:
+			print("Issue in flight plan creation")
+			print(response.text)
+
+	def submit_flight_plan(self):
+		if self.airmap_flight_plan_id is None:
+			return
+		print("Sending flight plan to Airmap")
+		url = "https://api.airmap.com/flight/v2/plan/" + self.airmap_flight_plan_id + "/submit"
+		response = requests.request("POST", url, headers=self.headers)
+		print(response.text)

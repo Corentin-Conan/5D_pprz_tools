@@ -25,6 +25,10 @@ class UI(QtWidgets.QWidget):
 		self.main_layout.addWidget(self.out_log)
 		sys.stdout = OutLog(self.out_log, sys.stdout)
 
+		#popup windows
+		self.confirmation_popup_send_flight_plan = QtWidgets.QMessageBox()
+		self.confirmation_popup_send_flight_plan.setWindowTitle("Confirm flight plan")
+
 		#top boxes
 		self.user_info_box = QtWidgets.QGroupBox("Airmap API Connection")
 		self.user_info_box.setFixedHeight(150)
@@ -125,7 +129,7 @@ class UI(QtWidgets.QWidget):
 			self.label_fint_status)
 
 	def send_flight_plan_to_airmap(self):
-		self.request_manager.send_flight_plan_to_airmap()
+		self.request_manager.send_flight_plan_to_airmap(self.confirmation_popup_send_flight_plan)
 
 	def show_all_surrounding_airspaces(self):
 		self.request_manager.show_all_surrounding_airspaces()

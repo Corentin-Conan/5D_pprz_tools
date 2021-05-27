@@ -15,3 +15,5 @@ class AirmapUserProfile(object):
 		self.user_name = data_user["airmap"]["user_name"]
 		self.token = None
 		self.refresh_token = None
+		self.pilot_id = None
+		self.aircraft_list = None
