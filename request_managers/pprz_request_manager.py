@@ -29,7 +29,9 @@ class PprzRequestManager(object):
 		self.interface.subscribe(self.update_wp_list, PprzMessage("ground", "WAYPOINT_MOVED"))
 
 	def update_config(self, config):
+		print("Update config")
 		self.flight_plan = FlightPlan.parse(config.flight_plan)
+		self.convert_flight_plan_to_geojson()
 
 	def update_wp_list(self, msg_id, msg):
 		wp = Waypoint(msg["wp_id"], None, None, None, msg["lat"], msg["long"], msg["alt"], msg["ground_alt"])
@@ -47,6 +49,7 @@ class PprzRequestManager(object):
 
 	def convert_flight_plan_to_geojson(self):
 		if self.flight_plan is not None:
+			print("Converting flight plan to geojson")
 			self.fl_geojson = pprz_flight_plan_to_geojson(self.sorted_wp_list, d_buffer = 0.001)
 		else:
 			print("No flight plan to convert")

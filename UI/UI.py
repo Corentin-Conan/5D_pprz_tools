@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 from .custom_widgets.out_log import OutLog
+from .custom_widgets.flight_plan_confirmation_window import FlightPlanConfirmationWindow
 
 import sys
 from PySide6 import QtCore, QtWidgets, QtGui
@@ -11,7 +12,7 @@ class UI(QtWidgets.QWidget):
 		super().__init__()
 		self.request_manager = req_manager
 
-		#UI layout init
+		# UI layout init
 		self.setWindowTitle("GGCS")
 		self.main_layout = QtWidgets.QVBoxLayout(self)
 		self.top_layout = QtWidgets.QHBoxLayout()
@@ -25,11 +26,10 @@ class UI(QtWidgets.QWidget):
 		self.main_layout.addWidget(self.out_log)
 		sys.stdout = OutLog(self.out_log, sys.stdout)
 
-		#popup windows
-		self.confirmation_popup_send_flight_plan = QtWidgets.QMessageBox()
-		self.confirmation_popup_send_flight_plan.setWindowTitle("Confirm flight plan")
+		# sub windows declaration
+		self.flight_plan_confirmation_window = None
 
-		#top boxes
+		# top boxes
 		self.user_info_box = QtWidgets.QGroupBox("Airmap API Connection")
 		self.user_info_box.setFixedHeight(150)
 		self.user_info_box.setFixedWidth(600)
@@ -42,7 +42,7 @@ class UI(QtWidgets.QWidget):
 		self.top_layout.addWidget(self.fint_connection_box)
 		self.top_layout.addWidget(self.connection_status_box)
 
-		#bottom boxes
+		# bottom boxes
 		self.mission_request_box = QtWidgets.QGroupBox("Mission Request")
 		self.mission_request_box.setFixedHeight(450)
 		self.mission_monitoring_box = QtWidgets.QGroupBox("Mission Monitoring")
@@ -53,7 +53,7 @@ class UI(QtWidgets.QWidget):
 		self.bot_layout.addWidget(self.mission_monitoring_box)
 		self.bot_layout.addWidget(self.finot_box)
 
-		#airmap api connection
+		# airmap api connection
 		self.label_client_id = QtWidgets.QLabel("Client ID")
 		self.line_edit_client_id = QtWidgets.QLineEdit()
 		self.line_edit_client_id.setText(self.request_manager.airmap_request_manager.airmap_user_profile.client_id)
@@ -74,7 +74,7 @@ class UI(QtWidgets.QWidget):
 		self.user_info_layout.addWidget(self.log_in_button)
 		self.log_in_button.setFixedWidth(100)
 
-		#fint api connection
+		# fint api connection
 		self.label_user_name_fint = QtWidgets.QLabel("User Name")
 		self.line_edit_user_name_fint = QtWidgets.QLineEdit()
 		self.line_edit_user_name_fint.setText(self.request_manager.fint_request_manager.fint_user_profile.user_name)
@@ -90,7 +90,7 @@ class UI(QtWidgets.QWidget):
 		self.user_info_layout_fint.addWidget(self.log_in_button_fint)
 		self.log_in_button_fint.setFixedWidth(100)
 
-		#connection status
+		# connection status
 		self.label_airmap = QtWidgets.QLabel("Airmap Connection Status")
 		self.label_airmap_status = QtWidgets.QLabel("Not Connected")
 		self.label_airmap_status.setStyleSheet("color: rgb(255,0,0)")
@@ -102,7 +102,7 @@ class UI(QtWidgets.QWidget):
 		self.connection_status_layout.addRow(self.label_airmap, self.label_airmap_status)
 		self.connection_status_layout.addRow(self.label_fint, self.label_fint_status)
 
-		#mission request / preparation
+		# mission request / preparation
 		self.send_flight_plan_to_airmap_button = QtWidgets.QPushButton('Send Flight Plan')
 		self.send_flight_plan_to_airmap_button.clicked.connect(self.send_flight_plan_to_airmap)
 		self.show_all_surrounding_airspaces_button = QtWidgets.QPushButton('Show All Airspaces')
@@ -129,7 +129,8 @@ class UI(QtWidgets.QWidget):
 			self.label_fint_status)
 
 	def send_flight_plan_to_airmap(self):
-		self.request_manager.send_flight_plan_to_airmap(self.confirmation_popup_send_flight_plan)
+		self.flight_plan_confirmation_window = FlightPlanConfirmationWindow()
+		self.request_manager.send_flight_plan_to_airmap(self.flight_plan_confirmation_window)
 
 	def show_all_surrounding_airspaces(self):
 		self.request_manager.show_all_surrounding_airspaces()
