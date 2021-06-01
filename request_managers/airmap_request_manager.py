@@ -114,35 +114,19 @@ class AirmapRequestManager(object):
 		for aircraft in self.airmap_user_profile.aircraft_list:
 			print(str(aircraft))
 
-	def create_flight_plan(self, flight_plan_geometry, lat0, lon0):
+	def initiate_flight_plan(self, flight_plan_geometry, lat0, lon0):
 		if self.airmap_user_profile.token is None:
 			print("\nUser not logged in")
 			return
-		# payload = {
-		#     "pilot_id": self.airmap_user_profile.pilot_id,
-		#     "aircraft_id": self.airmap_user_profile.aircraft_list[0]["id"],
-		#     "start_time": "2022-03-23T13:39:52Z",
-		#     "end_time": "2022-03-23T16:39:52Z",
-		#     "takeoff_latitude": dms_to_deg(lat0),
-		#     "takeoff_longitude": dms_to_deg(lon0),
-		#     "min_altitude_agl": 18,
-		#     "max_altitude_agl": 73,
-		#     "buffer": 1,
-		#     "geometry": flight_plan_geometry
-		# }
 		self.airmap_flight_plan.update_values(
 			pilot_id = self.airmap_user_profile.pilot_id,
 			ac_id = self.airmap_user_profile.aircraft_list[0]["id"],
-			start_time = "2022-03-23T13:39:52Z",
-			end_time = "2022-03-23T16:39:52Z",
 			take_off_lon = dms_to_deg(lon0),
 			take_off_lat = dms_to_deg(lat0),
-			min_alt = 18,
-			max_alt = 73,
-			buf = 1,
 			geometry = flight_plan_geometry)
+
+	def create_flight_plan(self):
 		payload = self.airmap_flight_plan.get_payload()
-		print("\nPayload sent : " + str(payload))
 		url = "https://api.airmap.com/flight/v2/plan"
 		response = requests.request("POST", url, json=payload, headers=self.headers)
 		print("\nFlight plan being created")
@@ -152,7 +136,6 @@ class AirmapRequestManager(object):
 			print("Flight plan ID : " + self.airmap_flight_plan.fp_id)
 		else:
 			print("Issue in flight plan creation")
-			print("Geometry : " + str(flight_plan_geometry))
 			print(response.text)
 
 	def submit_flight_plan(self):
@@ -165,13 +148,41 @@ class AirmapRequestManager(object):
 		if response.status_code == 200:
 			print("Flight plan successfully submited")
 			self.airmap_flight_plan.flight_id = response.json()["data"]["flight_id"]
-			print("Flight ID : " + str(self.airmap_user_profile.flight_id))
+			print("Flight ID : " + str(self.airmap_flight_plan.flight_id))
 		else:
 			print("Issue in flight plan submission")
 			print(response.text)
 
 	def populate_flight_plan_confirmation_window(self, window):
-		if self.airmap_user_profile.flight_plan_id is None:
-			return
-		else:
-			return
+		window.set_fields_from_dict(vars(self.airmap_flight_plan))
+
+	def update_flight_plan_from_confirmation_window(self, window):
+		dic = window.get_values()
+		for elem in dic:
+			if dic[elem] is not None:
+				if elem == "fp_id":
+					self.airmap_flight_plan.fp_id = dic[elem]
+				if elem == "flight_id" :
+					self.airmap_flight_plan.flight_id = dic[elem]
+				if elem == "pilot_id":
+					self.airmap_flight_plan.pilot_id = dic[elem]
+				if elem == "ac_id":
+					self.airmap_flight_plan.ac_id = dic[elem]
+				if elem == "take_off_lon":
+					self.airmap_flight_plan.take_off_lon = dic[elem]
+				if elem == "take_off_lat":
+					self.airmap_flight_plan.take_off_lat = dic[elem]
+				if elem == "min_alt":
+					self.airmap_flight_plan.min_alt = dic[elem]
+				if elem == "max_alt":
+					self.airmap_flight_plan.max_alt = dic[elem]
+				if elem == "buf":
+					self.airmap_flight_plan.buf = dic[elem]
+				if elem == "start_time":
+					self.airmap_flight_plan.start_time = dic[elem]
+				if elem == "end_time":
+					self.airmap_flight_plan.end_time = dic[elem]
+				if elem == "flight_descr":
+					self.airmap_flight_plan.flight_descr = dic[elem]
+				if elem == "geometry":
+					pass

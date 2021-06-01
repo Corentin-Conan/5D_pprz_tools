@@ -22,8 +22,6 @@ class AirmapFlightPlan(object):
 		self.end_time = end_time
 		self.flight_descr = flight_descr
 		self.geometry = geometry
-		self.has_been_sent = False
-		self.has_been_submitted = False
 
 	def get_payload(self):
 		payload = {
@@ -47,6 +45,7 @@ class AirmapFlightPlan(object):
 	def update_values(self, fp_id = None, flight_id = None, pilot_id = None, ac_id = None, 
 		take_off_lon = None, take_off_lat = None, min_alt = None, max_alt = None, buf = None,
 		start_time = None, end_time = None, flight_descr = None, geometry = None):
+	## /!\ make sure to keep the same names as the params of set fields function in confirmation window class /!\
 		if fp_id is not None:
 			self.fp_id = fp_id
 		if flight_id is not None:
@@ -73,3 +72,32 @@ class AirmapFlightPlan(object):
 			self.flight_descr = flight_descr
 		if geometry is not None:
 			self.geometry = geometry
+
+	def update_values_from_tuple(self, tup):
+		if tup[1] is not None:
+			if tup[0] == "fp_id":
+				self.fp_id = tup[1]
+			if tup[0] == "flight_id" :
+				self.flight_id = tup[1]
+			if tup[0] == "pilot_id":
+				self.pilot_id = tup[1]
+			if tup[0] == "ac_id":
+				self.ac_id = tup[1]
+			if tup[0] == "take_off_lon":
+				self.take_off_lon = tup[1]
+			if tup[0] == "take_off_lat":
+				self.take_off_lat = tup[1]
+			if tup[0] == "min_alt":
+				self.min_alt = tup[1]
+			if tup[0] == "max_alt":
+				self.max_alt = tup[1]
+			if tup[0] == "buf":
+				self.buf = tup[1]
+			if tup[0] == "start_time":
+				self.start_time = tup[1]
+			if tup[0] == "end_time":
+				self.end_time = tup[1]
+			if tup[0] == "flight_descr":
+				self.flight_descr = tup[1]
+			if tup[0] == "geometry":
+				pass

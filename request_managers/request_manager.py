@@ -55,17 +55,14 @@ class RequestManager(object):
 
 	def send_flight_plan_to_airmap(self, flight_plan_confirmation_window):
 		flight_plan = self.pprz_request_manager.flight_plan
-		if self.pprz_request_manager.fl_geojson is None:
-			self.pprz_request_manager.convert_flight_plan_to_geojson()
+		self.pprz_request_manager.convert_flight_plan_to_geojson()
 		flight_plan_geometry = self.pprz_request_manager.fl_geojson
-		# creates the flight plan with airmap's formalism
-		self.airmap_request_manager.create_flight_plan(flight_plan_geometry, flight_plan.lat0, flight_plan.lon0)
-		# popup to confirm the flight plan information before it is sent to airmap
-		# /!\ not finished /!\
-		# geojsonio.display(flight_plan_geometry)
-		# confirmation_popup.exec()
+		self.airmap_request_manager.initiate_flight_plan(flight_plan_geometry, flight_plan.lat0, flight_plan.lon0)
+		self.airmap_request_manager.populate_flight_plan_confirmation_window(flight_plan_confirmation_window)
 		flight_plan_confirmation_window.exec_()
-		# if flight_plan_confirmation_window.exec_() == QDialog.Accepted:
+		self.airmap_request_manager.update_flight_plan_from_confirmation_window(flight_plan_confirmation_window)
+		# creates the flight plan with airmap's formalism
+		self.airmap_request_manager.create_flight_plan()
 		# submits flight plan to airmap
 		self.airmap_request_manager.submit_flight_plan()
 		# shows the geometry of the flight plan sent on pprz GCS / this is optional /!\ TODO implement this "optionnality" 
