@@ -6,7 +6,7 @@ import json
 from geojson import Polygon
 from geojson_rewind import rewind
 import geopy
-
+import re
 from matplotlib import pyplot
 
 def pprz_flight_plan_to_geojson(wp_list, d_buffer):
@@ -19,22 +19,6 @@ def pprz_flight_plan_to_geojson(wp_list, d_buffer):
 	geojson_geometry = Polygon([[[i,j] for i,j in buffer.exterior.coords]])
 	geojson_geometry_rewound = rewind(geojson_geometry)
 	return(geojson_geometry_rewound)
-	# # for visualisation purposes
-	# xs_traj = []
-	# ys_traj = []
-	# xs_buff = []
-	# ys_buff = []
-	# for wp in waypoints:
-	# 	xs_traj.append(wp[0])
-	# 	ys_traj.append(wp[1])
-	# for pt in list(buffer.exterior.coords):
-	# 	xs_buff.append(pt[0])
-	# 	ys_buff.append(pt[1])
-	# pyplot.plot(xs_traj, ys_traj, linestyle='dashed')
-	# pyplot.plot(xs_buff, ys_buff, linestyle='dashed')
-	# pyplot.xlim(43,44)
-	# pyplot.ylim(1,2)
-	# pyplot.show()
 
 def add_lat_and_meters(deg_lat, m):
 	# /!\ this method returns an approximate result, but it is enough for what we use it for /!\
@@ -67,8 +51,25 @@ def dms_to_deg(dms):
 		dd *= -1
 	return degrees
 
+def to_deg(x):
+	# 41°24’12.2″N or 41 24 12.2 N
+	if re.search("^([0-9]|([0-9]{2})).([0-9]|([0-9]{2})).([0-9]|([0-9]{2}))([.]([0-9]*))*.[NSEW]", x):
+		coordinates = re.findall("[0-9]+[.]*[0-9]*", x)
+		direction = re.findall("[NSEW]", x)
+		d = float(coordinates[0])
+		min = float(coordinates[1])
+		sec = float(coordinates[2])
+		direction = direction[0]
+		dd = d + (min/60) + (sec/3600)
+		if direction == 'S' or direction == 'W':
+			dd *= -1
+		return dd
+	# 41.40338888888889 or -41.40338888888889
+	if re.search("^[-]*[0-9]+[.]*[0-9]*", x):
+		return x
+
 def main():
-	pprz_flight_plan_to_geojson(None, 0.1)
+	print(to_deg("-41.40338888888889"))
 
 if __name__ == '__main__':
 	main()

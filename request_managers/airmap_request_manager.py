@@ -10,7 +10,7 @@ PPRZ_HOME = getenv("PAPARAZZI_HOME", path.normpath(path.dirname(path.abspath(__f
 sys.path.append(PPRZ_HOME + "/5D_API/toolkit")
 
 from flight_plan_tools import pprz_flight_plan_to_geojson
-from flight_plan_tools import dms_to_deg
+from flight_plan_tools import to_deg
 
 import requests
 import json
@@ -121,8 +121,8 @@ class AirmapRequestManager(object):
 		self.airmap_flight_plan.update_values(
 			pilot_id = self.airmap_user_profile.pilot_id,
 			ac_id = self.airmap_user_profile.aircraft_list[0]["id"],
-			take_off_lon = dms_to_deg(lon0),
-			take_off_lat = dms_to_deg(lat0),
+			take_off_lon = to_deg(lon0),
+			take_off_lat = to_deg(lat0),
 			geometry = flight_plan_geometry)
 
 	def create_flight_plan(self):

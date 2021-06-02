@@ -3,8 +3,6 @@
 import sys
 from os import path, getenv
 
-import geojsonio
-
 PPRZ_HOME = getenv("PAPARAZZI_HOME", path.normpath(path.dirname(path.abspath(__file__))))
 sys.path.append(PPRZ_HOME + "/var/lib/python")
 sys.path.append(PPRZ_HOME + "/sw/lib/python")
@@ -45,7 +43,6 @@ class RequestManager(object):
 		# retreives the pilot profile information and the pilot's aircrafts and stores them in the airmap user profile
 		self.airmap_request_manager.get_user_information()
 
-
 	def log_in_to_fint_API(self, user_name, password, connection_status_label):
 		# retreives the authentification information provided in the UI by the user and updates the fint user profile
 		self.fint_request_manager.update_credentials(user_name, password)
@@ -54,16 +51,26 @@ class RequestManager(object):
 		self.fint_request_manager.log_in(connection_status_label)
 
 	def send_flight_plan_to_airmap(self, flight_plan_confirmation_window):
+		# retreives de the pprz flight plan
 		flight_plan = self.pprz_request_manager.flight_plan
+		# convrets the pprz flight plan to a geojson geometry and stores it in the fl_geojson attribute
 		self.pprz_request_manager.convert_flight_plan_to_geojson()
 		flight_plan_geometry = self.pprz_request_manager.fl_geojson
+		# creates an instance of airmap flight plan with parameters deduced from pprz flight plan
 		self.airmap_request_manager.initiate_flight_plan(flight_plan_geometry, flight_plan.lat0, flight_plan.lon0)
+		# adds this information on the fp confirmation window
 		self.airmap_request_manager.populate_flight_plan_confirmation_window(flight_plan_confirmation_window)
+		# opens the window and blocks the application
 		flight_plan_confirmation_window.exec_()
+		# don't apply fp modifications if the window has been closed by user
+		if flight_plan_confirmation_window.exit_code == 0:
+			print("\nFlight plan not sent")
+			return
+		# updates the airmap flight plan object
 		self.airmap_request_manager.update_flight_plan_from_confirmation_window(flight_plan_confirmation_window)
-		# creates the flight plan with airmap's formalism
+		# creates the flight plan in airmap API
 		self.airmap_request_manager.create_flight_plan()
-		# submits flight plan to airmap
+		# submits flight plan to airmap API
 		self.airmap_request_manager.submit_flight_plan()
 		# shows the geometry of the flight plan sent on pprz GCS / this is optional /!\ TODO implement this "optionnality" 
 		self.pprz_request_manager.show_geojson_flight_plan()

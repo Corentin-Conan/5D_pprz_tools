@@ -53,8 +53,8 @@ class PprzRequestManager(object):
 
 	def show_geojson_flight_plan(self):
 		if self.fl_geojson is not None:
-			lat0 = dms_to_deg(self.flight_plan.lat0)
-			lon0 = dms_to_deg(self.flight_plan.lon0)
+			lat0 = to_deg(self.flight_plan.lat0)
+			lon0 = to_deg(self.flight_plan.lon0)
 			msg = PprzMessage("ground", "SHAPE")
 			msg['id'] = 1
 			msg['linecolor'] = 'red'
@@ -76,8 +76,8 @@ class PprzRequestManager(object):
 
 	def get_mission_area(self):
 		max_dist = float(self.flight_plan.max_dist_from_home)
-		lat0 = float(dms_to_deg(self.flight_plan.lat0))
-		lon0 = float(dms_to_deg(self.flight_plan.lon0))
+		lat0 = float(to_deg(self.flight_plan.lat0))
+		lon0 = float(to_deg(self.flight_plan.lon0))
 		mission_area = {"type":"Polygon","coordinates":[[[add_lon_and_meters(lon0, lat0, max_dist), sub_lat_and_meters(lat0, max_dist)],[add_lon_and_meters(lon0, lat0, max_dist),add_lat_and_meters(lat0, max_dist)],[sub_lon_and_meters(lon0, lat0, max_dist), add_lat_and_meters(lat0, max_dist)],[sub_lon_and_meters(lon0, lat0, max_dist), sub_lat_and_meters(lat0, max_dist)], [add_lon_and_meters(lon0, lat0, max_dist),sub_lat_and_meters(lat0, max_dist)]]]}
 		return(mission_area)
 
