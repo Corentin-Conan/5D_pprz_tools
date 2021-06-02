@@ -60,6 +60,9 @@ class RequestManager(object):
 		self.airmap_request_manager.initiate_flight_plan(flight_plan_geometry, flight_plan.lat0, flight_plan.lon0)
 		# adds this information on the fp confirmation window
 		self.airmap_request_manager.populate_flight_plan_confirmation_window(flight_plan_confirmation_window)
+		# show the geojson geometry & waypoints
+		wp_list = self.pprz_request_manager.wp_list
+		self.airmap_request_manager.show_fp_geometry_on_window(flight_plan_confirmation_window, wp_list)
 		# opens the window and blocks the application
 		flight_plan_confirmation_window.exec_()
 		# don't apply fp modifications if the window has been closed by user

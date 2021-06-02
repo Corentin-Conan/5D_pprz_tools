@@ -1,18 +1,20 @@
 #!/usr/bin/python3
 
-from PySide6 import QtCore, QtWidgets, QtGui
+from PySide6 import QtCore, QtWidgets
+
+import pyqtgraph
 
 class FlightPlanConfirmationWindow(QtWidgets.QDialog):
 
 	def __init__(self):
 		super().__init__()
 		self.setWindowModality(QtCore.Qt.ApplicationModal)
-		self.resize(400, 800)
+		self.resize(1500, 800)
 		self.setWindowTitle("Flight plan confirmation window")
 
 		self.exit_code = 0
 
-		self.main_layout = QtWidgets.QVBoxLayout(self)
+		self.main_layout = QtWidgets.QHBoxLayout(self)
 		self.main_box = QtWidgets.QGroupBox()
 		self.main_layout.addWidget(self.main_box)
 		self.main_box_layout = QtWidgets.QFormLayout()
@@ -71,6 +73,9 @@ class FlightPlanConfirmationWindow(QtWidgets.QDialog):
 		self.main_box_layout.addRow(self.label_time_format, self.time_format)
 		self.main_box_layout.addRow(self.label_flight_description, self.line_edit_flight_description)
 
+		self.graphWidget = pyqtgraph.PlotWidget()
+		self.main_layout.addWidget(self.graphWidget)
+
 		self.send_and_close_button = QtWidgets.QPushButton("Send and Close")
 		self.send_and_close_button.clicked.connect(self.close_with_button)
 		self.main_layout.addWidget(self.send_and_close_button)
@@ -125,3 +130,9 @@ class FlightPlanConfirmationWindow(QtWidgets.QDialog):
 		dict_val["end_time"] = self.line_edit_end_time.text()
 		dict_val["flight_descr"] = self.line_edit_flight_description.toPlainText()
 		return dict_val
+
+	def plot(self, x, y):
+		self.graphWidget.plot(x, y)
+
+	def plot_points(self, x, y):
+		self.graphWidget.plot(x, y, pen=None, symbol='o')

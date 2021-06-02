@@ -186,3 +186,18 @@ class AirmapRequestManager(object):
 					self.airmap_flight_plan.flight_descr = dic[elem]
 				if elem == "geometry":
 					pass
+
+	def show_fp_geometry_on_window(self, window, wps):
+		x = []
+		y = []
+		points = self.airmap_flight_plan.geometry["coordinates"][0]
+		for point in points:
+			x.append(point[0])
+			y.append(point[1])
+		wpx = []
+		wpy = []
+		for wp in wps:
+			wpx.append(wp.lon)
+			wpy.append(wp.lat)
+		window.plot(x, y)
+		window.plot_points(wpx, wpy)
