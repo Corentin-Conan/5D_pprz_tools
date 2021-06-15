@@ -17,7 +17,7 @@ class FintRequestManager(object):
 		self.fint_user_profile.user_name = user_name
 		self.fint_user_profile.password = password
 
-	def log_in(self, connection_status_label):
+	def log_in(self, connection_status_label = None):
 		print("\nLogging in ...")
 		user_payload = {
 			'loginId': self.fint_user_profile.user_name, 
@@ -30,16 +30,18 @@ class FintRequestManager(object):
 			self.fint_user_profile.token = self.auth_response.json()["result"]["token"]
 			self.fint_user_profile.refresh_token = self.auth_response.json()["result"]["refreshToken"]
 			print("User logged in to FINT API")
-			connection_status_label.setStyleSheet("color: rgb(50,200,50)")
-			connection_status_label.setText("Connected")
+			if connection_status_label is not None:
+				connection_status_label.setStyleSheet("color: rgb(50,200,50)")
+				connection_status_label.setText("Connected")
 			refresh_thread = threading.Thread(target = self.thread_refresh, 
 				args = (3600 - 100, connection_status_label,), 
 				daemon = True)
 			refresh_thread.start()
 		else :
 			print("User not logged in " + str(self.auth_response.text))
-			connection_status_label.setStyleSheet("color: rgb(255,0,0)")
-			connection_status_label.setText("Not Connected")
+			if connection_status_label is not None:
+				connection_status_label.setStyleSheet("color: rgb(255,0,0)")
+				connection_status_label.setText("Not Connected")
 
 	def thread_refresh(self, refresh_timer, connection_status_label):
 		## thread meant to refresh the FINT access token

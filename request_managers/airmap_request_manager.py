@@ -30,7 +30,7 @@ class AirmapRequestManager(object):
 		self.airmap_user_profile.user_name = user_name
 		self.airmap_user_profile.password = password
 
-	def log_in(self, connection_status_label):
+	def log_in(self, connection_status_label = None):
 		print("\nLogging in ...")
 		user_payload = {
 			'grant_type': 'password',
@@ -51,16 +51,18 @@ class AirmapRequestManager(object):
 		    	"X-API-KEY": self.airmap_user_profile.api_key
 			}
 			print("User logged in to Airmap API")
-			connection_status_label.setStyleSheet("color: rgb(50,200,50)")
-			connection_status_label.setText("Connected")
+			if connection_status_label is not None:
+				connection_status_label.setStyleSheet("color: rgb(50,200,50)")
+				connection_status_label.setText("Connected")
 			refresh_thread = threading.Thread(target = self.thread_refresh, 
 				args = (self.auth_response.json()["expires_in"] - 100, connection_status_label,), 
 				daemon = True)
 			refresh_thread.start()
 		else :
 			print("User not logged in " + str(self.auth_response.text))
-			connection_status_label.setStyleSheet("color: rgb(255,0,0)")
-			connection_status_label.setText("Not Connected")
+			if connection_status_label is not None:
+				connection_status_label.setStyleSheet("color: rgb(255,0,0)")
+				connection_status_label.setText("Not Connected")
 
 	def thread_refresh(self, refresh_timer, connection_status_label):
 		## thread meant to refresh the airmap access token

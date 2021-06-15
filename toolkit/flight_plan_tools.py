@@ -5,9 +5,8 @@ import shapely.geometry
 import json
 from geojson import Polygon
 from geojson_rewind import rewind
-import geopy
-import re
 from matplotlib import pyplot
+import re
 
 def pprz_flight_plan_to_geojson(wp_list, d_buffer):
 	geojson_geometry = None

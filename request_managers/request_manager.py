@@ -39,16 +39,22 @@ class RequestManager(object):
 		self.airmap_request_manager.update_credentials(client_id, user_name, password)
 		# request token to airmap API, stores it in the airmap user profile and updates the connection status label given in argument
 		# the token has to be refreshed regularly, so a thread is also created to take care of this refresh
-		self.airmap_request_manager.log_in(connection_status_label)
+		self.airmap_request_manager.log_in(connection_status_label = connection_status_label)
 		# retreives the pilot profile information and the pilot's aircrafts and stores them in the airmap user profile
 		self.airmap_request_manager.get_user_information()
+
+	def log_in_to_airmap_API_with_default_cred(self):
+		self.airmap_request_manager.log_in()
 
 	def log_in_to_fint_API(self, user_name, password, connection_status_label):
 		# retreives the authentification information provided in the UI by the user and updates the fint user profile
 		self.fint_request_manager.update_credentials(user_name, password)
 		# request token to FINT API, stores it in the FINT user profile and updates the connection status label given in argument
 		# the token has to be refreshed regularly, so a thread is also created to take care of this refresh
-		self.fint_request_manager.log_in(connection_status_label)
+		self.fint_request_manager.log_in(connection_status_label = connection_status_label)
+
+	def log_in_to_fint_API_with_default_cred(self):
+		self.fint_request_manager.log_in()
 
 	def send_flight_plan_to_airmap(self, flight_plan_confirmation_window):
 		# retreives de the pprz flight plan
