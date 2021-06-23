@@ -8,9 +8,11 @@ from PySide6 import QtCore, QtWidgets, QtGui
 
 class EndUserUI(QtWidgets.QWidget):
 
-	def __init__(self):
+	def __init__(self, controler):
 		super().__init__()
 	
+		self.controler = controler
+
 		self.setWindowTitle("END USER UI - TASK ORDER")
 		self.resize(1400, 800)
 
@@ -92,11 +94,6 @@ class EndUserUI(QtWidgets.QWidget):
 		self.task_order_information_widget_list_forAll.append(self.time_label)
 		self.time_line_edit = QtWidgets.QLineEdit()
 		self.task_order_information_widget_list_forAll.append(self.time_line_edit)
-
-		# planned inspections to be used in planned inspection box
-		self.planned_apt_insp_1 = {"date": "date1", "type": "type1", "time": "time1", "drone": "drone1"}
-		self.planned_apt_insp_2 = {"date": "date2", "type": "type2", "time": "time2", "drone": "drone2"}
-		self.planed_apt_insp_list = [self.planned_apt_insp_1, self.planned_apt_insp_2]
 
 
 	def on_activity_selected(self, item):
