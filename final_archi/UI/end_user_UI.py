@@ -8,10 +8,10 @@ from PySide6 import QtCore, QtWidgets, QtGui
 
 class EndUserUI(QtWidgets.QWidget):
 
-	def __init__(self, controler):
+	def __init__(self, mission_mananger):
 		super().__init__()
 	
-		self.controler = controler
+		self.mission_manager = mission_mananger
 
 		self.setWindowTitle("END USER UI - TASK ORDER")
 		self.resize(1400, 800)
@@ -164,12 +164,10 @@ class EndUserUI(QtWidgets.QWidget):
 
 		# add planned inspections from already defined lists depending on the activity
 		if self.activities_list.currentItem().text() == "Airport Inspection Services":
-			for planned_mission in self.planed_apt_insp_list:
+			for planned_mission in self.mission_manager.accepted_missions["HEATHROW"]:
 				planned_mission_widget = PlannedMissionWidget(planned_mission)
 				self.planned_inspection_box_layout.addWidget(planned_mission_widget)
 				planned_mission_widget.show()
-
-		return
 
 
 	# def populate_inspection_planning_box(self, service):
