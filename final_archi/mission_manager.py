@@ -5,11 +5,19 @@ from datetime import datetime
 from objects.task_order import TaskOrder
 from objects.mission import Mission
 
+from PySide6 import QtCore
+
+class Communicate(QtCore.QObject):
+
+		# definition of signals for communication between windows
+		new_task_order_signal = QtCore.Signal(str)
 
 
-class MissionManager(object):
+class MissionManager():
 
 	def __init__(self):
+
+		self.comms = Communicate()
 
 		self.pending_task_orders = {"HEATHROW" : [], "RHODES" : [], "CORFU" : []}
 
@@ -90,3 +98,18 @@ class MissionManager(object):
 			description = "Inspection of waterway number 2 15min before landing of seaplane.")
 		self.accepted_missions["CORFU"].append(self.mission5)
 		self.accepted_missions["CORFU"].append(self.mission6)
+
+
+	def create_task_order(self, activity = None, location = None, service = None, target = None, date = None, time = None, comment = None):
+		print("Create task order ; service = " + service)
+
+		task_order = TaskOrder(
+			activity = activity,
+			location = location,
+			service = service,
+			target = target,
+			date = date,
+			time = time,
+			comment = comment)
+
+		self.pending_task_orders[task_order.location].append(task_order)
