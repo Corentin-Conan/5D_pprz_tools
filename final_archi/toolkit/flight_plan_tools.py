@@ -68,7 +68,9 @@ def to_deg(x):
 		return x
 
 def main():
-	print(to_deg("-41.40338888888889"))
+	print(to_deg("51 28 08 N"))
+	print(to_deg("0 29 21 W"))
+
 
 if __name__ == '__main__':
 	main()
