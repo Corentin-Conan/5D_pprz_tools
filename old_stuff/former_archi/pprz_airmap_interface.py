@@ -31,7 +31,7 @@ class Pprz_UTM_Interface(object):
 		## connection to Airmap API
 		self.CLIENT_ID = "2cd97349-096e-4457-be5d-bd1e751380ef"
 		self.USER_NAME = "corentin.conan@enac.fr"
-		self.PASSWORD = "Z&8r3m8xxXR_Ap-"
+		self.PASSWORD = "Pprz_2021"
 		self.API_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJjcmVkZW50aWFsX2lkIjoiY3JlZGVudGlhbHxvd2FENUdZQzNLV3YwQkN3b1h2ZDh1bkRlenAzIiwiYXBwbGljYXRpb25faWQiOiJhcHBsaWNhdGlvbnxhZExxdm4zU05QcG5CWmlHTTlvb0x0RVgzTG5XIiwib3JnYW5pemF0aW9uX2lkIjoiZGV2ZWxvcGVyfFAzS0xHWUVjTmtPTERERkwzRGxHcWh5Z2VSMFgiLCJpYXQiOjE2MTY1MDQ5NjF9.CknSj6XPvJCVwc4WhzqATdeOZcOVMxSt03FIqW_KDG4"
 		self.TOKEN = None
 		self.PILOT_ID = None
@@ -237,7 +237,7 @@ if __name__ == "__main__":
 		pprz_UTM_interface.create_flight_plan()
 		pprz_UTM_interface.submit_flight_plan() # don't submit too many flight plans
 		# print(pprz_UTM_interface.get_advisory_for_flight_plan())
-	pprz_UTM_interface.get_own_flights()
+	# pprz_UTM_interface.get_own_flights()
 	# pprz_UTM_interface.get_flights_in_mission_airspace()
 	# pprz_UTM_interface.test_telemtry()
-	pprz_UTM_interface.start_flight_comms()
+	# pprz_UTM_interface.start_flight_comms()
