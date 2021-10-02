@@ -26,3 +26,6 @@ class OutLog:
 
         if self.out:
             self.out.write(m)
+
+    def flush(self):
+        pass
