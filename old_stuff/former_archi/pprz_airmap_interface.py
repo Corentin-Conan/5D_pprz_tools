@@ -125,8 +125,8 @@ class Pprz_UTM_Interface(object):
 		payload = {
 		    "pilot_id": self.PILOT_ID,
 		    "aircraft_id": self.AIRCRAFT_IDs[0],
-		    "start_time": "2022-03-23T13:39:52Z",
-		    "end_time": "2022-03-23T16:39:52Z",
+		    "start_time": "2021-10-01T13:39:52Z",
+		    "end_time": "2022-10-01T16:39:52Z",
 		    "takeoff_latitude": lat0,
 		    "takeoff_longitude": lon0,
 		    "min_altitude_agl": 18,

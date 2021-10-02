@@ -219,6 +219,7 @@ class GGCS(QtWidgets.QWidget):
 		if flight_plan is not None:
 			print("Flight Plan Sent")
 			self.airmap_interface.create_flight_plan()
+			self.airmap_interface.submit_flight_plan()
 		else:
 			print("No flight plan")
 
