@@ -79,13 +79,14 @@ class Pprz_UTM_Interface(object):
 			data = user_payload)
 		if self.auth_response.status_code == 200:
 			self.TOKEN = self.auth_response.json()["access_token"]
-			print("User logged in")
+			print("User logged in hhhhh")
 			self.headers = {
 		    	"Accept": "application/json",
 		    	"Content-Type": "application/json; charset=utf-8",
 		    	"Authorization": "Bearer " + self.TOKEN,
 		    	"X-API-KEY": self.API_KEY
 			}
+			self.get_user_information()
 			return(1)
 		else :
 			print("User not logged in " + str(self.auth_response.text))
@@ -100,7 +101,9 @@ class Pprz_UTM_Interface(object):
 	def get_user_information(self):
 		if self.TOKEN is not None:
 			#get pilot ID
-			self.PILOT_ID = requests.get('https://api.airmap.com/pilot/v2/profile', headers=self.headers).json()["data"]["id"]
+			response = requests.get('https://api.airmap.com/pilot/v2/profile', headers=self.headers)
+			# self.PILOT_ID = requests.get('https://api.airmap.com/pilot/v2/profile', headers=self.headers).json()["data"]["id"]
+			print(response.text)
 			#get aircrafts ID
 			self.all_aircrafts = requests.get("https://api.airmap.com/pilot/v2/"+ self.PILOT_ID +  "/aircraft", headers=self.headers).json()['data']
 			for aircraft in self.all_aircrafts:

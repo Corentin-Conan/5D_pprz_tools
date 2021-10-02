@@ -15,13 +15,15 @@ class AirmapRequestManager():
 
 		self.api_key = data_user["airmap"]["api_key"]
 		self.client_id = data_user["airmap"]["client_id"]
-		self.user_name = data_user["airmap"]["user_name"]
-		self.password = data_user["airmap"]["password"]
+		self.user_name = "corentin.conan@enac.fr"
+		self.password = "Pprz_2021"
 
 		self.token = None
 		self.refresh_token = None
 
 		self.headers = None
+
+		self.pilot_id = None
 
 
 	def log_in_to_airmap_API(self, client_id, user_name, password, connection_status_label):
@@ -36,6 +38,7 @@ class AirmapRequestManager():
 			"https://auth.airmap.com/realms/airmap/protocol/openid-connect/token", 
 			data = user_payload)
 		if auth_response.status_code == 200:
+			print(auth_response.text)
 			connection_status_label.setStyleSheet("color: rgb(50,200,50)")
 			connection_status_label.setText("Connected")
 			self.token = auth_response.json()["access_token"]
@@ -51,6 +54,8 @@ class AirmapRequestManager():
 				args = (auth_response.json()["expires_in"] - 100, connection_status_label,), 
 				daemon = True)
 			refresh_thread.start()
+			self.get_user_profile()
+			self.load_flight_plans()
 		else :
 			print("User not logged in " + str(auth_response.text))
 
@@ -82,3 +87,18 @@ class AirmapRequestManager():
 				if connection_status_label is not None:
 					connection_status_label.setStyleSheet("color: rgb(255,0,0)")
 					connection_status_label.setText("Refresh Token Failed")
+
+
+	def get_user_profile(self):
+		print("\nRetreiving user information ...")
+		response = requests.get("https://api.airmap.com/pilot/v2/profile", headers = self.headers)
+		self.pilot_id = response.json()["data"]["id"]
+		print(self.pilot_id)
+		print(response.text)
+
+
+	def load_flight_plans(self):
+		print("\nLoading flight plans ...")
+		querystring = {"pilot_id": self.pilot_id}
+		response = requests.get("https://api.airmap.com/flight/v2/", headers = self.headers, params = querystring)
+		print(response.text)
