@@ -9,6 +9,7 @@ from outlog import OutLog
 
 class UI(QtWidgets.QWidget):
 
+
 	def __init__(self, _airmap_request_manager):
 
 		super().__init__()
@@ -18,6 +19,11 @@ class UI(QtWidgets.QWidget):
 		self.setWindowTitle("Airmap Information Manager")
 		self.resize(1200, 800)
 		self._layout = QtWidgets.QVBoxLayout(self)
+
+		# font
+		self.font = QtGui.QFont()
+		self.font.setPointSize(8)
+		self.setFont(self.font)
 
 		# toolbar
 		self.toolbar = QtWidgets.QToolBar("Main Toolbar")
@@ -86,8 +92,13 @@ class UI(QtWidgets.QWidget):
 		self.log_in_layout.addRow(self.log_in_button, self.status_label)
 
 		# flight plan list
-		self.flight_plan_list_box = QtWidgets.QGroupBox('Flight Plan List')
+		self.flight_plan_list_box = QtWidgets.QGroupBox('Planned Flights List')
 		self.left_layout.addWidget(self.flight_plan_list_box)
+		self.flight_plan_list_layout = QtWidgets.QVBoxLayout()
+		self.flight_plan_list_box.setLayout(self.flight_plan_list_layout)
+		self.flight_plan_list = QtWidgets.QListWidget()
+		self.flight_plan_list_layout.addWidget(self.flight_plan_list)
+		self.flight_plan_list.itemClicked.connect(self.onListItemClicked)
 
 		# # main section - information management
 		# self.main_box = QtWidgets.QGroupBox("UTM Link")
@@ -105,20 +116,42 @@ class UI(QtWidgets.QWidget):
 		sys.stdout = OutLog(self.out_log, sys.stdout)
 		sys.stderr = OutLog(self.out_log, sys.stderr)
 
+
 	# toolbar functions
 	def onButtonAccountClicked(self, s):
 		print("click", s)
 
+
 	def onButtonPilotClicked(self, s):
 		print("click", s)
+
 
 	def onButtonAircraftsClicked(self, s):
 		print("click", s)
 
+
 	# button functions
 	def logIn(self):
+
 		self.airmap_request_manager.log_in_to_airmap_API(
 			self.line_edit_client_id.text(),
 			self.line_edit_user_name.text(),
 			self.line_edit_password.text(),
 			self.status_label)
+
+		flight_widgets = self.airmap_request_manager.load_flight_plans()
+
+		for widget in flight_widgets:
+
+			item = QtWidgets.QListWidgetItem(self.flight_plan_list)
+			self.flight_plan_list.addItem(item)
+
+			item.setSizeHint(widget.minimumSizeHint())
+
+			self.flight_plan_list.setItemWidget(item, widget)
+
+
+	# list item clicked function
+	def onListItemClicked(self, item):
+
+		print("Item clicked : " + self.flight_plan_list.itemWidget(item).id)
