@@ -150,3 +150,29 @@ class AirmapRequestManager():
 		response = requests.post(url, headers = self.headers)
 
 		print(response.text)
+
+
+	def create_flight_plan(self, pilot_id, aircraft_id, start_time, end_time,
+		takeoff_latitude, takeoff_longitude, min_altitude_agl, max_altitude_agl,
+		buffer, geometry, flight_description):
+
+		payload = {
+			"pilot_id": pilot_id,
+			"aircraft_id": aircraft_id,
+			"start_time": start_time,
+			"end_time": end_time,
+			"takeoff_latitude": takeoff_latitude,
+			"takeoff_longitude": takeoff_longitude,
+			"min_altitude_agl": min_altitude_agl,
+			"max_altitude_agl": max_altitude_agl,
+			"buffer": buffer,
+			"geometry": geometry,
+			"flight_description": flight_description
+		}
+
+		url = "https://api.airmap.com/flight/v2/plan"
+
+		response = requests.post(url, json = payload, headers = self.headers)
+		print(response.text)
+
+

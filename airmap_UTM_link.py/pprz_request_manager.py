@@ -76,12 +76,12 @@ class PprzRequestManager():
 
 			lons = [wp.lon for wp in self.pprz_flight_plan.waypoints if wp.name[0] != "_"]
 			
-			time.sleep(0.5)	
+			time.sleep(0.7)	
 
 			if None not in lons:
 
 				print("UNSUBSCRIBE !!")
-				self.interface.unsubscribe_all()
+				self.interface.unsubscribe_all() # use usubscribe(bind_id)
 
 				return
 
@@ -90,7 +90,7 @@ class PprzRequestManager():
 			# coords_wp = [(wp.lon, wp.lat) for wp in sorted_wp_list]
 			# print("COORDS : " + str(coords_wp))
 
-		self.interface.subscribe(update_wp_list, PprzMessage("ground", "WAYPOINT_MOVED"))
+		bind_id = self.interface.subscribe(update_wp_list, PprzMessage("ground", "WAYPOINT_MOVED"))
 
 		self.pprz_flight_plan = None
 

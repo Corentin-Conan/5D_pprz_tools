@@ -118,6 +118,28 @@ class UI(QtWidgets.QWidget):
 		self.flight_plan_id = QtWidgets.QLabel("")
 		self.label_pilot_id = QtWidgets.QLabel("Pilot ID : ")
 		self.pilot_id = QtWidgets.QLabel("")
+		self.label_pprz_flight_plan = QtWidgets.QLabel("Paparazzi flight plan : ")
+		self.pprz_flight_plan = QtWidgets.QLabel("")
+		self.change_pprz_flight_plan_button = QtWidgets.QPushButton("Change PPRZ Flight Plan")
+		self.change_pprz_flight_plan_button.setFixedWidth(150)
+		self.change_pprz_flight_plan_button.clicked.connect(self.change_pprz_flight_plan)
+		self.label_start_time = QtWidgets.QLabel("Start time : ")
+		self.start_time = QtWidgets.QLineEdit()
+		self.label_end_time = QtWidgets.QLabel("End time : ")
+		self.end_time = QtWidgets.QLineEdit("")
+		self.label_take_off_lat = QtWidgets.QLabel("Takeoff latitude : ")
+		self.take_off_lat = QtWidgets.QLabel("")
+		self.label_take_off_lon = QtWidgets.QLabel("Takeoff longitude : ")
+		self.take_off_lon = QtWidgets.QLabel("")
+		self.label_min_alt_agl = QtWidgets.QLabel("Minimum altitude AGL : ")
+		self.min_alt_agl = QtWidgets.QLineEdit("0")
+		self.label_max_alt_agl = QtWidgets.QLabel("Maximum altitude AGL : ")
+		self.max_alt_agl = QtWidgets.QLineEdit("")
+		self.label_buffer = QtWidgets.QLabel("Buffer : ")
+		self.buffer = QtWidgets.QLineEdit("")
+		self.label_flight_description = QtWidgets.QLabel("Flight description : ")
+		self.flight_description = QtWidgets.QLineEdit("")
+
 		self.label_wps = QtWidgets.QLabel("Waypoints : ")
 		self.wps = QtWidgets.QLabel("")
 		self.label_sorted_wps = QtWidgets.QLabel("Sorted Waypoints : ")
@@ -134,6 +156,17 @@ class UI(QtWidgets.QWidget):
 		self.mid_layout.addRow(self.label_flight_id, self.flight_id)
 		self.mid_layout.addRow(self.label_flight_plan_id, self.flight_plan_id)
 		self.mid_layout.addRow(self.label_pilot_id, self.pilot_id)
+		self.mid_layout.addRow(self.label_pprz_flight_plan, self.pprz_flight_plan)
+		self.mid_layout.addRow(self.change_pprz_flight_plan_button)
+		self.mid_layout.addRow(self.label_start_time, self.start_time)
+		self.mid_layout.addRow(self.label_end_time, self.end_time)
+		self.mid_layout.addRow(self.label_take_off_lat, self.take_off_lat)
+		self.mid_layout.addRow(self.label_take_off_lon, self.take_off_lon)
+		self.mid_layout.addRow(self.label_min_alt_agl, self.min_alt_agl)
+		self.mid_layout.addRow(self.label_max_alt_agl, self.max_alt_agl)
+		self.mid_layout.addRow(self.label_buffer, self.buffer)
+		self.mid_layout.addRow(self.label_flight_description, self.flight_description)
+
 		self.mid_layout.addRow(self.label_wps, self.wps)
 		self.mid_layout.addRow(self.label_sorted_wps, self.sorted_wps)
 		self.mid_layout.addRow(self.compute_am_flight_plan_button)
@@ -226,6 +259,16 @@ class UI(QtWidgets.QWidget):
 			self.sorted_wps.setText(str(wp_names))
 
 
+	# on change pprz flight plan button clicked
+	def change_pprz_flight_plan(self):
+
+		flight_plan_path = QtWidgets.QFileDialog.getOpenFileName(self, "Select flight plan",
+			"/home/corentin/paparazzi/conf/flight_plans", "XML Files (*.xml)")
+		print(flight_plan_path)
+
+		self.pprz_flight_plan.setText(flight_plan_path[0])
+
+
 	# on compute airmap flight plan button clicked
 	def compute_airmap_flight_plan(self):
 
@@ -236,6 +279,13 @@ class UI(QtWidgets.QWidget):
 	def create_new_flight(self):
 
 		print("\nCreate new flight")
+		flight_plan_path = QtWidgets.QFileDialog.getOpenFileName(self, "Select flight plan",
+			"/home/corentin/paparazzi/conf/flight_plans", "XML Files (*.xml)")
+		print(flight_plan_path)
+
+		self.pprz_flight_plan.setText(flight_plan_path[0])
+
+		# do the rest of the flight creation process
 
 
 	# on delete flight button clicked
