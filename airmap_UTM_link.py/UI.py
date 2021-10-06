@@ -14,9 +14,14 @@ class UI(QtWidgets.QWidget):
 
 		super().__init__()
 
+		# request managers
 		self.airmap_request_manager = _airmap_request_manager
 		self.pprz_request_manager = _pprz_request_manager
 
+		# variables to keep for easy access by all components
+		self.flight_selected = None
+
+		# UI creation
 		self.setWindowTitle("Airmap Information Manager")
 		self.resize(1200, 800)
 		self._layout = QtWidgets.QVBoxLayout(self)
@@ -101,6 +106,11 @@ class UI(QtWidgets.QWidget):
 		self.flight_plan_list_layout.addWidget(self.flight_plan_list)
 		self.flight_plan_list.itemClicked.connect(self.onListItemClicked)
 
+		self.new_flight_button = QtWidgets.QPushButton("New flight")
+		self.new_flight_button.setFixedWidth(150)
+		self.new_flight_button.clicked.connect(self.create_new_flight)
+		self.flight_plan_list_layout.addWidget(self.new_flight_button)
+
 		# flight information window
 		self.label_flight_id = QtWidgets.QLabel("Flight ID : ")
 		self.flight_id = QtWidgets.QLabel("")
@@ -114,7 +124,12 @@ class UI(QtWidgets.QWidget):
 		self.sorted_wps = QtWidgets.QLineEdit("")
 
 		self.compute_am_flight_plan_button = QtWidgets.QPushButton("Compute AIRMAP Flight Plan")
+		self.compute_am_flight_plan_button.setFixedWidth(150)
 		self.compute_am_flight_plan_button.clicked.connect(self.compute_airmap_flight_plan)
+
+		self.delete_flight_button = QtWidgets.QPushButton("Delete Flight")
+		self.delete_flight_button.setFixedWidth(150)
+		self.delete_flight_button.clicked.connect(self.delete_flight)
 
 		self.mid_layout.addRow(self.label_flight_id, self.flight_id)
 		self.mid_layout.addRow(self.label_flight_plan_id, self.flight_plan_id)
@@ -122,6 +137,7 @@ class UI(QtWidgets.QWidget):
 		self.mid_layout.addRow(self.label_wps, self.wps)
 		self.mid_layout.addRow(self.label_sorted_wps, self.sorted_wps)
 		self.mid_layout.addRow(self.compute_am_flight_plan_button)
+		self.mid_layout.addRow(self.delete_flight_button)
 
 		# bottom box - outlog
 		self.out_log = QtWidgets.QTextEdit()
@@ -155,6 +171,10 @@ class UI(QtWidgets.QWidget):
 			self.line_edit_user_name.text(),
 			self.line_edit_password.text(),
 			self.status_label)
+		self.populate_flight_list()
+
+
+	def populate_flight_list(self):
 
 		flight_widgets = self.airmap_request_manager.load_flight_plans()
 
@@ -168,11 +188,20 @@ class UI(QtWidgets.QWidget):
 			self.flight_plan_list.setItemWidget(item, widget)
 
 
+	def update_flight_list(self):
+
+		# delete current list items
+		self.flight_plan_list.clear()
+		# populate with updated flights
+		self.populate_flight_list()
+
+
 	# list item clicked function
 	def onListItemClicked(self, item):
 
-		print("\nItem clicked : " + self.flight_plan_list.itemWidget(item).flight_id)
-		self.populate_flight_information_window(self.flight_plan_list.itemWidget(item))
+		self.flight_selected = self.flight_plan_list.itemWidget(item)
+		print("\nItem clicked : " + self.flight_selected.flight_id)
+		self.populate_flight_information_window(self.flight_selected)
 
 
 	# on flight selected, populate flight information window
@@ -197,7 +226,23 @@ class UI(QtWidgets.QWidget):
 			self.sorted_wps.setText(str(wp_names))
 
 
-
+	# on compute airmap flight plan button clicked
 	def compute_airmap_flight_plan(self):
 
 		self.pprz_request_manager.compute_airmap_flight_plan_geometry(self.sorted_wps.text())
+
+
+	# on create new flight button clicked
+	def create_new_flight(self):
+
+		print("\nCreate new flight")
+
+
+	# on delete flight button clicked
+	def delete_flight(self):
+
+		print("\nDelete selected flight")
+		self.airmap_request_manager.delete_flight(self.flight_selected.flight_id)
+		
+		# update flight list
+		self.update_flight_list()

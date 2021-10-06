@@ -143,3 +143,10 @@ class AirmapRequestManager():
 
 		return flight_widgets
 
+
+	def delete_flight(self, flight_id):
+
+		url = "https://api.airmap.com/flight/v2/" + flight_id + "/delete"
+		response = requests.post(url, headers = self.headers)
+
+		print(response.text)
