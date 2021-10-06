@@ -70,7 +70,6 @@ class AirmapRequestManager():
 
 			refresh_thread.start()
 			self.get_user_profile()
-			# self.load_flight_plans()
 
 		else :
 

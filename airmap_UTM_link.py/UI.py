@@ -10,11 +10,12 @@ from outlog import OutLog
 class UI(QtWidgets.QWidget):
 
 
-	def __init__(self, _airmap_request_manager):
+	def __init__(self, _airmap_request_manager, _pprz_request_manager):
 
 		super().__init__()
 
 		self.airmap_request_manager = _airmap_request_manager
+		self.pprz_request_manager = _pprz_request_manager
 
 		self.setWindowTitle("Airmap Information Manager")
 		self.resize(1200, 800)
@@ -54,7 +55,7 @@ class UI(QtWidgets.QWidget):
 		self.main_layout.addWidget(self.left_group_box)
 
 		self.mid_group_box = QtWidgets.QGroupBox('')
-		self.mid_layout = QtWidgets.QVBoxLayout(self.mid_group_box)
+		self.mid_layout = QtWidgets.QFormLayout(self.mid_group_box)
 		self.main_layout.addWidget(self.mid_group_box)
 
 		self.right_group_box = QtWidgets.QGroupBox('')
@@ -100,11 +101,27 @@ class UI(QtWidgets.QWidget):
 		self.flight_plan_list_layout.addWidget(self.flight_plan_list)
 		self.flight_plan_list.itemClicked.connect(self.onListItemClicked)
 
-		# # main section - information management
-		# self.main_box = QtWidgets.QGroupBox("UTM Link")
-		# self.main_layout.addWidget(self.main_box)
-		# self.main_box_layout = QtWidgets.QHBoxLayout()
-		# self.main_box.setLayout(self.main_box_layout)
+		# flight information window
+		self.label_flight_id = QtWidgets.QLabel("Flight ID : ")
+		self.flight_id = QtWidgets.QLabel("")
+		self.label_flight_plan_id = QtWidgets.QLabel("Flight Plan ID : ")
+		self.flight_plan_id = QtWidgets.QLabel("")
+		self.label_pilot_id = QtWidgets.QLabel("Pilot ID : ")
+		self.pilot_id = QtWidgets.QLabel("")
+		self.label_wps = QtWidgets.QLabel("Waypoints : ")
+		self.wps = QtWidgets.QLabel("")
+		self.label_sorted_wps = QtWidgets.QLabel("Sorted Waypoints : ")
+		self.sorted_wps = QtWidgets.QLineEdit("")
+
+		self.compute_am_flight_plan_button = QtWidgets.QPushButton("Compute AIRMAP Flight Plan")
+		self.compute_am_flight_plan_button.clicked.connect(self.compute_airmap_flight_plan)
+
+		self.mid_layout.addRow(self.label_flight_id, self.flight_id)
+		self.mid_layout.addRow(self.label_flight_plan_id, self.flight_plan_id)
+		self.mid_layout.addRow(self.label_pilot_id, self.pilot_id)
+		self.mid_layout.addRow(self.label_wps, self.wps)
+		self.mid_layout.addRow(self.label_sorted_wps, self.sorted_wps)
+		self.mid_layout.addRow(self.compute_am_flight_plan_button)
 
 		# bottom box - outlog
 		self.out_log = QtWidgets.QTextEdit()
@@ -154,4 +171,33 @@ class UI(QtWidgets.QWidget):
 	# list item clicked function
 	def onListItemClicked(self, item):
 
-		print("Item clicked : " + self.flight_plan_list.itemWidget(item).id)
+		print("\nItem clicked : " + self.flight_plan_list.itemWidget(item).flight_id)
+		self.populate_flight_information_window(self.flight_plan_list.itemWidget(item))
+
+
+	# on flight selected, populate flight information window
+	def populate_flight_information_window(self, flight):
+
+		print("\nPopulating flight window with flight : " + flight.flight_id)
+		self.flight_id.setText(flight.flight_id)
+		self.flight_plan_id.setText(flight.flight_plan_id)
+		self.pilot_id.setText(flight.pilot_id)
+
+		wps = self.pprz_request_manager.get_waypoints()
+
+		if wps == -1:
+
+			self.wps.setText("No flight plan loaded")
+			self.sorted_wps.setText("No flight plan loaded")
+
+		else:
+
+			wp_names = [wp.name for wp in wps]
+			self.wps.setText(str(wp_names))
+			self.sorted_wps.setText(str(wp_names))
+
+
+
+	def compute_airmap_flight_plan(self):
+
+		self.pprz_request_manager.compute_airmap_flight_plan_geometry(self.sorted_wps.text())
