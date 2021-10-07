@@ -2,9 +2,12 @@
 
 import sys
 import time
-from os import path, getenv
+# from os import path, getenv
+import os
+import subprocess
+import xml.etree.ElementTree as ET
 
-PPRZ_HOME = getenv("PAPARAZZI_HOME", path.normpath(path.dirname(path.abspath(__file__))))
+PPRZ_HOME = os.getenv("PAPARAZZI_HOME", os.path.normpath(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(PPRZ_HOME + "/var/lib/python")
 sys.path.append(PPRZ_HOME + "/sw/lib/python")
 
@@ -59,40 +62,35 @@ class PprzRequestManager():
 		self.interface = IvyMessagesInterface("msgInterface")
 		self.pprzconnect = PprzConnect(notify=self.update_config, ivy=self.interface)
 		
-
-		def update_wp_list(msg_id, msg):
-
-			print("update wp list")
-
-			for current_wp in self.pprz_flight_plan.waypoints:
-
-				if int(msg["wp_id"]) == int(current_wp.no) and current_wp.name[0] != "_":
-					current_wp.lat = msg["lat"]
-					current_wp.lon = msg["long"]
-					current_wp.alt = msg["alt"]
-					current_wp.ground_alt = msg["ground_alt"]
-
-					print("WP updated : " + current_wp.name)
-
-			lons = [wp.lon for wp in self.pprz_flight_plan.waypoints if wp.name[0] != "_"]
-			
-			time.sleep(0.7)	
-
-			if None not in lons:
-
-				print("UNSUBSCRIBE !!")
-				self.interface.unsubscribe_all() # use usubscribe(bind_id)
-
-				return
-
-			# sorted_wp_list = sort_like(wp_list, wp_names)
-
-			# coords_wp = [(wp.lon, wp.lat) for wp in sorted_wp_list]
-			# print("COORDS : " + str(coords_wp))
-
-		bind_id = self.interface.subscribe(update_wp_list, PprzMessage("ground", "WAYPOINT_MOVED"))
-
 		self.pprz_flight_plan = None
+
+		bind_id = self.interface.subscribe(self.update_wp_list, PprzMessage("ground", "WAYPOINT_MOVED"))
+
+
+	def update_wp_list(self, msg_id, msg):
+
+		print("update wp list")
+
+		for current_wp in self.pprz_flight_plan.waypoints:
+
+			if int(msg["wp_id"]) == int(current_wp.no) and current_wp.name[0] != "_" and current_wp.lon is None:
+				current_wp.lat = msg["lat"]
+				current_wp.lon = msg["long"]
+				current_wp.alt = msg["alt"]
+				current_wp.ground_alt = msg["ground_alt"]
+
+				print("WP updated : " + current_wp.name)
+
+		lons = [wp.lon for wp in self.pprz_flight_plan.waypoints if wp.name[0] != "_"]
+		
+		time.sleep(0.8)	
+
+		if None not in lons:
+
+			print("UNSUBSCRIBE !!")
+			self.interface.unsubscribe_all() # use usubscribe(bind_id)
+
+			return
 
 
 	def update_config(self, config):
@@ -142,3 +140,18 @@ class PprzRequestManager():
 		return(buffer)
 
 
+	# called when creating a new flight: opens GCS with selected flight plan 
+	# and parses flight plan to get requied informations
+	def open_and_parse(self, flight_plan_path):
+
+		pprz_fp_info = {}
+
+		# open fp in GCS
+		x = subprocess.Popen("/home/corentin/PprzGCS/build/pprzgcs/pprzgcs -f " + flight_plan_path, shell = True)
+
+		# parse and get required fp info
+		tree = ET.parse(flight_plan_path)
+		root = tree.getroot()
+		print(root.attrib)
+
+		return pprz_fp_info

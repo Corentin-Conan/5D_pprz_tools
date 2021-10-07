@@ -29,6 +29,7 @@ class AirmapRequestManager():
 		self.headers = None
 
 		self.pilot_id = None
+		self.aircrafts = []
 
 
 	def log_in_to_airmap_API(self, client_id, user_name, password, connection_status_label):
@@ -120,10 +121,16 @@ class AirmapRequestManager():
 	def get_user_profile(self):
 
 		print("\nRetreiving user information ...")
+
 		response = requests.get("https://api.airmap.com/pilot/v2/profile", headers = self.headers)
 		print("User logged in")
 		print(response.text)
 		self.pilot_id = response.json()["data"]["id"]
+
+		url = "https://api.airmap.com/pilot/v2/" + self.pilot_id + "/aircraft"
+		response = requests.get(url, headers = self.headers)
+		self.aircrafts = response.json()["data"]
+		print("Aircrafts : " + str(self.aircrafts))
 
 
 	def load_flight_plans(self):
@@ -157,8 +164,8 @@ class AirmapRequestManager():
 		buffer, geometry, flight_description):
 
 		payload = {
-			"pilot_id": pilot_id,
-			"aircraft_id": aircraft_id,
+			"pilot_id": self.pilot_id,
+			"aircraft_id": self.aircrafts[0]["id"],
 			"start_time": start_time,
 			"end_time": end_time,
 			"takeoff_latitude": takeoff_latitude,
@@ -172,7 +179,23 @@ class AirmapRequestManager():
 
 		url = "https://api.airmap.com/flight/v2/plan"
 
-		response = requests.post(url, json = payload, headers = self.headers)
-		print(response.text)
+		print(payload)
+
+		# response = requests.post(url, json = payload, headers = self.headers)
+		# print(response.text)
+
+
+	# function to write in json
+	def write_in_json(self, pprz_file, flight_id):
+
+		data = {flight_id: pprz_file}
+		flight = json.dumps(data)
+
+		with open("airmap.flights.json", "r+") as file:
+
+			file_data = json.load(file)
+			file_data["flights"].append(flight)
+			file.seek(0)
+			json.dump(file_data, file, indent = 4)
 
 

@@ -124,9 +124,9 @@ class UI(QtWidgets.QWidget):
 		self.change_pprz_flight_plan_button.setFixedWidth(150)
 		self.change_pprz_flight_plan_button.clicked.connect(self.change_pprz_flight_plan)
 		self.label_start_time = QtWidgets.QLabel("Start time : ")
-		self.start_time = QtWidgets.QLineEdit()
+		self.start_time = QtWidgets.QLineEdit("YYYY-MM-DDThh:mm:ss.sssZ")
 		self.label_end_time = QtWidgets.QLabel("End time : ")
-		self.end_time = QtWidgets.QLineEdit("")
+		self.end_time = QtWidgets.QLineEdit("YYYY-MM-DDThh:mm:ss.sssZ")
 		self.label_take_off_lat = QtWidgets.QLabel("Takeoff latitude : ")
 		self.take_off_lat = QtWidgets.QLabel("")
 		self.label_take_off_lon = QtWidgets.QLabel("Takeoff longitude : ")
@@ -145,13 +145,17 @@ class UI(QtWidgets.QWidget):
 		self.label_sorted_wps = QtWidgets.QLabel("Sorted Waypoints : ")
 		self.sorted_wps = QtWidgets.QLineEdit("")
 
-		self.compute_am_flight_plan_button = QtWidgets.QPushButton("Compute AIRMAP Flight Plan")
+		self.compute_am_flight_plan_button = QtWidgets.QPushButton("Compute Flight Geometry")
 		self.compute_am_flight_plan_button.setFixedWidth(150)
-		self.compute_am_flight_plan_button.clicked.connect(self.compute_airmap_flight_plan)
+		self.compute_am_flight_plan_button.clicked.connect(self.compute_flight_geometry)
 
 		self.delete_flight_button = QtWidgets.QPushButton("Delete Flight")
 		self.delete_flight_button.setFixedWidth(150)
 		self.delete_flight_button.clicked.connect(self.delete_flight)
+
+		self.submit_flight_plan_button = QtWidgets.QPushButton("Submit Flight Plan")
+		self.submit_flight_plan_button.setFixedWidth(150)
+		self.submit_flight_plan_button.clicked.connect(self.submit_flight_plan)
 
 		self.mid_layout.addRow(self.label_flight_id, self.flight_id)
 		self.mid_layout.addRow(self.label_flight_plan_id, self.flight_plan_id)
@@ -171,6 +175,7 @@ class UI(QtWidgets.QWidget):
 		self.mid_layout.addRow(self.label_sorted_wps, self.sorted_wps)
 		self.mid_layout.addRow(self.compute_am_flight_plan_button)
 		self.mid_layout.addRow(self.delete_flight_button)
+		self.mid_layout.addRow(self.submit_flight_plan_button)
 
 		# bottom box - outlog
 		self.out_log = QtWidgets.QTextEdit()
@@ -181,6 +186,10 @@ class UI(QtWidgets.QWidget):
 		self._layout.addWidget(self.out_log)
 		sys.stdout = OutLog(self.out_log, sys.stdout)
 		sys.stderr = OutLog(self.out_log, sys.stderr)
+
+		# set disable blocks at beginning of app
+		self.flight_plan_list_box.setDisabled(True)
+		self.mid_group_box.setDisabled(True)
 
 
 	# toolbar functions
@@ -204,6 +213,7 @@ class UI(QtWidgets.QWidget):
 			self.line_edit_user_name.text(),
 			self.line_edit_password.text(),
 			self.status_label)
+		self.flight_plan_list_box.setEnabled(True)
 		self.populate_flight_list()
 
 
@@ -234,7 +244,10 @@ class UI(QtWidgets.QWidget):
 
 		self.flight_selected = self.flight_plan_list.itemWidget(item)
 		print("\nItem clicked : " + self.flight_selected.flight_id)
+		self.mid_group_box.setEnabled(True)
+
 		self.populate_flight_information_window(self.flight_selected)
+
 
 
 	# on flight selected, populate flight information window
@@ -244,6 +257,13 @@ class UI(QtWidgets.QWidget):
 		self.flight_id.setText(flight.flight_id)
 		self.flight_plan_id.setText(flight.flight_plan_id)
 		self.pilot_id.setText(flight.pilot_id)
+		self.start_time.setText(flight.start_time)
+		self.end_time.setText(flight.end_time)
+		self.take_off_lat.setText(str(flight.lat))
+		self.take_off_lon.setText(str(flight.lon))
+		self.max_alt_agl.setText(str(flight.max_altitude))
+		self.buffer.setText(str(flight.buffer))
+		self.flight_description.setText("not implemented yet // see also for min alt agl")
 
 		wps = self.pprz_request_manager.get_waypoints()
 
@@ -269,8 +289,8 @@ class UI(QtWidgets.QWidget):
 		self.pprz_flight_plan.setText(flight_plan_path[0])
 
 
-	# on compute airmap flight plan button clicked
-	def compute_airmap_flight_plan(self):
+	# on compute flight geometry button clicked
+	def compute_flight_geometry(self):
 
 		self.pprz_request_manager.compute_airmap_flight_plan_geometry(self.sorted_wps.text())
 
@@ -283,9 +303,36 @@ class UI(QtWidgets.QWidget):
 			"/home/corentin/paparazzi/conf/flight_plans", "XML Files (*.xml)")
 		print(flight_plan_path)
 
-		self.pprz_flight_plan.setText(flight_plan_path[0])
+		if flight_plan_path == None:
 
-		# do the rest of the flight creation process
+			return
+
+		self.mid_group_box.setEnabled(True)
+
+		self.pprz_flight_plan.setText(flight_plan_path[0])
+		self.flight_id.setText("")
+		self.flight_plan_id.setText("")
+		self.pilot_id.setText("")
+		self.start_time.setText("")
+		self.end_time.setText("")
+		self.take_off_lat.setText("")
+		self.take_off_lon.setText("")
+		self.max_alt_agl.setText("")
+		self.buffer.setText("")
+		self.flight_description.setText("")
+
+		pprz_fp_info = self.pprz_request_manager.open_and_parse(flight_plan_path[0])
+
+
+	# on submit flight plan button clicked
+	def submit_flight_plan(self):
+
+		self.airmap_request_manager.create_flight_plan(None, None,
+			self.start_time.text(), self.end_time.text(), None, None,
+			self.min_alt_agl.text(), self.max_alt_agl.text(), self.buffer.text(),
+			None, self.flight_description.text())
+		# test for writing in json file
+		self.airmap_request_manager.write_in_json(flight_plan_path[0], "test")
 
 
 	# on delete flight button clicked
