@@ -336,13 +336,16 @@ class UI(QtWidgets.QWidget):
 	# on submit flight plan button clicked
 	def submit_flight_plan(self):
 
+		buffer = self.pprz_request_manager.compute_airmap_flight_plan_geometry(self.pprz_fp_info["waypoints"] ,self.sorted_wps.text())
+
 		self.airmap_request_manager.create_flight_plan(None, None,
 			self.start_time.text(), self.end_time.text(), None, None,
 			self.min_alt_agl.text(), self.max_alt_agl.text(), self.buffer.text(),
-			None, self.flight_description.text())
+			buffer, self.flight_description.text())
 		# test for writing in json file
-		self.airmap_request_manager.write_in_json(flight_plan_path[0], "test")
-
+		# self.airmap_request_manager.write_in_json(flight_plan_path[0], "test")
+		# update flight list to show newly created flight
+		self.update_flight_list()
 
 	# on delete flight button clicked
 	def delete_flight(self):

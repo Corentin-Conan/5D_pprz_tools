@@ -106,7 +106,7 @@ class PprzRequestManager():
 
 		show_shape_on_gcs(self.interface, buffer.exterior.coords, 1, "red")
 
-		return(buffer)
+		return(buffer.exterior.coords)
 
 
 	# called when creating a new flight: opens GCS with selected flight plan 

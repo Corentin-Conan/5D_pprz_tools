@@ -5,6 +5,8 @@ import json
 import threading
 import time
 from pathlib import Path
+from geojson import Polygon
+from geojson_rewind import rewind
 
 from flight_plan_widget import FlightPlanWidget
 
@@ -30,6 +32,8 @@ class AirmapRequestManager():
 
 		self.pilot_id = None
 		self.aircrafts = []
+
+		self.flight_plan = None
 
 
 	def log_in_to_airmap_API(self, client_id, user_name, password, connection_status_label):
@@ -163,6 +167,10 @@ class AirmapRequestManager():
 		takeoff_latitude, takeoff_longitude, min_altitude_agl, max_altitude_agl,
 		buffer, geometry, flight_description):
 
+		mission_airspace = Polygon([[[i,j] for i,j in geometry]])
+
+		mission_airspace_rewound = rewind(mission_airspace)
+
 		payload = {
 			"pilot_id": self.pilot_id,
 			"aircraft_id": self.aircrafts[0]["id"],
@@ -173,16 +181,21 @@ class AirmapRequestManager():
 			"min_altitude_agl": min_altitude_agl,
 			"max_altitude_agl": max_altitude_agl,
 			"buffer": buffer,
-			"geometry": geometry,
+			"geometry": mission_airspace_rewound,
 			"flight_description": flight_description
 		}
 
+		# create flight plan
 		url = "https://api.airmap.com/flight/v2/plan"
+		response = requests.post(url, json = payload, headers = self.headers)
+		print(response.text)
 
-		print(payload)
+		self.flight_plan = response.json()["data"]
 
-		# response = requests.post(url, json = payload, headers = self.headers)
-		# print(response.text)
+		# submit flight plan
+		url = "https://api.airmap.com/flight/v2/plan/" + self.flight_plan["id"] + "/submit"
+		response = requests.post(url, headers = self.headers)
+		print(response.text)
 
 
 	# function to write in json
@@ -191,7 +204,7 @@ class AirmapRequestManager():
 		data = {flight_id: pprz_file}
 		flight = json.dumps(data)
 
-		with open("airmap.flights.json", "r+") as file:
+		with open("airmap.flights.json", "rw") as file:
 
 			file_data = json.load(file)
 			file_data["flights"].append(flight)
