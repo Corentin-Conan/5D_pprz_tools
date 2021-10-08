@@ -20,6 +20,7 @@ class UI(QtWidgets.QWidget):
 
 		# variables to keep for easy access by all components
 		self.flight_selected = None
+		self.pprz_fp_info = None
 
 		# UI creation
 		self.setWindowTitle("Airmap Information Manager")
@@ -292,7 +293,9 @@ class UI(QtWidgets.QWidget):
 	# on compute flight geometry button clicked
 	def compute_flight_geometry(self):
 
-		self.pprz_request_manager.compute_airmap_flight_plan_geometry(self.sorted_wps.text())
+		self.pprz_request_manager.get_lat_lon_of_waypoints(self.pprz_fp_info["waypoints"], self.pprz_fp_info["lat0"], self.pprz_fp_info["lon0"])
+
+		self.pprz_request_manager.compute_airmap_flight_plan_geometry(self.pprz_fp_info["waypoints"] ,self.sorted_wps.text())
 
 
 	# on create new flight button clicked
@@ -313,16 +316,22 @@ class UI(QtWidgets.QWidget):
 		self.flight_id.setText("")
 		self.flight_plan_id.setText("")
 		self.pilot_id.setText("")
-		self.start_time.setText("")
-		self.end_time.setText("")
+		self.start_time.setText("YYYY-MM-DDThh:mm:ss.sssZ")
+		self.end_time.setText("YYYY-MM-DDThh:mm:ss.sssZ")
 		self.take_off_lat.setText("")
 		self.take_off_lon.setText("")
 		self.max_alt_agl.setText("")
 		self.buffer.setText("")
 		self.flight_description.setText("")
 
-		pprz_fp_info = self.pprz_request_manager.open_and_parse(flight_plan_path[0])
+		self.pprz_fp_info = self.pprz_request_manager.open_and_parse(flight_plan_path[0])
+		print(self.pprz_fp_info)
 
+		self.take_off_lon.setText(self.pprz_fp_info["lon0"])
+		self.take_off_lat.setText(self.pprz_fp_info["lat0"])
+		self.max_alt_agl.setText(self.pprz_fp_info["alt"])
+		self.wps.setText(str([wp.name for wp in self.pprz_fp_info["waypoints"] if wp.name[0] != "_"]))
+		self.sorted_wps.setText(str([wp.name for wp in self.pprz_fp_info["waypoints"] if wp.name[0] != "_"]))
 
 	# on submit flight plan button clicked
 	def submit_flight_plan(self):
