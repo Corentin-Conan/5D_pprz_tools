@@ -4,6 +4,7 @@ import sys
 import time
 # from os import path, getenv
 import os
+import json
 import subprocess
 import xml.etree.ElementTree as ET
 import pyproj
@@ -122,7 +123,7 @@ class PprzRequestManager():
 		# parse and get required fp info
 		tree = ET.parse(flight_plan_path)
 		root = tree.getroot()
-		# print(root.attrib)
+		print(root.attrib)
 
 		for child in root:
 			if child.tag == "waypoints":
@@ -138,3 +139,106 @@ class PprzRequestManager():
 		pprz_fp_info["waypoints"] = waypoints
 
 		return pprz_fp_info
+
+
+
+	def get_mission_geometry(self, flight_plan_path):
+
+		tree = ET.parse(flight_plan_path)
+		root = tree.getroot()
+
+		lat0 = root.attrib["lat0"]
+		lon0 = root.attrib["lon0"]
+		max_dist_from_home = root.attrib["max_dist_from_home"]
+
+		utm_crs_list = pyproj.database.query_utm_crs_info(
+			datum_name = "WGS 84",
+			area_of_interest = pyproj.aoi.AreaOfInterest(
+				west_lon_degree = float(lon0),
+				south_lat_degree = float(lat0),
+				east_lon_degree = float(lon0),
+				north_lat_degree = float(lat0)
+				)
+			)
+
+		utm_crs = pyproj.CRS.from_epsg(utm_crs_list[0].code)
+
+		proj = pyproj.Proj(utm_crs, preserve_units = False)
+
+		x0, y0 = proj(lon0, lat0)
+
+		p1 = (x0 - float(max_dist_from_home), y0 - float(max_dist_from_home))
+		p2 = (x0 + float(max_dist_from_home), y0 - float(max_dist_from_home))
+		p3 = (x0 + float(max_dist_from_home), y0 + float(max_dist_from_home))
+		p4 = (x0 - float(max_dist_from_home), y0 + float(max_dist_from_home))
+
+		p_list = [p1, p2, p3, p4, p1]
+
+		p_list_latlon = [proj(p[0], p[1], inverse = True) for p in p_list]
+
+		geometry = {'type': "Polygon",'coordinates':[[[p[0], p[1]] for p in p_list_latlon]]}
+
+		geojson_geometry = json.dumps(geometry)
+
+		print(geojson_geometry)
+		return geojson_geometry
+
+
+
+	def show_airspaces_on_gcs(self, airspaces):
+
+		msg_list = []
+		id_number = 10
+		# print(airspaces)
+		## fills a PprzMessage with information from the GeoJSON
+		for area in airspaces:
+			## creates  and fills a new PprzMessage for each area
+			msg_shape = PprzMessage("ground", "SHAPE")
+			msg_shape['id'] = id_number
+			id_number += 1
+			## color depending on the type of airspace
+			if area['type'] == 'controlled_airspace':
+				msg_shape['linecolor'] = 'red'
+				msg_shape['fillcolor'] = 'red'
+			elif area['type'] == 'airport':
+				msg_shape['linecolor'] = 'blue'
+				msg_shape['fillcolor'] = 'blue'
+			else :
+				msg_shape['linecolor'] = 'orange'
+				msg_shape['fillcolor'] = 'orange'
+			## opacity / 0 - Transparent, 1 - Light Fill, 2 - Medium Fill, 3 - Opaque
+			msg_shape['opacity'] = 1
+			## shape / 0 - Circle, 1 - Polygon, 2 - Line, 3 - Text
+			if area['geometry']['type'] == 'Polygon':
+				msg_shape['shape'] = 1
+			elif area['geometry']['type'] == 'MultiPolygon':
+				msg_shape['shape'] = 1
+			else:
+				print('unknown shape for area id = ' + str(id_number))
+			## status / 0 - Create, 1 - Delete
+			msg_shape['status'] = 0
+			## lonarr & latarr
+			lonarr = []
+			latarr = []
+			if area['geometry']['type'] == 'MultiPolygon':
+				for coordinates in area['geometry']['coordinates'][0][0]:
+					# print('coordinates = '+str(coordinates))
+					lonarr.append(int(coordinates[0] * 10000000))
+					latarr.append(int(coordinates[1] * 10000000))
+				msg_shape['latarr'] = latarr
+				msg_shape['lonarr'] = lonarr
+			elif area['geometry']['type'] == 'Polygon':
+				for coordinates in area['geometry']['coordinates'][0]:
+					# print('coordinates = '+str(coordinates))
+					lonarr.append(int(coordinates[0] * 10000000))
+					latarr.append(int(coordinates[1] * 10000000))
+				msg_shape['latarr'] = latarr
+				msg_shape['lonarr'] = lonarr
+			## radius = 0 if not circle
+			## text
+			msg_shape['text'] = area['name'].replace(" ", "_")
+			print(msg_shape)
+			msg_list.append(msg_shape)
+		
+		for msg in msg_list:
+			self.interface.send(msg)

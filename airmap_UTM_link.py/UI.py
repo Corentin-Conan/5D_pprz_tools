@@ -20,6 +20,7 @@ class UI(QtWidgets.QWidget):
 
 		# variables to keep for easy access by all components
 		self.flight_selected = None
+		self.flight_plan_path = None
 		self.pprz_fp_info = None
 
 		# UI creation
@@ -65,6 +66,7 @@ class UI(QtWidgets.QWidget):
 		self.main_layout.addWidget(self.mid_group_box)
 
 		self.right_group_box = QtWidgets.QGroupBox('')
+		self.right_group_box.setFixedWidth(350)
 		self.right_layout = QtWidgets.QVBoxLayout(self.right_group_box)
 		self.main_layout.addWidget(self.right_group_box)
 
@@ -178,6 +180,21 @@ class UI(QtWidgets.QWidget):
 		self.mid_layout.addRow(self.delete_flight_button)
 		self.mid_layout.addRow(self.submit_flight_plan_button)
 
+		# right box 
+		# airspace information box
+		self.airspace_information_box = QtWidgets.QGroupBox("Airspace Information")
+		self.right_layout.addWidget(self.airspace_information_box)
+		self.airspace_information_layout = QtWidgets.QVBoxLayout(self.airspace_information_box)
+
+		self.get_airspaces_button = QtWidgets.QPushButton("Get Airspaces")
+		self.get_airspaces_button.clicked.connect(self.get_airspaces)
+		self.airspace_information_layout.addWidget(self.get_airspaces_button)
+
+		# flight status box
+		self.flight_status_box = QtWidgets.QGroupBox("Flight Status")
+		self.right_layout.addWidget(self.flight_status_box)
+		self.flight_status_layout = QtWidgets.QVBoxLayout(self.flight_status_box)
+
 		# bottom box - outlog
 		self.out_log = QtWidgets.QTextEdit()
 		self.out_log.setFixedHeight(150)
@@ -250,7 +267,6 @@ class UI(QtWidgets.QWidget):
 		self.populate_flight_information_window(self.flight_selected)
 
 
-
 	# on flight selected, populate flight information window
 	def populate_flight_information_window(self, flight):
 
@@ -283,11 +299,11 @@ class UI(QtWidgets.QWidget):
 	# on change pprz flight plan button clicked
 	def change_pprz_flight_plan(self):
 
-		flight_plan_path = QtWidgets.QFileDialog.getOpenFileName(self, "Select flight plan",
+		self.flight_plan_path = QtWidgets.QFileDialog.getOpenFileName(self, "Select flight plan",
 			"/home/corentin/paparazzi/conf/flight_plans", "XML Files (*.xml)")
-		print(flight_plan_path)
+		print(self.flight_plan_path)
 
-		self.pprz_flight_plan.setText(flight_plan_path[0])
+		self.pprz_flight_plan.setText(self.flight_plan_path[0])
 
 
 	# on compute flight geometry button clicked
@@ -302,17 +318,17 @@ class UI(QtWidgets.QWidget):
 	def create_new_flight(self):
 
 		print("\nCreate new flight")
-		flight_plan_path = QtWidgets.QFileDialog.getOpenFileName(self, "Select flight plan",
+		self.flight_plan_path = QtWidgets.QFileDialog.getOpenFileName(self, "Select flight plan",
 			"/home/corentin/paparazzi/conf/flight_plans", "XML Files (*.xml)")
-		print(flight_plan_path)
+		print(self.flight_plan_path)
 
-		if flight_plan_path == None:
+		if self.flight_plan_path == None:
 
 			return
 
 		self.mid_group_box.setEnabled(True)
 
-		self.pprz_flight_plan.setText(flight_plan_path[0])
+		self.pprz_flight_plan.setText(self.flight_plan_path[0])
 		self.flight_id.setText("")
 		self.flight_plan_id.setText("")
 		self.pilot_id.setText("")
@@ -324,7 +340,7 @@ class UI(QtWidgets.QWidget):
 		self.buffer.setText("")
 		self.flight_description.setText("")
 
-		self.pprz_fp_info = self.pprz_request_manager.open_and_parse(flight_plan_path[0])
+		self.pprz_fp_info = self.pprz_request_manager.open_and_parse(self.flight_plan_path[0])
 		print(self.pprz_fp_info)
 
 		self.take_off_lon.setText(self.pprz_fp_info["lon0"])
@@ -332,6 +348,7 @@ class UI(QtWidgets.QWidget):
 		self.max_alt_agl.setText(self.pprz_fp_info["alt"])
 		self.wps.setText(str([wp.name for wp in self.pprz_fp_info["waypoints"] if wp.name[0] != "_"]))
 		self.sorted_wps.setText(str([wp.name for wp in self.pprz_fp_info["waypoints"] if wp.name[0] != "_"]))
+
 
 	# on submit flight plan button clicked
 	def submit_flight_plan(self):
@@ -343,9 +360,10 @@ class UI(QtWidgets.QWidget):
 			self.min_alt_agl.text(), self.max_alt_agl.text(), self.buffer.text(),
 			buffer, self.flight_description.text())
 		# test for writing in json file
-		# self.airmap_request_manager.write_in_json(flight_plan_path[0], "test")
+		self.airmap_request_manager.write_in_json(flight_plan_path[0], "test")
 		# update flight list to show newly created flight
 		self.update_flight_list()
+
 
 	# on delete flight button clicked
 	def delete_flight(self):
@@ -355,3 +373,21 @@ class UI(QtWidgets.QWidget):
 		
 		# update flight list
 		self.update_flight_list()
+
+
+	# on get airspaces button clicked
+	def get_airspaces(self):
+
+		print("\nRetreiving airspaces")
+		mission_geometry = self.pprz_request_manager.get_mission_geometry(self.flight_plan_path[0])
+		airspaces = self.airmap_request_manager.get_airspaces_in_geometry(mission_geometry)
+		self.pprz_request_manager.show_airspaces_on_gcs(airspaces)
+		self.show_airspaces_in_airspace_list(airspaces)
+
+
+	# called on get airspace
+	def show_airspaces_in_airspace_list(airspaces):
+
+		
+
+		pass

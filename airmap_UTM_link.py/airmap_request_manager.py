@@ -167,8 +167,10 @@ class AirmapRequestManager():
 		takeoff_latitude, takeoff_longitude, min_altitude_agl, max_altitude_agl,
 		buffer, geometry, flight_description):
 
+		# create geojson object
 		mission_airspace = Polygon([[[i,j] for i,j in geometry]])
 
+		# rewind coordinates (put them in order according to right hand rule)
 		mission_airspace_rewound = rewind(mission_airspace)
 
 		payload = {
@@ -198,7 +200,7 @@ class AirmapRequestManager():
 		print(response.text)
 
 
-	# function to write in json
+	# function to write in json file
 	def write_in_json(self, pprz_file, flight_id):
 
 		data = {flight_id: pprz_file}
@@ -209,6 +211,36 @@ class AirmapRequestManager():
 			file_data = json.load(file)
 			file_data["flights"].append(flight)
 			file.seek(0)
-			json.dump(file_data, file, indent = 4)
+			json.dumps(file_data, file, indent = 4)
+
+
+	# get airspaces near pprz flight plan geometry
+	def get_airspaces_in_geometry(self, geometry):
+
+		# querystring = {
+		# 	("geometry", geometry),
+		#   ('types', 'airport,controlled_airspace'),
+		# 	('full', 'true'),
+		# 	('geometry_format', 'geojson')
+		# }
+
+		# querystring = {"geometry": geometry}
+
+		querystring = (
+			('geometry', geometry),
+			('full', 'true'),
+			('geometry_format', 'geojson')
+		)
+
+		response = requests.get('https://api.airmap.com/airspace/v2/search', headers = self.headers, params = querystring)
+		print(response.text)
+
+		if response.status_code == 200:
+
+			airspaces = response.json()['data']
+			print(airspaces)
+
+			return airspaces
+
 
 
