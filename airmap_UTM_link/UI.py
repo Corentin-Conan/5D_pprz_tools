@@ -359,8 +359,10 @@ class UI(QtWidgets.QWidget):
 			self.start_time.text(), self.end_time.text(), None, None,
 			self.min_alt_agl.text(), self.max_alt_agl.text(), self.buffer.text(),
 			buffer, self.flight_description.text())
+
 		# test for writing in json file
 		self.airmap_request_manager.write_in_json(flight_plan_path[0], "test")
+		
 		# update flight list to show newly created flight
 		self.update_flight_list()
 
@@ -379,9 +381,13 @@ class UI(QtWidgets.QWidget):
 	def get_airspaces(self):
 
 		print("\nRetreiving airspaces")
+		
 		mission_geometry = self.pprz_request_manager.get_mission_geometry(self.flight_plan_path[0])
+		
 		airspaces = self.airmap_request_manager.get_airspaces_in_geometry(mission_geometry)
+		
 		self.pprz_request_manager.show_airspaces_on_gcs(airspaces)
+		
 		self.show_airspaces_in_airspace_list(airspaces)
 
 

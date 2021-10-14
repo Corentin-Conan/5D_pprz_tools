@@ -185,60 +185,61 @@ class PprzRequestManager():
 
 
 
-	def show_airspaces_on_gcs(self, airspaces):
+	def show_airspaces_on_gcs(self, airspace_type_widgets):
+
+		# airspace_type_widgets is a list of airspace type widget and their respective children airspace widgets
 
 		msg_list = []
-		id_number = 10
 		# print(airspaces)
 		## fills a PprzMessage with information from the GeoJSON
-		for area in airspaces:
-			## creates  and fills a new PprzMessage for each area
-			msg_shape = PprzMessage("ground", "SHAPE")
-			msg_shape['id'] = id_number
-			id_number += 1
-			## color depending on the type of airspace
-			if area['type'] == 'controlled_airspace':
-				msg_shape['linecolor'] = 'red'
-				msg_shape['fillcolor'] = 'red'
-			elif area['type'] == 'airport':
-				msg_shape['linecolor'] = 'blue'
-				msg_shape['fillcolor'] = 'blue'
-			else :
-				msg_shape['linecolor'] = 'orange'
-				msg_shape['fillcolor'] = 'orange'
-			## opacity / 0 - Transparent, 1 - Light Fill, 2 - Medium Fill, 3 - Opaque
-			msg_shape['opacity'] = 1
-			## shape / 0 - Circle, 1 - Polygon, 2 - Line, 3 - Text
-			if area['geometry']['type'] == 'Polygon':
-				msg_shape['shape'] = 1
-			elif area['geometry']['type'] == 'MultiPolygon':
-				msg_shape['shape'] = 1
-			else:
-				print('unknown shape for area id = ' + str(id_number))
-			## status / 0 - Create, 1 - Delete
-			msg_shape['status'] = 0
-			## lonarr & latarr
-			lonarr = []
-			latarr = []
-			if area['geometry']['type'] == 'MultiPolygon':
-				for coordinates in area['geometry']['coordinates'][0][0]:
-					# print('coordinates = '+str(coordinates))
-					lonarr.append(int(coordinates[0] * 10000000))
-					latarr.append(int(coordinates[1] * 10000000))
-				msg_shape['latarr'] = latarr
-				msg_shape['lonarr'] = lonarr
-			elif area['geometry']['type'] == 'Polygon':
-				for coordinates in area['geometry']['coordinates'][0]:
-					# print('coordinates = '+str(coordinates))
-					lonarr.append(int(coordinates[0] * 10000000))
-					latarr.append(int(coordinates[1] * 10000000))
-				msg_shape['latarr'] = latarr
-				msg_shape['lonarr'] = lonarr
-			## radius = 0 if not circle
-			## text
-			msg_shape['text'] = area['name'].replace(" ", "_")
-			print(msg_shape)
-			msg_list.append(msg_shape)
+		for airspace_type_widget in airspace_type_widgets:
+			for airspace in airspace_type_widget.children:
+				## creates  and fills a new PprzMessage for each area
+				msg_shape = PprzMessage("ground", "SHAPE")
+				msg_shape['id'] = airspace.pprz_shape_id
+				## color depending on the type of airspace
+				if airspace.type == 'controlled_airspace':
+					msg_shape['linecolor'] = 'red'
+					msg_shape['fillcolor'] = 'red'
+				elif airspace.type == 'airport':
+					msg_shape['linecolor'] = 'blue'
+					msg_shape['fillcolor'] = 'blue'
+				else :
+					msg_shape['linecolor'] = 'orange'
+					msg_shape['fillcolor'] = 'orange'
+				## opacity / 0 - Transparent, 1 - Light Fill, 2 - Medium Fill, 3 - Opaque
+				msg_shape['opacity'] = 1
+				## shape / 0 - Circle, 1 - Polygon, 2 - Line, 3 - Text
+				if airspace.geometry_type == 'Polygon':
+					msg_shape['shape'] = 1
+				elif airspace.geometry_type == 'MultiPolygon':
+					msg_shape['shape'] = 1
+				else:
+					print('unknown shape for area id = ' + str(id_number))
+				## status / 0 - Create, 1 - Delete
+				msg_shape['status'] = 0
+				## lonarr & latarr
+				lonarr = []
+				latarr = []
+				if airspace.geometry_type == 'MultiPolygon':
+					for coordinates in airspace.coordinates[0][0]:
+						# print('coordinates = '+str(coordinates))
+						lonarr.append(int(coordinates[0] * 10000000))
+						latarr.append(int(coordinates[1] * 10000000))
+					msg_shape['latarr'] = latarr
+					msg_shape['lonarr'] = lonarr
+				elif airspace.geometry_type == 'Polygon':
+					for coordinates in airspace.coordinates[0]:
+						# print('coordinates = '+str(coordinates))
+						lonarr.append(int(coordinates[0] * 10000000))
+						latarr.append(int(coordinates[1] * 10000000))
+					msg_shape['latarr'] = latarr
+					msg_shape['lonarr'] = lonarr
+				## radius = 0 if not circle
+				## text
+				msg_shape['text'] = airspace.name.replace(" ", "_")
+				print(msg_shape)
+				msg_list.append(msg_shape)
 		
 		for msg in msg_list:
 			self.interface.send(msg)

@@ -9,6 +9,7 @@ from geojson import Polygon
 from geojson_rewind import rewind
 
 from flight_plan_widget import FlightPlanWidget
+from airspace_list_widgets import AirspaceWidget, AirspaceTypeWidget
 
 
 
@@ -34,6 +35,9 @@ class AirmapRequestManager():
 		self.aircrafts = []
 
 		self.flight_plan = None
+
+		self.airspace_type_widgets = []
+		self.airspace_widgets = []
 
 
 	def log_in_to_airmap_API(self, client_id, user_name, password, connection_status_label):
@@ -217,15 +221,6 @@ class AirmapRequestManager():
 	# get airspaces near pprz flight plan geometry
 	def get_airspaces_in_geometry(self, geometry):
 
-		# querystring = {
-		# 	("geometry", geometry),
-		#   ('types', 'airport,controlled_airspace'),
-		# 	('full', 'true'),
-		# 	('geometry_format', 'geojson')
-		# }
-
-		# querystring = {"geometry": geometry}
-
 		querystring = (
 			('geometry', geometry),
 			('full', 'true'),
@@ -240,7 +235,31 @@ class AirmapRequestManager():
 			airspaces = response.json()['data']
 			print(airspaces)
 
-			return airspaces
+			# reset list of airspace type widgets
+			self.airspace_type_widgets = []
+
+			# create airspace type widgets and their children airspace widget
+			airspace_id = 10
+
+			for airspace in airspaces:
+
+				airspace_id += 1
+
+				airspace_widget = AirspaceWidget(airspace_id, airspace)
+
+				type = airspace_widget.type
+
+				if type not in [airspace_type_widget.type for airspace_type_widget in self.airspace_type_widgets]:
+
+					airspace_type_widget = AirspaceTypeWidget(type, airspace_widget)
+					self.airspace_type_widgets.append(airspace_type_widget)
+
+				else:
+
+					airspace_type_widget = next(x for x in self.airspace_type_widgets if x.type == type)
+					airspace_type_widget.add_child(airspace_widget)
+
+			return self.airspace_type_widgets
 
 
 
