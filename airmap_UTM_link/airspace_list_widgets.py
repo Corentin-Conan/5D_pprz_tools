@@ -45,21 +45,26 @@ class AirspaceTypeWidget(QtWidgets.QWidget):
 			self.children = []
 
 		# representation
-		self.main_layout = QtWidgets.QVBoxLayout(self)
+		self.main_layout = QtWidgets.QFormLayout(self)
 
-		self.label_type = QtWidgets.QLabel(self.type)
-		self.main_layout.addWidget(self.label_type)
+		self.label_type = QtWidgets.QLabel(self.type.upper())
+		self.main_chkbox = QtWidgets.QCheckBox("")
+		self.main_layout.addRow(self.label_type, self.main_chkbox)
+
+		self.main_box = QtWidgets.QGroupBox()
+		self.main_layout.addRow(self.main_box)
+		self.layout = QtWidgets.QVBoxLayout(self.main_box)
 
 		for child in self.children:
 
-			self.main_layout.addWidget(child)
+			self.layout.addWidget(child)
 
 
 	def add_child(self, child):
 
 		self.children.append(child)
 
-		self.main_layout.addWidget(child)
+		self.layout.addWidget(child)
 
 
 
