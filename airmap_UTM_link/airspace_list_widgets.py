@@ -50,35 +50,16 @@ class AirspaceTypeWidget(QtWidgets.QWidget):
 		self.label_type = QtWidgets.QLabel(self.type)
 		self.main_layout.addWidget(self.label_type)
 
-		self.airspace_list = QtWidgets.QListWidget()
-		self.main_layout.addWidget(self.airspace_list)
-
 		for child in self.children:
 
-			item = QtWidgets.QListWidgetItem(self.airspace_list)
-			self.airspace_list.addItem(item)
-
-			item.setSizeHint(child.minimumSizeHint())
-
-			self.airspace_list.setItemWidget(item, child)
+			self.main_layout.addWidget(child)
 
 
 	def add_child(self, child):
 
 		self.children.append(child)
 
-		self.update_children()
+		self.main_layout.addWidget(child)
 
 
-	def update_children(self):
 
-		self.airspace_list.clear()
-
-		for child in self.children:
-
-			item = QtWidgets.QListWidgetItem(self.airspace_list)
-			self.airspace_list.addItem(item)
-
-			item.setSizeHint(child.minimumSizeHint())
-
-			self.airspace_list.setItemWidget(item, child)

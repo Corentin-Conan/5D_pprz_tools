@@ -190,6 +190,9 @@ class UI(QtWidgets.QWidget):
 		self.get_airspaces_button.clicked.connect(self.get_airspaces)
 		self.airspace_information_layout.addWidget(self.get_airspaces_button)
 
+		self.displayed_airspace_list = QtWidgets.QListWidget()
+		self.airspace_information_layout.addWidget(self.displayed_airspace_list)
+
 		# flight status box
 		self.flight_status_box = QtWidgets.QGroupBox("Flight Status")
 		self.right_layout.addWidget(self.flight_status_box)
@@ -384,16 +387,26 @@ class UI(QtWidgets.QWidget):
 		
 		mission_geometry = self.pprz_request_manager.get_mission_geometry(self.flight_plan_path[0])
 		
-		airspaces = self.airmap_request_manager.get_airspaces_in_geometry(mission_geometry)
+		airspace_type_widgets = self.airmap_request_manager.get_airspaces_in_geometry(mission_geometry)
 		
-		self.pprz_request_manager.show_airspaces_on_gcs(airspaces)
+		self.pprz_request_manager.show_airspaces_on_gcs(airspace_type_widgets)
 		
-		self.show_airspaces_in_airspace_list(airspaces)
+		self.show_airspaces_in_airspace_list(airspace_type_widgets)
 
 
 	# called on get airspace
-	def show_airspaces_in_airspace_list(airspaces):
+	def show_airspaces_in_airspace_list(self, airspace_type_widgets):
 
-		
+		self.displayed_airspace_list.clear()
 
-		pass
+		for airspace_type_widget in airspace_type_widgets:
+
+			item = QtWidgets.QListWidgetItem(self.displayed_airspace_list)
+			self.displayed_airspace_list.addItem(item)
+			item.setSizeHint(airspace_type_widget.minimumSizeHint())
+
+			self.displayed_airspace_list.setItemWidget(item, airspace_type_widget)
+
+
+
+
