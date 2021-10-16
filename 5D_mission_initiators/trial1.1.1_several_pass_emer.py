@@ -17,13 +17,11 @@ import shapely.geometry
 
 def trial1_1_1_init():
 
-	print("smth is happening at least")
 
 	flight_plan = None
 	wp_list = None
 
-	wp_names = ["stand_1", "stand_2", "stand_3", "stand_4", "stand_5", "stand_6", "stand_7", "stand_8", "stand_9", "tax_1", "tax_2", "tax_3", "tax_4", "tax_5", "tax_6", "tax_7", "tax_8"]
-	# wp_names = ["STDBY", "stand_1", "stand_2", "stand_3"]	
+	wp_names = ["STDBY", "stand_1", "stand_2", "stand_3", "stand_4", "stand_5", "stand_6", "stand_7", "stand_8", "stand_9", "tax_1", "tax_2", "tax_3", "tax_4", "tax_5", "tax_6", "tax_7", "tax_8", "TD"]
 	wp_list = []
 	sorted_wp_list = []
 
@@ -112,15 +110,26 @@ def trial1_1_1_init():
 		if (None, None) not in coords_wp:
 
 			line_full_path = shapely.geometry.LineString([(float(wp.lon), float(wp.lat)) for wp in sorted_wp_list])
-			buffer = line_full_path.buffer(0.0001, resolution = 5, cap_style = 1, join_style = 1)
+			buffer_cont = line_full_path.buffer(0.000135, resolution = 1, cap_style = 1, join_style = 1)
+			buffer_emer = line_full_path.buffer(0.00035, resolution = 1, cap_style = 1, join_style = 1)
+			buffer_limit_kill = line_full_path.buffer(0.0005, resolution = 1, cap_style = 1, join_style = 1)
 
-			buffer_coord = list(buffer.exterior.coords)
+			buffer_cont_coord = list(buffer_cont.exterior.coords)
+			buffer_emer_coord = list(buffer_emer.exterior.coords)
+			buffer_limit_kill_coord = list(buffer_limit_kill.exterior.coords)
 
-			show_shape_on_gcs(buffer.exterior.coords, 1, "red")
+			show_shape_on_gcs(buffer_limit_kill_coord, 3, "red")
+			show_shape_on_gcs(buffer_emer_coord, 2, "orange")
+			show_shape_on_gcs(buffer_cont_coord, 1, "green")
 
-			id = 11
+			id = 27
 
-			for coord in buffer_coord:
+			for coord in buffer_cont_coord[0:-1]:
+				move_wp(id, coord)
+				id += 1
+				time.sleep(0.1)
+
+			for coord in buffer_emer_coord[0:-1]:
 				move_wp(id, coord)
 				id += 1
 				time.sleep(0.1)

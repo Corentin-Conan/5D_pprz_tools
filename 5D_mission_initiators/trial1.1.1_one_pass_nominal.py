@@ -15,9 +15,14 @@ from flight_plan import FlightPlan, Waypoint
 
 import shapely.geometry
 
+def update_config(conf):
+	pass
+
+
 def trial1_1_1_init():
 
 	interface = IvyMessagesInterface("msgInterface")
+	pprzconnect = PprzConnect(notify=update_config, ivy=interface)
 	
 	# show area to inspect on map
 	msg_shape = PprzMessage("ground", "SHAPE")
