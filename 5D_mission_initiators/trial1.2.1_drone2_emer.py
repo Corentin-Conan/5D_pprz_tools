@@ -20,9 +20,10 @@ def trial1_1_1_init():
 	flight_plan = None
 	wp_list = None
 
-	wp_names = ["STDBY", "ENTRY WW4", "OUT WW4", "TD"]
+	wp_names = ["STDBY", "ENTRY WW2", "OUT WW2", "ENTRY WW1", "OUT WW1", "ENTRY WW3", "OUT WW3", "TD"]
 	wp_list = []
 	sorted_wp_list = []
+
 
 
 	def sort_like(list_to_sort, list_model):
@@ -30,6 +31,8 @@ def trial1_1_1_init():
 			print(wp.name)
 		if not len(list_to_sort) == len(list_model):
 			print("lists not same size")
+			print(str(list_to_sort))
+			print(str(list_model))
 			return
 		sorted_list = []
 		for elem_model in list_model:
@@ -43,7 +46,7 @@ def trial1_1_1_init():
 	def move_wp(wp_id, coord):
 		msg_mv_wp = PprzMessage("datalink", "MOVE_WP")
 		msg_mv_wp["wp_id"] = wp_id
-		msg_mv_wp["ac_id"] = 41
+		msg_mv_wp["ac_id"] = 5
 		msg_mv_wp["lon"] = int(coord[0] * 10000000)
 		msg_mv_wp["lat"] = int(coord[1] * 10000000)
 		msg_mv_wp["alt"] = 150000
@@ -56,16 +59,18 @@ def trial1_1_1_init():
 
 		print("update config")
 
-		# get flight plan
-		flight_plan = FlightPlan.parse(config.flight_plan)
+		if int(config.id) == 5:
 
-		# get flight plan and define params for the operation (eg the waypoint for the diff sectors)
-		wps = flight_plan.waypoints
+			# get flight plan
+			flight_plan = FlightPlan.parse(config.flight_plan)
 
-		for wp in wps:
-			if wp.name in wp_names:
-				wp_list.append(wp)
-				print(wp_list)
+			# get flight plan and define params for the operation (eg the waypoint for the diff sectors)
+			wps = flight_plan.waypoints
+
+			for wp in wps:
+				if wp.name in wp_names:
+					wp_list.append(wp)
+					print(wp_list)
 
 
 
@@ -92,54 +97,61 @@ def trial1_1_1_init():
 
 	def update_wp_list(msg_id, msg):
 
-		print("update wp list")
+		if int(msg.ac_id) == 5:
 
-		wp = Waypoint(None, None, None, msg["lat"], msg["long"], msg["alt"], msg["ground_alt"], msg["wp_id"])
+		print("update wp list")	
 
-		for current_wp in wp_list:
-			if int(wp.no) == int(current_wp.no):
-				current_wp.lat = msg["lat"]
-				current_wp.lon = msg["long"]
-				current_wp.alt = msg["alt"]
-				current_wp.ground_alt = msg["ground_alt"]
+			wp = Waypoint(None, None, None, msg["lat"], msg["long"], msg["alt"], msg["ground_alt"], msg["wp_id"])
 
-		sorted_wp_list = sort_like(wp_list, wp_names)
+			for current_wp in wp_list:
+				if int(wp.no) == int(current_wp.no):
+					current_wp.lat = msg["lat"]
+					current_wp.lon = msg["long"]
+					current_wp.alt = msg["alt"]
+					current_wp.ground_alt = msg["ground_alt"]
 
-		coords_wp = [(wp.lon, wp.lat) for wp in sorted_wp_list]
-		print("COORDS : " + str(coords_wp))
+			sorted_wp_list = sort_like(wp_list, wp_names)
 
-		if (None, None) not in coords_wp:
+			coords_wp = [(wp.lon, wp.lat) for wp in sorted_wp_list]
+			print("COORDS : " + str(coords_wp))
 
-			line_full_path = shapely.geometry.LineString([(float(wp.lon), float(wp.lat)) for wp in sorted_wp_list])
-			buffer_cont = line_full_path.buffer(0.0007, resolution = 1, cap_style = 1, join_style = 1)
-			buffer_emer = line_full_path.buffer(0.0009, resolution = 1, cap_style = 1, join_style = 1)
+			if (None, None) not in coords_wp:
 
-			# show_shape_on_gcs(buffer_cont.exterior.coords, 1, "red")
-			# show_shape_on_gcs(buffer_emer.exterior.coords, 2, "red")
+				line_full_path = shapely.geometry.LineString([(float(wp.lon), float(wp.lat)) for wp in sorted_wp_list])
+				buffer_cont = line_full_path.buffer(0.0007, resolution = 1, cap_style = 1, join_style = 1)
+				buffer_emer = line_full_path.buffer(0.0011, resolution = 1, cap_style = 1, join_style = 1)
+				buffer_limit_kill = line_full_path.buffer(0.0013, resolution = 1, cap_style = 1, join_style = 1)
 
-			id = 8
+				buffer_cont_coord = list(buffer_cont.exterior.coords)
+				buffer_emer_coord = list(buffer_emer.exterior.coords)
+				buffer_limit_kill_coord = list(buffer_limit_kill.exterior.coords)
 
-			for coord in buffer_cont.exterior.coords[0:-1]:
-				move_wp(id, coord)
-				id += 1
-				time.sleep(0.1)
+				show_shape_on_gcs(buffer_limit_kill_coord, 6, "red")
+				show_shape_on_gcs(buffer_emer_coord, 5, "orange")
+				show_shape_on_gcs(buffer_cont_coord, 4, "green")
 
-			for coord in buffer_emer.exterior.coords[0:-1]:
-				print("MOVE WP EMER")
-				move_wp(id, coord)
-				id += 1
-				time.sleep(0.1)
+				id_1 = 12
 
-			interface.unsubscribe_all()
+				for coord in buffer_cont.exterior.coords[0:-1]:
+					move_wp(id_1, coord)
+					id_1 += 1
+					time.sleep(0.1)
 
-			return
+				for coord in buffer_emer.exterior.coords[0:-1]:
+					# print("MOVE WP EMER")
+					move_wp(id_1, coord)
+					id_1 += 1
+					time.sleep(0.1)
+
+				interface.unsubscribe_all()
+
+				return
 
 
 
 	interface = IvyMessagesInterface("msgInterface")
 	pprzconnect = PprzConnect(notify=update_config, ivy=interface)
 	interface.subscribe(update_wp_list, PprzMessage("ground", "WAYPOINT_MOVED"))
-
 
 
 def main():
