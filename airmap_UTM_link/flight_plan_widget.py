@@ -7,7 +7,7 @@ from PySide6 import QtCore, QtWidgets, QtGui
 class FlightPlanWidget(QtWidgets.QWidget):
 
 
-	def __init__(self, flight):
+	def __init__(self, flight, flight_plan):
 
 		super().__init__()
 
@@ -29,6 +29,9 @@ class FlightPlanWidget(QtWidgets.QWidget):
 		self.buffer = flight["buffer"]
 		self.max_altitude = flight["max_altitude"]
 
+		self.min_altitude = flight_plan["min_altitude_agl"]
+		self.description = flight_plan["flight_description"]
+
 		# representation in list item
 		self.main_layout = QtWidgets.QVBoxLayout(self)
 		self.box = QtWidgets.QGroupBox()
@@ -40,12 +43,12 @@ class FlightPlanWidget(QtWidgets.QWidget):
 		self.font.setPointSize(8)
 		self.setFont(self.font)
 
-		self.id_label = QtWidgets.QLabel("Location : " + self.state + " , " + self.city)
-		self.latlon_label = QtWidgets.QLabel("Lat : " + str(self.lat) + " ; Lon : " + str(self.lon))
+		self.id_label = QtWidgets.QLabel("Location : " + self.country + ", " + self.state + ", " + self.city)
 		self.ac_id_label = QtWidgets.QLabel("Scheduled at : " + self.start_time)
+		self.descr_label = QtWidgets.QLabel(self.description)
 
 		self.layout.addWidget(self.id_label)
-		self.layout.addWidget(self.latlon_label)
 		self.layout.addWidget(self.ac_id_label)
+		self.layout.addWidget(self.descr_label)
 
  

@@ -157,7 +157,7 @@ class PprzRequestManager():
 
 		lat0 = tools.to_deg(_lat0)
 		lon0 = tools.to_deg(_lon0)
-		
+
 		max_dist_from_home = root.attrib["max_dist_from_home"]
 
 		utm_crs_list = pyproj.database.query_utm_crs_info(

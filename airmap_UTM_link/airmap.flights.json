@@ -1,3 +1,7 @@
 {
-    "flights": {}
+    "flights": {
+        "flight|W3YNbNaCA4pkPxsGO6byyC9dybYJ": "/home/corentin/paparazzi/conf/flight_plans/basic.xml",
+        "flight|4x4zoNnUeyGnmaSzPQ6yYumO8moA": "/home/corentin/paparazzi/conf/flight_plans/5D/Trial1.1.1_one_pass_nominal.xml",
+        "flight|3XDGYgaFa8WRnDcOemkBycDwK60O": "/home/corentin/paparazzi/conf/flight_plans/5D/Trial1.3.1_Drone1.xml"
+    }
 }

@@ -266,7 +266,7 @@ class UI(QtWidgets.QWidget):
 	def onListItemClicked(self, item):
 
 		self.flight_selected = self.flight_plan_list.itemWidget(item)
-		print("\nItem clicked : " + self.flight_selected.flight_id)
+		# print("\nItem clicked : " + self.flight_selected.flight_id)
 		self.mid_group_box.setEnabled(True)
 
 		self.populate_flight_information_window(self.flight_selected)
@@ -275,7 +275,7 @@ class UI(QtWidgets.QWidget):
 	# on flight selected, populate flight information window
 	def populate_flight_information_window(self, flight):
 
-		print("\nPopulating flight window with flight : " + flight.flight_id)
+		# print("\nPopulating flight window with flight : " + flight.flight_id)
 		self.flight_id.setText(flight.flight_id)
 		self.flight_plan_id.setText(flight.flight_plan_id)
 		self.pilot_id.setText(flight.pilot_id)
@@ -283,22 +283,23 @@ class UI(QtWidgets.QWidget):
 		self.end_time.setText(flight.end_time)
 		self.take_off_lat.setText(str(flight.lat))
 		self.take_off_lon.setText(str(flight.lon))
+		self.min_alt_agl.setText(str(flight.min_altitude))
 		self.max_alt_agl.setText(str(flight.max_altitude))
 		self.buffer.setText(str(flight.buffer))
-		self.flight_description.setText("not implemented yet // see also for min alt agl")
+		self.flight_description.setText(flight.description)
 
-		wps = self.pprz_request_manager.get_waypoints()
+		pprz_flight_plan_path = tools.get_pprz_fp_path_from_flight_id("airmap.flights.json", flight.flight_id)
+		self.flight_plan_path = pprz_flight_plan_path
 
-		if wps == -1:
+		self.pprz_fp_info = self.pprz_request_manager.open_and_parse(pprz_flight_plan_path)
 
-			self.wps.setText("No flight plan loaded")
-			self.sorted_wps.setText("No flight plan loaded")
+		self.pprz_flight_plan.setText(self.flight_plan_path)
 
-		else:
-
-			wp_names = [wp.name for wp in wps]
-			self.wps.setText(str(wp_names))
-			self.sorted_wps.setText(str(wp_names))
+		self.take_off_lon.setText(self.pprz_fp_info["lon0"])
+		self.take_off_lat.setText(self.pprz_fp_info["lat0"])
+		self.max_alt_agl.setText(self.pprz_fp_info["alt"])
+		self.wps.setText(str([wp.name for wp in self.pprz_fp_info["waypoints"] if wp.name[0] != "_"]))
+		self.sorted_wps.setText(str([wp.name for wp in self.pprz_fp_info["waypoints"] if wp.name[0] != "_"]))
 
 
 	# on change pprz flight plan button clicked
@@ -308,7 +309,7 @@ class UI(QtWidgets.QWidget):
 			"/home/corentin/paparazzi/conf/flight_plans", "XML Files (*.xml)")
 		print(self.flight_plan_path)
 
-		self.pprz_flight_plan.setText(self.flight_plan_path[0])
+		self.pprz_flight_plan.setText(self.flight_plan_path)
 
 
 	# on compute flight geometry button clicked
@@ -324,7 +325,7 @@ class UI(QtWidgets.QWidget):
 
 		print("\nCreate new flight")
 		self.flight_plan_path = QtWidgets.QFileDialog.getOpenFileName(self, "Select flight plan",
-			"/home/corentin/paparazzi/conf/flight_plans", "XML Files (*.xml)")
+			"/home/corentin/paparazzi/conf/flight_plans", "XML Files (*.xml)")[0]
 		print(self.flight_plan_path)
 
 		if self.flight_plan_path == None:
@@ -333,7 +334,7 @@ class UI(QtWidgets.QWidget):
 
 		self.mid_group_box.setEnabled(True)
 
-		self.pprz_flight_plan.setText(self.flight_plan_path[0])
+		self.pprz_flight_plan.setText(self.flight_plan_path)
 		self.flight_id.setText("")
 		self.flight_plan_id.setText("")
 		self.pilot_id.setText("")
@@ -367,8 +368,11 @@ class UI(QtWidgets.QWidget):
 			self.min_alt_agl.text(), self.max_alt_agl.text(), self.buffer.text(),
 			buffer, self.flight_description.text())
 
+		print("OTHER FP PATH : " + str(self.flight_plan_path))
+
 		# write association of flight id and pprz flight plan in json file
-		tools.write_in_json("airmap.flights.json", self.flight_plan_path[0], flight_id)
+		if flight_id is not None:
+			tools.write_in_json("airmap.flights.json", self.flight_plan_path, flight_id)
 		
 		# update flight list to show newly created flight
 		self.update_flight_list()
@@ -390,8 +394,8 @@ class UI(QtWidgets.QWidget):
 	def get_airspaces(self):
 
 		print("\nRetreiving airspaces")
-		
-		mission_geometry = self.pprz_request_manager.get_mission_geometry(self.flight_plan_path[0])
+
+		mission_geometry = self.pprz_request_manager.get_mission_geometry(self.flight_plan_path)
 		
 		airspace_type_widgets = self.airmap_request_manager.get_airspaces_in_geometry(mission_geometry)
 		

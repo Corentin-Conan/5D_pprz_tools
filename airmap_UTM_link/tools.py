@@ -13,7 +13,7 @@ def write_in_json(json_file, pprz_file, flight_id):
 
 		file_data = json.load(file)
 
-	# INVESTIGATE : does not work without the print (or the second one)
+	# INVESTIGATE : 
 	# when adding flights, can erase completely the json file 
 	print(file_data)
 	
@@ -23,7 +23,7 @@ def write_in_json(json_file, pprz_file, flight_id):
 
 	with open(json_file, "w") as file:
 
-		file.write(json.dumps(file_data, indent = 4, sort_keys = True))
+		file.write(json.dumps(file_data, indent = 4, sort_keys = False))
 
 	return
 
@@ -51,7 +51,7 @@ def erase_in_json(json_file, pprz_file = None, flight_id = None):
 
 		with open(json_file, "w") as file:
 
-				file.write(json.dumps(file_data, indent = 4, sort_keys = True))
+				file.write(json.dumps(file_data, indent = 4, sort_keys = False))
 
 	# most probable case
 	elif flight_id is not None:
@@ -68,10 +68,20 @@ def erase_in_json(json_file, pprz_file = None, flight_id = None):
 
 		with open(json_file, "w") as file:
 
-				file.write(json.dumps(file_data, indent = 4, sort_keys = True))
+				file.write(json.dumps(file_data, indent = 4, sort_keys = False))
 
 	return
 
+
+def get_pprz_fp_path_from_flight_id(json_file, flight_id):
+
+	with open(json_file, "r") as file:
+
+		file_data = json.load(file)
+
+	pprz_fp_path = file_data["flights"][flight_id]
+
+	return pprz_fp_path
 
 
 def to_deg(coord):

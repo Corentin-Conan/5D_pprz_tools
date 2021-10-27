@@ -138,22 +138,27 @@ class AirmapRequestManager():
 		url = "https://api.airmap.com/pilot/v2/" + self.pilot_id + "/aircraft"
 		response = requests.get(url, headers = self.headers)
 		self.aircrafts = response.json()["data"]
-		print("Aircrafts : " + str(self.aircrafts))
+		# print("Aircrafts : " + str(self.aircrafts))
 
 
 	def load_flight_plans(self):
 
-		print("\nLoading flights ...")
+		# print("\nLoading flights ...")
 		querystring = {"pilot_id": self.pilot_id}
 		response = requests.get("https://api.airmap.com/flight/v2/", headers = self.headers, params = querystring)
-		print(response.text)
+		# print(response.text)
 
 		flights = response.json()["data"]["results"]
 		flight_widgets = []
 
 		for flight in flights:
 
-			flight_widget = FlightPlanWidget(flight)
+			# retreive flight plan of flight because some information are not in flight object (e.g. flight description)
+			url = "https://api.airmap.com/flight/v2/plan/" + flight["flight_plan_id"]
+			response = requests.get(url, headers = self.headers)
+			flight_plan = response.json()["data"]
+
+			flight_widget = FlightPlanWidget(flight, flight_plan)
 			flight_widgets.append(flight_widget)
 
 		return flight_widgets
@@ -206,6 +211,10 @@ class AirmapRequestManager():
 		if response.status_code == 200:
 
 			return response.json()["data"]["flight_id"]
+
+		else:
+
+			return None
 
 
 	# get airspaces near pprz flight plan geometry
