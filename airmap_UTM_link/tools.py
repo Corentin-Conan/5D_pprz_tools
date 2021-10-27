@@ -108,7 +108,7 @@ def to_deg(coord):
 		return dms
 
 	# case 19.90969
-	if re.match(r"[0-9]*\.[0-9]*", coord):
+	if re.match(r"\-?[0-9]*\.[0-9]*", coord):
 
 		return coord
 
