@@ -2,6 +2,8 @@
 
 import sys
 
+import tools
+
 from PySide6 import QtCore, QtWidgets, QtGui
 
 from outlog import OutLog
@@ -356,15 +358,17 @@ class UI(QtWidgets.QWidget):
 	# on submit flight plan button clicked
 	def submit_flight_plan(self):
 
+		self.compute_flight_geometry()
+
 		buffer = self.pprz_request_manager.compute_airmap_flight_plan_geometry(self.pprz_fp_info["waypoints"] ,self.sorted_wps.text())
 
-		self.airmap_request_manager.create_flight_plan(None, None,
+		flight_id = self.airmap_request_manager.create_flight_plan(None, None,
 			self.start_time.text(), self.end_time.text(), None, None,
 			self.min_alt_agl.text(), self.max_alt_agl.text(), self.buffer.text(),
 			buffer, self.flight_description.text())
 
-		# test for writing in json file
-		self.airmap_request_manager.write_in_json(flight_plan_path[0], "test")
+		# write association of flight id and pprz flight plan in json file
+		tools.write_in_json("airmap.flights.json", self.flight_plan_path[0], flight_id)
 		
 		# update flight list to show newly created flight
 		self.update_flight_list()
@@ -375,6 +379,8 @@ class UI(QtWidgets.QWidget):
 
 		print("\nDelete selected flight")
 		self.airmap_request_manager.delete_flight(self.flight_selected.flight_id)
+
+		tools.erase_in_json("airmap.flights.json", flight_id = self.flight_selected.flight_id)
 		
 		# update flight list
 		self.update_flight_list()

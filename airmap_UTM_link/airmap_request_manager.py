@@ -203,19 +203,9 @@ class AirmapRequestManager():
 		response = requests.post(url, headers = self.headers)
 		print(response.text)
 
+		if response.status_code == 200:
 
-	# function to write in json file
-	def write_in_json(self, pprz_file, flight_id):
-
-		data = {flight_id: pprz_file}
-		flight = json.dumps(data)
-
-		with open("airmap.flights.json", "rw") as file:
-
-			file_data = json.load(file)
-			file_data["flights"].append(flight)
-			file.seek(0)
-			json.dumps(file_data, file, indent = 4)
+			return response.json()["data"]["flight_id"]
 
 
 	# get airspaces near pprz flight plan geometry
