@@ -55,27 +55,29 @@ def trial1_2_1_init():
 	# called when pprz is running
 	def update_config(config):
 
-		# get flight plan
-		flight_plan = FlightPlan.parse(config.flight_plan)
+		if int(config.id) == 4:
 
-		# get flight plan and define params for the operation (eg the waypoint for the diff sectors)
-		wp_list = flight_plan.waypoints
+			# get flight plan
+			flight_plan = FlightPlan.parse(config.flight_plan)
 
-		for wp in wp_list:
-			if wp.name in sect_1_wp_names:
-				sect_1_wp.append(wp)
-			if wp.name in sect_2_wp_names:
-				sect_2_wp.append(wp)
-			if wp.name in sect_3_wp_names:
-				sect_3_wp.append(wp)
-			if wp.name in sect_4_wp_names:
-				sect_4_wp.append(wp)
+			# get flight plan and define params for the operation (eg the waypoint for the diff sectors)
+			wp_list = flight_plan.waypoints
+
+			for wp in wp_list:
+				if wp.name in sect_1_wp_names:
+					sect_1_wp.append(wp)
+				if wp.name in sect_2_wp_names:
+					sect_2_wp.append(wp)
+				if wp.name in sect_3_wp_names:
+					sect_3_wp.append(wp)
+				if wp.name in sect_4_wp_names:
+					sect_4_wp.append(wp)
 
 
 	def move_wp(wp_id, coord):
 		msg_mv_wp = PprzMessage("datalink", "MOVE_WP")
 		msg_mv_wp["wp_id"] = wp_id
-		msg_mv_wp["ac_id"] = 41
+		msg_mv_wp["ac_id"] = 4
 		msg_mv_wp["lon"] = int(coord[0] * 10000000)
 		msg_mv_wp["lat"] = int(coord[1] * 10000000)
 		msg_mv_wp["alt"] = 150000
@@ -106,165 +108,170 @@ def trial1_2_1_init():
 	# function meant to update wp in different sector lists to get their lon and lat
 	def update_wp_list(msg_id, msg):
 
-		wp = Waypoint(None, None, None, msg["lat"], msg["long"], msg["alt"], msg["ground_alt"], msg["wp_id"])
+		if int(msg.ac_id) == 4:
 
-		# sect 1
-		for current_wp in sect_1_wp:
-			if int(wp.no) == int(current_wp.no):
-				current_wp.lat = msg["lat"]
-				current_wp.lon = msg["long"]
-				current_wp.alt = msg["alt"]
-				current_wp.ground_alt = msg["ground_alt"]
-
-		sorted_sect_1_wp = sort_like(sect_1_wp, sect_1_wp_names)
-
-		coords_sect_1 = [(wp.lon, wp.lat) for wp in sorted_sect_1_wp]
-		print("COORDS SECT 1 : " + str(coords_sect_1))
-
-		# sect 2
-		for current_wp in sect_2_wp:
-			if int(wp.no) == int(current_wp.no):
-				current_wp.lat = msg["lat"]
-				current_wp.lon = msg["long"]
-				current_wp.alt = msg["alt"]
-				current_wp.ground_alt = msg["ground_alt"]
-
-		sorted_sect_2_wp = sort_like(sect_2_wp, sect_2_wp_names)
-
-		coords_sect_2 = [(wp.lon, wp.lat) for wp in sorted_sect_2_wp]
-		print("COORDS SECT 2 : " + str(coords_sect_2))
-
-		# sect 3
-		for current_wp in sect_3_wp:
-			if int(wp.no) == int(current_wp.no):
-				current_wp.lat = msg["lat"]
-				current_wp.lon = msg["long"]
-				current_wp.alt = msg["alt"]
-				current_wp.ground_alt = msg["ground_alt"]
-
-		sorted_sect_3_wp = sort_like(sect_3_wp, sect_3_wp_names)
-
-		coords_sect_3 = [(wp.lon, wp.lat) for wp in sorted_sect_3_wp]
-		print("COORDS SECT 3 : " + str(coords_sect_3))
-
-		# sect 4
-		for current_wp in sect_4_wp:
-			if int(wp.no) == int(current_wp.no):
-				current_wp.lat = msg["lat"]
-				current_wp.lon = msg["long"]
-				current_wp.alt = msg["alt"]
-				current_wp.ground_alt = msg["ground_alt"]
-
-		sorted_sect_4_wp = sort_like(sect_4_wp, sect_4_wp_names)
-
-		coords_sect_4 = [(wp.lon, wp.lat) for wp in sorted_sect_4_wp]
-		print("COORDS SECT 4 : " + str(coords_sect_4))
-
-		if (None, None) not in coords_sect_1 and (None, None) not in coords_sect_2 and (None, None) not in coords_sect_3 and (None, None) not in coords_sect_4:
-
-			# should sort here, since here we have the names
-			sorted_sect_1_wp = sort_like(sect_1_wp, sect_1_wp_names)
-			sorted_sect_2_wp = sort_like(sect_2_wp, sect_2_wp_names)
-			sorted_sect_3_wp = sort_like(sect_3_wp, sect_3_wp_names)
-			sorted_sect_4_wp = sort_like(sect_4_wp, sect_4_wp_names)
+			wp = Waypoint(None, None, None, msg["lat"], msg["long"], msg["alt"], msg["ground_alt"], msg["wp_id"])
 
 			# sect 1
-			line_sect_1 = shapely.geometry.LineString([(float(wp.lon), float(wp.lat)) for wp in sorted_sect_1_wp])
-			buffer_sect_1_cont = line_sect_1.buffer(0.0003, resolution = 1, cap_style = 1, join_style = 1)
-			buffer_sect_1_emer = line_sect_1.buffer(0.001, resolution = 1, cap_style = 1, join_style = 1)
+			for current_wp in sect_1_wp:
+				if int(wp.no) == int(current_wp.no):
+					current_wp.lat = msg["lat"]
+					current_wp.lon = msg["long"]
+					current_wp.alt = msg["alt"]
+					current_wp.ground_alt = msg["ground_alt"]
 
-			buffer_sect_1_cont_coords = list(buffer_sect_1_cont.exterior.coords)
-			buffer_sect_1_emer_coords = list(buffer_sect_1_emer.exterior.coords)
+			print(str([wp.name for wp in sect_1_wp]))
+			print(str(sect_1_wp_names))
 
-			show_shape_on_gcs(buffer_sect_1_emer_coords, 2, "red")
-			show_shape_on_gcs(buffer_sect_1_cont_coords, 1, "blue")
+			sorted_sect_1_wp = sort_like(sect_1_wp, sect_1_wp_names)
+
+			coords_sect_1 = [(wp.lon, wp.lat) for wp in sorted_sect_1_wp]
+			print("COORDS SECT 1 : " + str(coords_sect_1))
 
 			# sect 2
-			line_sect_2 = shapely.geometry.LineString([(float(wp.lon), float(wp.lat)) for wp in sorted_sect_2_wp])
-			buffer_sect_2_cont = line_sect_2.buffer(0.0003, resolution = 1, cap_style = 1, join_style = 1)
-			buffer_sect_2_emer = line_sect_2.buffer(0.001, resolution = 1, cap_style = 1, join_style = 1)
+			for current_wp in sect_2_wp:
+				if int(wp.no) == int(current_wp.no):
+					current_wp.lat = msg["lat"]
+					current_wp.lon = msg["long"]
+					current_wp.alt = msg["alt"]
+					current_wp.ground_alt = msg["ground_alt"]
 
-			buffer_sect_2_cont_coords = list(buffer_sect_2_cont.exterior.coords)
-			buffer_sect_2_emer_coords = list(buffer_sect_2_emer.exterior.coords)
+			sorted_sect_2_wp = sort_like(sect_2_wp, sect_2_wp_names)
 
-			print("sect 2 cont : " + str(buffer_sect_2_cont_coords))
-			print("sect 2 emer : " + str(buffer_sect_2_emer_coords))
-
-			show_shape_on_gcs(buffer_sect_2_emer_coords, 3, "red")
-			show_shape_on_gcs(buffer_sect_2_cont_coords, 4, "blue")
+			coords_sect_2 = [(wp.lon, wp.lat) for wp in sorted_sect_2_wp]
+			print("COORDS SECT 2 : " + str(coords_sect_2))
 
 			# sect 3
-			line_sect_3 = shapely.geometry.LineString([(float(wp.lon), float(wp.lat)) for wp in sorted_sect_3_wp])
-			buffer_sect_3_cont = line_sect_3.buffer(0.0003, resolution = 1, cap_style = 1, join_style = 1)
-			buffer_sect_3_emer = line_sect_3.buffer(0.001, resolution = 1, cap_style = 1, join_style = 1)
+			for current_wp in sect_3_wp:
+				if int(wp.no) == int(current_wp.no):
+					current_wp.lat = msg["lat"]
+					current_wp.lon = msg["long"]
+					current_wp.alt = msg["alt"]
+					current_wp.ground_alt = msg["ground_alt"]
 
-			buffer_sect_3_cont_coords = list(buffer_sect_3_cont.exterior.coords)
-			buffer_sect_3_emer_coords = list(buffer_sect_3_emer.exterior.coords)
+			sorted_sect_3_wp = sort_like(sect_3_wp, sect_3_wp_names)
 
-			print("sect 3 cont : " + str(buffer_sect_3_cont_coords))
-			print("sect 3 emer : " + str(buffer_sect_3_emer_coords))
-
-			show_shape_on_gcs(buffer_sect_3_emer_coords, 5, "red")
-			show_shape_on_gcs(buffer_sect_3_cont_coords, 6, "blue")
+			coords_sect_3 = [(wp.lon, wp.lat) for wp in sorted_sect_3_wp]
+			print("COORDS SECT 3 : " + str(coords_sect_3))
 
 			# sect 4
-			line_sect_4 = shapely.geometry.LineString([(float(wp.lon), float(wp.lat)) for wp in sorted_sect_4_wp])
-			buffer_sect_4_cont = line_sect_4.buffer(0.0003, resolution = 1, cap_style = 1, join_style = 1)
-			buffer_sect_4_emer = line_sect_4.buffer(0.001, resolution = 1, cap_style = 1, join_style = 1)
+			for current_wp in sect_4_wp:
+				if int(wp.no) == int(current_wp.no):
+					current_wp.lat = msg["lat"]
+					current_wp.lon = msg["long"]
+					current_wp.alt = msg["alt"]
+					current_wp.ground_alt = msg["ground_alt"]
 
-			buffer_sect_4_cont_coords = list(buffer_sect_4_cont.exterior.coords)
-			buffer_sect_4_emer_coords = list(buffer_sect_4_emer.exterior.coords)
+			sorted_sect_4_wp = sort_like(sect_4_wp, sect_4_wp_names)
 
-			print("sect 4 cont : " + str(buffer_sect_4_cont_coords))
-			print("sect 4 emer : " + str(buffer_sect_4_emer_coords))
+			coords_sect_4 = [(wp.lon, wp.lat) for wp in sorted_sect_4_wp]
+			print("COORDS SECT 4 : " + str(coords_sect_4))
 
-			show_shape_on_gcs(buffer_sect_4_emer_coords, 7, "red")
-			show_shape_on_gcs(buffer_sect_4_cont_coords, 8, "blue")
+			if (None, None) not in coords_sect_1 and (None, None) not in coords_sect_2 and (None, None) not in coords_sect_3 and (None, None) not in coords_sect_4:
 
-			id = 29
+				# should sort here, since here we have the names
+				sorted_sect_1_wp = sort_like(sect_1_wp, sect_1_wp_names)
+				sorted_sect_2_wp = sort_like(sect_2_wp, sect_2_wp_names)
+				sorted_sect_3_wp = sort_like(sect_3_wp, sect_3_wp_names)
+				sorted_sect_4_wp = sort_like(sect_4_wp, sect_4_wp_names)
 
-			for coord in buffer_sect_1_cont_coords[0:-1]:
-				move_wp(id, coord)
-				id += 1
-				time.sleep(0.1)
+				# sect 1
+				line_sect_1 = shapely.geometry.LineString([(float(wp.lon), float(wp.lat)) for wp in sorted_sect_1_wp])
+				buffer_sect_1_cont = line_sect_1.buffer(0.0003, resolution = 1, cap_style = 1, join_style = 1)
+				buffer_sect_1_emer = line_sect_1.buffer(0.001, resolution = 1, cap_style = 1, join_style = 1)
 
-			for coord in buffer_sect_1_emer_coords[0:-1]:
-				move_wp(id, coord)
-				id += 1
-				time.sleep(0.1)
+				buffer_sect_1_cont_coords = list(buffer_sect_1_cont.exterior.coords)
+				buffer_sect_1_emer_coords = list(buffer_sect_1_emer.exterior.coords)
 
-			for coord in buffer_sect_2_cont_coords[0:-1]:
-				move_wp(id, coord)
-				id += 1
-				time.sleep(0.1)
+				show_shape_on_gcs(buffer_sect_1_emer_coords, 2, "red")
+				show_shape_on_gcs(buffer_sect_1_cont_coords, 1, "blue")
 
-			for coord in buffer_sect_2_emer_coords[0:-1]:
-				move_wp(id, coord)
-				id += 1
-				time.sleep(0.1)
+				# sect 2
+				line_sect_2 = shapely.geometry.LineString([(float(wp.lon), float(wp.lat)) for wp in sorted_sect_2_wp])
+				buffer_sect_2_cont = line_sect_2.buffer(0.0003, resolution = 1, cap_style = 1, join_style = 1)
+				buffer_sect_2_emer = line_sect_2.buffer(0.001, resolution = 1, cap_style = 1, join_style = 1)
 
-			for coord in buffer_sect_3_cont_coords[0:-1]:
-				move_wp(id, coord)
-				id += 1
-				time.sleep(0.1)
+				buffer_sect_2_cont_coords = list(buffer_sect_2_cont.exterior.coords)
+				buffer_sect_2_emer_coords = list(buffer_sect_2_emer.exterior.coords)
 
-			for coord in buffer_sect_3_emer_coords[0:-1]:
-				move_wp(id, coord)
-				id += 1
-				time.sleep(0.1)
+				print("sect 2 cont : " + str(buffer_sect_2_cont_coords))
+				print("sect 2 emer : " + str(buffer_sect_2_emer_coords))
 
-			for coord in buffer_sect_4_cont_coords[0:-1]:
-				move_wp(id, coord)
-				id += 1
-				time.sleep(0.1)
+				show_shape_on_gcs(buffer_sect_2_emer_coords, 3, "red")
+				show_shape_on_gcs(buffer_sect_2_cont_coords, 4, "blue")
 
-			for coord in buffer_sect_4_emer_coords[0:-1]:
-				move_wp(id, coord)
-				id += 1
-				time.sleep(0.1)
+				# sect 3
+				line_sect_3 = shapely.geometry.LineString([(float(wp.lon), float(wp.lat)) for wp in sorted_sect_3_wp])
+				buffer_sect_3_cont = line_sect_3.buffer(0.0003, resolution = 1, cap_style = 1, join_style = 1)
+				buffer_sect_3_emer = line_sect_3.buffer(0.001, resolution = 1, cap_style = 1, join_style = 1)
 
-			print("UNSUBSCRIBE !!!")
-			interface.unsubscribe_all()
+				buffer_sect_3_cont_coords = list(buffer_sect_3_cont.exterior.coords)
+				buffer_sect_3_emer_coords = list(buffer_sect_3_emer.exterior.coords)
+
+				print("sect 3 cont : " + str(buffer_sect_3_cont_coords))
+				print("sect 3 emer : " + str(buffer_sect_3_emer_coords))
+
+				show_shape_on_gcs(buffer_sect_3_emer_coords, 5, "red")
+				show_shape_on_gcs(buffer_sect_3_cont_coords, 6, "blue")
+
+				# sect 4
+				line_sect_4 = shapely.geometry.LineString([(float(wp.lon), float(wp.lat)) for wp in sorted_sect_4_wp])
+				buffer_sect_4_cont = line_sect_4.buffer(0.0003, resolution = 1, cap_style = 1, join_style = 1)
+				buffer_sect_4_emer = line_sect_4.buffer(0.001, resolution = 1, cap_style = 1, join_style = 1)
+
+				buffer_sect_4_cont_coords = list(buffer_sect_4_cont.exterior.coords)
+				buffer_sect_4_emer_coords = list(buffer_sect_4_emer.exterior.coords)
+
+				print("sect 4 cont : " + str(buffer_sect_4_cont_coords))
+				print("sect 4 emer : " + str(buffer_sect_4_emer_coords))
+
+				show_shape_on_gcs(buffer_sect_4_emer_coords, 7, "red")
+				show_shape_on_gcs(buffer_sect_4_cont_coords, 8, "blue")
+
+				id = 29
+
+				for coord in buffer_sect_1_cont_coords[0:-1]:
+					move_wp(id, coord)
+					id += 1
+					time.sleep(0.1)
+
+				for coord in buffer_sect_1_emer_coords[0:-1]:
+					move_wp(id, coord)
+					id += 1
+					time.sleep(0.1)
+
+				for coord in buffer_sect_2_cont_coords[0:-1]:
+					move_wp(id, coord)
+					id += 1
+					time.sleep(0.1)
+
+				for coord in buffer_sect_2_emer_coords[0:-1]:
+					move_wp(id, coord)
+					id += 1
+					time.sleep(0.1)
+
+				for coord in buffer_sect_3_cont_coords[0:-1]:
+					move_wp(id, coord)
+					id += 1
+					time.sleep(0.1)
+
+				for coord in buffer_sect_3_emer_coords[0:-1]:
+					move_wp(id, coord)
+					id += 1
+					time.sleep(0.1)
+
+				for coord in buffer_sect_4_cont_coords[0:-1]:
+					move_wp(id, coord)
+					id += 1
+					time.sleep(0.1)
+
+				for coord in buffer_sect_4_emer_coords[0:-1]:
+					move_wp(id, coord)
+					id += 1
+					time.sleep(0.1)
+
+				print("UNSUBSCRIBE !!!")
+				interface.unsubscribe_all()
 
 			return
 

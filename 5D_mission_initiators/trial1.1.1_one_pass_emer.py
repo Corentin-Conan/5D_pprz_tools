@@ -60,7 +60,7 @@ def trial1_1_1_init():
 	def move_wp(wp_id, coord):
 		msg_mv_wp = PprzMessage("datalink", "MOVE_WP")
 		msg_mv_wp["wp_id"] = wp_id
-		msg_mv_wp["ac_id"] = 40
+		msg_mv_wp["ac_id"] = 41
 		msg_mv_wp["lon"] = int(coord[0] * 10000000)
 		msg_mv_wp["lat"] = int(coord[1] * 10000000)
 		msg_mv_wp["alt"] = 150000
@@ -118,9 +118,9 @@ def trial1_1_1_init():
 			buffer_emer_coord = list(buffer_emer.exterior.coords)
 			buffer_limit_kill_coord = list(buffer_limit_kill.exterior.coords)
 
-			show_shape_on_gcs(buffer_limit_kill_coord, 3, "red")
-			show_shape_on_gcs(buffer_emer_coord, 2, "orange")
-			show_shape_on_gcs(buffer_cont_coord, 1, "green")
+			# show_shape_on_gcs(buffer_limit_kill_coord, 3, "red")
+			# show_shape_on_gcs(buffer_emer_coord, 2, "orange")
+			# show_shape_on_gcs(buffer_cont_coord, 1, "green")
 
 			id = 16
 

@@ -129,7 +129,7 @@ def trial1_2_1_init():
 				show_shape_on_gcs(buffer_emer_coord, 2, "orange")
 				show_shape_on_gcs(buffer_cont_coord, 1, "green")
 
-				id_1 = 8
+				id_1 = 9
 
 				for coord in buffer_cont.exterior.coords[0:-1]:
 					move_wp(id_1, coord)

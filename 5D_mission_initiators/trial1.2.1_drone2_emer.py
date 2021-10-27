@@ -99,7 +99,7 @@ def trial1_1_1_init():
 
 		if int(msg.ac_id) == 5:
 
-		print("update wp list")	
+			print("update wp list")	
 
 			wp = Waypoint(None, None, None, msg["lat"], msg["long"], msg["alt"], msg["ground_alt"], msg["wp_id"])
 
