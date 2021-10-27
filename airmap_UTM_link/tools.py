@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import json
+import re
 
 
 # function to write in json file
@@ -70,3 +71,49 @@ def erase_in_json(json_file, pprz_file = None, flight_id = None):
 				file.write(json.dumps(file_data, indent = 4, sort_keys = True))
 
 	return
+
+
+
+def to_deg(coord):
+
+	# coord format accepted : 19 54 34.9 E // 19 54 34.9 // 19.90969
+
+	# case 19 54 34.9 E
+	if re.match(r"[0-9][0-9] [0-9][0-9] [0-9][0-9]\.[0-9]* [NSEW]", coord):
+
+		splitted = re.split(r' ', coord)
+		d = float(splitted[0])
+		m = float(splitted[1])
+		s = float(splitted[2])
+		hem = splitted[3]
+
+		dms = d + (m/60) + (s/3600)
+
+		if hem == 'W' or hem == "S":
+
+			dms *= -1
+
+		return dms
+
+	# case 19 54 34.9
+	if re.match(r"[0-9][0-9] [0-9][0-9] [0-9][0-9]\.[0-9]*", coord):
+
+		splitted = re.split(r' ', coord)
+		d = float(splitted[0])
+		m = float(splitted[1])
+		s = float(splitted[2])
+
+		dms = d + (m/60) + (s/3600)
+
+		return dms
+
+	# case 19.90969
+	if re.match(r"[0-9]*\.[0-9]*", coord):
+
+		return coord
+
+
+if __name__ == '__main__':
+	print(to_deg("19 54 34.9 E"))
+	print(to_deg("19 54 34.9"))
+	print(to_deg("19.90969"))

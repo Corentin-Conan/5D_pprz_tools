@@ -9,6 +9,8 @@ import subprocess
 import xml.etree.ElementTree as ET
 import pyproj
 
+import tools
+
 PPRZ_HOME = os.getenv("PAPARAZZI_HOME", os.path.normpath(os.path.dirname(os.path.abspath(__file__))))
 sys.path.append(PPRZ_HOME + "/var/lib/python")
 sys.path.append(PPRZ_HOME + "/sw/lib/python")
@@ -64,7 +66,10 @@ class PprzRequestManager():
 		self.interface = IvyMessagesInterface("msgInterface")
 		
 
-	def get_lat_lon_of_waypoints(self, waypoints, lat0, lon0):
+	def get_lat_lon_of_waypoints(self, waypoints, _lat0, _lon0):
+
+		lat0 = tools.to_deg(_lat0)
+		lon0 = tools.to_deg(_lon0)
 
 		utm_crs_list = pyproj.database.query_utm_crs_info(
 			datum_name = "WGS 84",
@@ -75,10 +80,10 @@ class PprzRequestManager():
 				north_lat_degree = float(lat0)
 				)
 			)
-		print(utm_crs_list)
+		# print(utm_crs_list)
 
 		utm_crs = pyproj.CRS.from_epsg(utm_crs_list[0].code)
-		print(utm_crs)
+		# print(utm_crs)
 
 		# p = pyproj.Proj(proj = "utm", zone = utm_crs, ellps = "WGS84", preserve_units = False)
 		p = pyproj.Proj(utm_crs, preserve_units = False)
@@ -88,19 +93,19 @@ class PprzRequestManager():
 		for wp in waypoints:
 			x, y = x0 + float(wp.x), y0 + float(wp.y)
 			wp.lon, wp.lat = p(x, y, inverse = True)
-			print(wp.name + " lon : " + str(wp.lon) + " lat : " + str(wp.lat))
+			# print(wp.name + " lon : " + str(wp.lon) + " lat : " + str(wp.lat))
 
 
 	def compute_airmap_flight_plan_geometry(self, waypoints, sorted_wp_names):
 
 		sorted_wp_list = sort_like(waypoints, sorted_wp_names)
-		print(sorted_wp_list)
+		# print(sorted_wp_list)
 
-		for wp in sorted_wp_list:
-			print("WP : " + wp.name)
+		# for wp in sorted_wp_list:
+		# 	print("WP : " + wp.name)
 
 		coords_wp = [(wp.lon, wp.lat) for wp in sorted_wp_list]
-		print("COORDS : " + str(coords_wp))
+		# print("COORDS : " + str(coords_wp))
 
 		line_full_path = shapely.geometry.LineString([(float(wp.lon), float(wp.lat)) for wp in sorted_wp_list])
 		buffer = line_full_path.buffer(0.0005, resolution = 5, cap_style = 1, join_style = 1)
@@ -123,7 +128,7 @@ class PprzRequestManager():
 		# parse and get required fp info
 		tree = ET.parse(flight_plan_path)
 		root = tree.getroot()
-		print(root.attrib)
+		# print(root.attrib)
 
 		for child in root:
 			if child.tag == "waypoints":
@@ -147,8 +152,12 @@ class PprzRequestManager():
 		tree = ET.parse(flight_plan_path)
 		root = tree.getroot()
 
-		lat0 = root.attrib["lat0"]
-		lon0 = root.attrib["lon0"]
+		_lat0 = root.attrib["lat0"]
+		_lon0 = root.attrib["lon0"]
+
+		lat0 = tools.to_deg(_lat0)
+		lon0 = tools.to_deg(_lon0)
+		
 		max_dist_from_home = root.attrib["max_dist_from_home"]
 
 		utm_crs_list = pyproj.database.query_utm_crs_info(
@@ -180,7 +189,7 @@ class PprzRequestManager():
 
 		geojson_geometry = json.dumps(geometry)
 
-		print(geojson_geometry)
+		# print(geojson_geometry)
 		return geojson_geometry
 
 
