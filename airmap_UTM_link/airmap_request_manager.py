@@ -58,8 +58,8 @@ class AirmapRequestManager():
 		if auth_response.status_code == 200:
 
 			print(auth_response.text)
-			connection_status_label.setStyleSheet("color: rgb(50,200,50)")
-			connection_status_label.setText("Connected")
+			# connection_status_label.setStyleSheet("color: rgb(50,200,50)")
+			# connection_status_label.setText("Connected")
 
 			self.token = auth_response.json()["access_token"]
 			self.refresh_token = auth_response.json()["refresh_token"]
@@ -71,18 +71,20 @@ class AirmapRequestManager():
 		    	"X-API-KEY": self.api_key
 			}
 
-			print("User logged in to Airmap API")
-
 			refresh_thread = threading.Thread(target = self.thread_refresh, 
 				args = (auth_response.json()["expires_in"] - 100, connection_status_label,), 
 				daemon = True)
 
-			refresh_thread.start()
+			# refresh_thread.start()
+
 			self.get_user_profile()
+
+			return "success"
 
 		else :
 
 			print("User not logged in " + str(auth_response.text))
+
 
 
 	## thread meant to refresh the airmap access token
@@ -130,8 +132,10 @@ class AirmapRequestManager():
 
 		print("\nRetreiving user information ...")
 
+		# print(self.headers)
+
 		response = requests.get("https://api.airmap.com/pilot/v2/profile", headers = self.headers)
-		print("User logged in")
+		# print("User logged in")
 		print(response.text)
 		self.pilot_id = response.json()["data"]["id"]
 
@@ -143,10 +147,10 @@ class AirmapRequestManager():
 
 	def load_flight_plans(self):
 
-		# print("\nLoading flights ...")
+		print("\nLoading flights ...")
 		querystring = {"pilot_id": self.pilot_id}
 		response = requests.get("https://api.airmap.com/flight/v2/", headers = self.headers, params = querystring)
-		# print(response.text)
+		print(response.text)
 
 		flights = response.json()["data"]["results"]
 		flight_widgets = []

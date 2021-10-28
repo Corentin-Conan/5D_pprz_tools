@@ -91,16 +91,16 @@ class UI(QtWidgets.QWidget):
 
 		self.log_in_button = QtWidgets.QPushButton("Log In")
 		self.log_in_button.clicked.connect(self.logIn)
-		self.status_label = QtWidgets.QLabel("Not Connected")
-		self.status_label.setAlignment(QtCore.Qt.AlignCenter)
-		self.status_label.setStyleSheet("color: rgb(255,0,0)")
+		self.log_in_status_label = QtWidgets.QLabel("Not Connected")
+		self.log_in_status_label.setAlignment(QtCore.Qt.AlignCenter)
+		self.log_in_status_label.setStyleSheet("color: rgb(255,0,0)")
 
 		self.log_in_layout = QtWidgets.QFormLayout()
 		self.login_box.setLayout(self.log_in_layout)
 		self.log_in_layout.addRow(self.label_client_id, self.line_edit_client_id)
 		self.log_in_layout.addRow(self.label_user_name, self.line_edit_user_name)
 		self.log_in_layout.addRow(self.label_password, self.line_edit_password)
-		self.log_in_layout.addRow(self.log_in_button, self.status_label)
+		self.log_in_layout.addRow(self.log_in_button, self.log_in_status_label)
 
 		# flight plan list
 		self.flight_plan_list_box = QtWidgets.QGroupBox('Planned Flights List')
@@ -215,6 +215,8 @@ class UI(QtWidgets.QWidget):
 		self.mid_group_box.setDisabled(True)
 
 
+	# ========= STATE CHANGE FUNCTIONS ========= #
+
 	# toolbar functions
 	def onButtonAccountClicked(self, s):
 		print("click", s)
@@ -228,23 +230,88 @@ class UI(QtWidgets.QWidget):
 		print("click", s)
 
 
-	# button functions
+	# on log in clicked
 	def logIn(self):
 
-		self.airmap_request_manager.log_in_to_airmap_API(
-			self.line_edit_client_id.text(),
-			self.line_edit_user_name.text(),
-			self.line_edit_password.text(),
-			self.status_label)
-		self.flight_plan_list_box.setEnabled(True)
-		self.populate_flight_list()
+		completion = self.check_log_in_completion()
+
+		if completion:
+
+			log_in_status = self.airmap_request_manager.log_in_to_airmap_API(
+				self.line_edit_client_id.text(),
+				self.line_edit_user_name.text(),
+				self.line_edit_password.text(),
+				self.log_in_status_label)
+
+			if log_in_status == "succes":
+
+				self.set_log_in_status_label(status = log_in_status)
+
+				print("User logged in to Airmap API")
+
+				self.flight_plan_list_box.setEnabled(True)
+
+				flights = self.airmap_request_manager.load_flight_plans()
+				self.populate_flight_list(flights)
+
+			else:
+
+				print("\nLog in error")
+				self.manage_log_in_error(log_in_status)
+
+		else:
+		
+			print("\nMissing field for log in")
 
 
-	def populate_flight_list(self):
 
-		flight_widgets = self.airmap_request_manager.load_flight_plans()
 
-		for widget in flight_widgets:
+
+
+
+	# ========= UI FUNCTIONS =================== #
+
+	def check_log_in_completion(self):
+
+		completion = True
+
+		client_id = self.line_edit_client_id.text()
+		user_name = self.line_edit_user_name.text()
+		password = self.line_edit_password.text()
+
+		if client_id == "":
+			self.line_edit_client_id.setStyleSheet('''QLineEdit{background-color: orange}''')
+			completion = False
+
+		if user_name == "":
+			self.line_edit_user_name.setStyleSheet('''QLineEdit{background-color: orange}''')
+			completion = False
+
+		if password == "":
+			self.line_edit_password.setStyleSheet('''QLineEdit{background-color: orange}''')
+			completion = False
+
+		return completion
+
+
+
+	def set_log_in_status_label(self, status):
+
+		if status == "succes":
+			# set all fields white in case some were red because of mistake in log in
+			self.line_edit_client_id.setStyleSheet('''QLineEdit{background-color: rgb(0, 0, 0)}''')
+			self.line_edit_user_name.setStyleSheet('''QLineEdit{background-color: rgb(0, 0, 0)}''')
+			self.line_edit_password.setStyleSheet('''QLineEdit{background-color: rgb(0, 0, 0)}''')
+
+			# set log in status label
+			self.log_in_status_label.setStyleSheet("color: rgb(50,200,50)")
+			self.log_in_status_label.setText("Connected")
+
+
+
+	def populate_flight_list(self, flights):
+
+		for widget in flights:
 
 			item = QtWidgets.QListWidgetItem(self.flight_plan_list)
 			self.flight_plan_list.addItem(item)
@@ -252,6 +319,16 @@ class UI(QtWidgets.QWidget):
 			item.setSizeHint(widget.minimumSizeHint())
 
 			self.flight_plan_list.setItemWidget(item, widget)
+
+
+	def manage_log_in_error(self, status_code):
+
+		print(status_code)
+
+
+
+# former stuff ============================================== #
+
 
 
 	def update_flight_list(self):
