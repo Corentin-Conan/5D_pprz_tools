@@ -8,6 +8,7 @@ from PySide6 import QtCore, QtWidgets, QtGui
 
 from outlog import OutLog
 from dialogs.flight_deletion_confirmation_dialog import FlightDeletionConfirmationDialog
+from dialogs.cancel_flight_creation_confirmation_dialog import CancelFlightCreationConfirmationDialog
 
 
 class UI(QtWidgets.QWidget):
@@ -115,7 +116,7 @@ class UI(QtWidgets.QWidget):
 
 		self.new_flight_button = QtWidgets.QPushButton("New flight")
 		self.new_flight_button.setFixedWidth(150)
-		self.new_flight_button.clicked.connect(self.create_new_flight)
+		self.new_flight_button.clicked.connect(self.onCreateFlight)
 		self.flight_plan_list_layout.addWidget(self.new_flight_button)
 
 		# right box 
@@ -225,6 +226,8 @@ class UI(QtWidgets.QWidget):
 
 			self.clear_flight_param_window()
 
+			self.flight_selected = None
+
 		else:
 
 			print("Deletion rejected")
@@ -232,10 +235,33 @@ class UI(QtWidgets.QWidget):
 			return
 
 
-
+	# on new flight button pressed
 	def onCreateFlight(self):
 
-		pass
+		self.enable_flight_param_window(edit = True)
+
+		self.flight_plan_path = self.get_pprz_flight_plan_path()
+
+		self.pprz_fp_info = self.pprz_request_manager.open_and_parse(self.flight_plan_path, open_GCS = True)
+
+		self.fill_flight_param_window_from_ppz_flight_plan(self.pprz_fp_info)
+
+
+	# on cancel flight creation button pressed
+	def onCancelFlightCreation(self):
+
+		self.flight_plan_path = None
+		self.pprz_fp_info = None
+
+		confirmation = self.cancel_flight_creation_confirmation_dialog()
+
+		if confirmation:
+
+			self.clear_flight_param_window()
+
+		else:
+
+			return
 
 
 
@@ -344,9 +370,9 @@ class UI(QtWidgets.QWidget):
 			self.compute_am_flight_plan_button.setFixedWidth(150)
 			self.compute_am_flight_plan_button.clicked.connect(self.compute_flight_geometry)
 
-			self.delete_flight_button = QtWidgets.QPushButton("Delete Flight")
-			self.delete_flight_button.setFixedWidth(150)
-			self.delete_flight_button.clicked.connect(self.delete_flight)
+			self.cancel_flight_creation_button = QtWidgets.QPushButton("Cancel Flight Creation")
+			self.cancel_flight_creation_button.setFixedWidth(150)
+			self.cancel_flight_creation_button.clicked.connect(self.onCancelFlightCreation)
 
 			self.submit_flight_plan_button = QtWidgets.QPushButton("Submit Flight Plan")
 			self.submit_flight_plan_button.setFixedWidth(150)
@@ -369,7 +395,7 @@ class UI(QtWidgets.QWidget):
 			self.mid_layout.addRow(self.label_wps, self.wps)
 			self.mid_layout.addRow(self.label_sorted_wps, self.sorted_wps)
 			self.mid_layout.addRow(self.compute_am_flight_plan_button)
-			self.mid_layout.addRow(self.delete_flight_button)
+			self.mid_layout.addRow(self.cancel_flight_creation_button)
 			self.mid_layout.addRow(self.submit_flight_plan_button)
 
 		else:
@@ -526,6 +552,44 @@ class UI(QtWidgets.QWidget):
 	def clear_flight_param_window(self):
 		for i in reversed(range(self.mid_layout.count())): 
 			self.mid_layout.itemAt(i).widget().deleteLater()
+
+
+
+	def get_pprz_flight_plan_path(self):
+
+		flight_plan_path = QtWidgets.QFileDialog.getOpenFileName(self, "Select flight plan",
+			"/home/corentin/paparazzi/conf/flight_plans", "XML Files (*.xml)")[0]
+		print(self.flight_plan_path)
+
+		if flight_plan_path == None:
+			return None
+
+		else :
+			return flight_plan_path
+
+
+
+	def fill_flight_param_window_from_ppz_flight_plan(self, pprz_fp_info):
+
+		print(pprz_fp_info)
+
+		self.take_off_lon.setText(pprz_fp_info["lon0"])
+		self.take_off_lat.setText(pprz_fp_info["lat0"])
+		self.max_alt_agl.setText(pprz_fp_info["alt"])
+		self.wps.setText(str([wp.name for wp in pprz_fp_info["waypoints"] if wp.name[0] != "_"]))
+		self.sorted_wps.setText(str([wp.name for wp in pprz_fp_info["waypoints"] if wp.name[0] != "_"]))
+
+
+
+	def cancel_flight_creation_confirmation_dialog(self):
+
+		dialog = CancelFlightCreationConfirmationDialog()
+
+		if dialog.exec_():
+			return True
+		else:
+			return False
+
 
 
 
