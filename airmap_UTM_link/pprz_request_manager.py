@@ -117,13 +117,14 @@ class PprzRequestManager():
 
 	# called when creating a new flight: opens GCS with selected flight plan 
 	# and parses flight plan to get requied informations
-	def open_and_parse(self, flight_plan_path):
+	def open_and_parse(self, flight_plan_path, open_GCS = False):
 
 		pprz_fp_info = {}
 		waypoints = []
 
-		# open fp in GCS
-		x = subprocess.Popen("/home/corentin/PprzGCS/build/pprzgcs/pprzgcs -f " + flight_plan_path, shell = True)
+		if open_GCS:
+			# open fp in GCS
+			x = subprocess.Popen("/home/corentin/PprzGCS/build/pprzgcs/pprzgcs -f " + flight_plan_path, shell = True)
 
 		# parse and get required fp info
 		tree = ET.parse(flight_plan_path)

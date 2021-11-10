@@ -7,6 +7,7 @@ import tools
 from PySide6 import QtCore, QtWidgets, QtGui
 
 from outlog import OutLog
+from dialogs.flight_deletion_confirmation_dialog import FlightDeletionConfirmationDialog
 
 
 class UI(QtWidgets.QWidget):
@@ -64,6 +65,7 @@ class UI(QtWidgets.QWidget):
 		self.main_layout.addWidget(self.left_group_box)
 
 		self.mid_group_box = QtWidgets.QGroupBox('')
+		self.mid_group_box.setFixedWidth(800)
 		self.mid_layout = QtWidgets.QFormLayout(self.mid_group_box)
 		self.main_layout.addWidget(self.mid_group_box)
 
@@ -109,78 +111,12 @@ class UI(QtWidgets.QWidget):
 		self.flight_plan_list_box.setLayout(self.flight_plan_list_layout)
 		self.flight_plan_list = QtWidgets.QListWidget()
 		self.flight_plan_list_layout.addWidget(self.flight_plan_list)
-		self.flight_plan_list.itemClicked.connect(self.onListItemClicked)
+		self.flight_plan_list.itemClicked.connect(self.onFlightSelected)
 
 		self.new_flight_button = QtWidgets.QPushButton("New flight")
 		self.new_flight_button.setFixedWidth(150)
 		self.new_flight_button.clicked.connect(self.create_new_flight)
 		self.flight_plan_list_layout.addWidget(self.new_flight_button)
-
-		# flight information window
-		self.label_flight_id = QtWidgets.QLabel("Flight ID : ")
-		self.flight_id = QtWidgets.QLabel("")
-		self.label_flight_plan_id = QtWidgets.QLabel("Flight Plan ID : ")
-		self.flight_plan_id = QtWidgets.QLabel("")
-		self.label_pilot_id = QtWidgets.QLabel("Pilot ID : ")
-		self.pilot_id = QtWidgets.QLabel("")
-		self.label_pprz_flight_plan = QtWidgets.QLabel("Paparazzi flight plan : ")
-		self.pprz_flight_plan = QtWidgets.QLabel("")
-		self.change_pprz_flight_plan_button = QtWidgets.QPushButton("Change PPRZ Flight Plan")
-		self.change_pprz_flight_plan_button.setFixedWidth(150)
-		self.change_pprz_flight_plan_button.clicked.connect(self.change_pprz_flight_plan)
-		self.label_start_time = QtWidgets.QLabel("Start time : ")
-		self.start_time = QtWidgets.QLineEdit("YYYY-MM-DDThh:mm:ss.sssZ")
-		self.label_end_time = QtWidgets.QLabel("End time : ")
-		self.end_time = QtWidgets.QLineEdit("YYYY-MM-DDThh:mm:ss.sssZ")
-		self.label_take_off_lat = QtWidgets.QLabel("Takeoff latitude : ")
-		self.take_off_lat = QtWidgets.QLabel("")
-		self.label_take_off_lon = QtWidgets.QLabel("Takeoff longitude : ")
-		self.take_off_lon = QtWidgets.QLabel("")
-		self.label_min_alt_agl = QtWidgets.QLabel("Minimum altitude AGL : ")
-		self.min_alt_agl = QtWidgets.QLineEdit("0")
-		self.label_max_alt_agl = QtWidgets.QLabel("Maximum altitude AGL : ")
-		self.max_alt_agl = QtWidgets.QLineEdit("")
-		self.label_buffer = QtWidgets.QLabel("Buffer : ")
-		self.buffer = QtWidgets.QLineEdit("")
-		self.label_flight_description = QtWidgets.QLabel("Flight description : ")
-		self.flight_description = QtWidgets.QLineEdit("")
-
-		self.label_wps = QtWidgets.QLabel("Waypoints : ")
-		self.wps = QtWidgets.QLabel("")
-		self.label_sorted_wps = QtWidgets.QLabel("Sorted Waypoints : ")
-		self.sorted_wps = QtWidgets.QLineEdit("")
-
-		self.compute_am_flight_plan_button = QtWidgets.QPushButton("Compute Flight Geometry")
-		self.compute_am_flight_plan_button.setFixedWidth(150)
-		self.compute_am_flight_plan_button.clicked.connect(self.compute_flight_geometry)
-
-		self.delete_flight_button = QtWidgets.QPushButton("Delete Flight")
-		self.delete_flight_button.setFixedWidth(150)
-		self.delete_flight_button.clicked.connect(self.delete_flight)
-
-		self.submit_flight_plan_button = QtWidgets.QPushButton("Submit Flight Plan")
-		self.submit_flight_plan_button.setFixedWidth(150)
-		self.submit_flight_plan_button.clicked.connect(self.submit_flight_plan)
-
-		self.mid_layout.addRow(self.label_flight_id, self.flight_id)
-		self.mid_layout.addRow(self.label_flight_plan_id, self.flight_plan_id)
-		self.mid_layout.addRow(self.label_pilot_id, self.pilot_id)
-		self.mid_layout.addRow(self.label_pprz_flight_plan, self.pprz_flight_plan)
-		self.mid_layout.addRow(self.change_pprz_flight_plan_button)
-		self.mid_layout.addRow(self.label_start_time, self.start_time)
-		self.mid_layout.addRow(self.label_end_time, self.end_time)
-		self.mid_layout.addRow(self.label_take_off_lat, self.take_off_lat)
-		self.mid_layout.addRow(self.label_take_off_lon, self.take_off_lon)
-		self.mid_layout.addRow(self.label_min_alt_agl, self.min_alt_agl)
-		self.mid_layout.addRow(self.label_max_alt_agl, self.max_alt_agl)
-		self.mid_layout.addRow(self.label_buffer, self.buffer)
-		self.mid_layout.addRow(self.label_flight_description, self.flight_description)
-
-		self.mid_layout.addRow(self.label_wps, self.wps)
-		self.mid_layout.addRow(self.label_sorted_wps, self.sorted_wps)
-		self.mid_layout.addRow(self.compute_am_flight_plan_button)
-		self.mid_layout.addRow(self.delete_flight_button)
-		self.mid_layout.addRow(self.submit_flight_plan_button)
 
 		# right box 
 		# airspace information box
@@ -236,15 +172,13 @@ class UI(QtWidgets.QWidget):
 		completion = self.check_log_in_completion()
 
 		if completion:
-
 			log_in_status = self.airmap_request_manager.log_in_to_airmap_API(
 				self.line_edit_client_id.text(),
 				self.line_edit_user_name.text(),
 				self.line_edit_password.text(),
 				self.log_in_status_label)
 
-			if log_in_status == "succes":
-
+			if log_in_status == "success":
 				self.set_log_in_status_label(status = log_in_status)
 
 				print("User logged in to Airmap API")
@@ -255,17 +189,51 @@ class UI(QtWidgets.QWidget):
 				self.populate_flight_list(flights)
 
 			else:
-
 				print("\nLog in error")
 				self.manage_log_in_error(log_in_status)
 
 		else:
-		
 			print("\nMissing field for log in")
 
 
 
+	# on flight in flight list clicked
+	def onFlightSelected(self, item):
 
+		self.flight_selected = self.flight_plan_list.itemWidget(item)
+
+		self.enable_flight_param_window(edit = False)
+
+		self.populate_flight_param_window(self.flight_selected, edit = False)
+
+
+	# on delete flight button pressed
+	def onDeleteFlight(self):
+
+		# dialog to confirm deletion
+		confirmation = self.deletion_confirmation_dialog()
+
+		if confirmation:
+
+			print("Deletion confirmed")
+
+			self.airmap_request_manager.delete_flight(self.flight_selected.flight_id)
+
+			tools.erase_in_json("airmap.flights.json", flight_id = self.flight_selected.flight_id)
+			
+			self.update_flight_list()
+
+		else:
+
+			print("Deletion rejected")
+
+			return
+
+
+
+	def onCreateFlight(self):
+
+		pass
 
 
 
@@ -297,11 +265,11 @@ class UI(QtWidgets.QWidget):
 
 	def set_log_in_status_label(self, status):
 
-		if status == "succes":
+		if status == "success":
 			# set all fields white in case some were red because of mistake in log in
-			self.line_edit_client_id.setStyleSheet('''QLineEdit{background-color: rgb(0, 0, 0)}''')
-			self.line_edit_user_name.setStyleSheet('''QLineEdit{background-color: rgb(0, 0, 0)}''')
-			self.line_edit_password.setStyleSheet('''QLineEdit{background-color: rgb(0, 0, 0)}''')
+			self.line_edit_client_id.setStyleSheet('''QLineEdit{background-color: rgb(255, 255, 255)}''')
+			self.line_edit_user_name.setStyleSheet('''QLineEdit{background-color: rgb(255, 255, 255)}''')
+			self.line_edit_password.setStyleSheet('''QLineEdit{background-color: rgb(255, 255, 255)}''')
 
 			# set log in status label
 			self.log_in_status_label.setStyleSheet("color: rgb(50,200,50)")
@@ -321,13 +289,215 @@ class UI(QtWidgets.QWidget):
 			self.flight_plan_list.setItemWidget(item, widget)
 
 
+
 	def manage_log_in_error(self, status_code):
 
 		print(status_code)
 
 
 
-# former stuff ============================================== #
+	def enable_flight_param_window(self, edit = True):
+
+		self.mid_group_box.setEnabled(True)
+
+		for i in reversed(range(self.mid_layout.count())): 
+			self.mid_layout.itemAt(i).widget().deleteLater()
+
+		if edit:
+
+			# flight information window == edit mode
+			self.label_flight_id = QtWidgets.QLabel("Flight ID : ")
+			self.flight_id = QtWidgets.QLabel("")
+			self.label_flight_plan_id = QtWidgets.QLabel("Flight Plan ID : ")
+			self.flight_plan_id = QtWidgets.QLabel("")
+			self.label_pilot_id = QtWidgets.QLabel("Pilot ID : ")
+			self.pilot_id = QtWidgets.QLabel("")
+			self.label_pprz_flight_plan = QtWidgets.QLabel("Paparazzi flight plan : ")
+			self.pprz_flight_plan = QtWidgets.QLabel("")
+			self.change_pprz_flight_plan_button = QtWidgets.QPushButton("Change PPRZ Flight Plan")
+			self.change_pprz_flight_plan_button.setFixedWidth(150)
+			self.change_pprz_flight_plan_button.clicked.connect(self.change_pprz_flight_plan)
+			self.label_start_time = QtWidgets.QLabel("Start time : ")
+			self.start_time = QtWidgets.QLineEdit("YYYY-MM-DDThh:mm:ss.sssZ")
+			self.label_end_time = QtWidgets.QLabel("End time : ")
+			self.end_time = QtWidgets.QLineEdit("YYYY-MM-DDThh:mm:ss.sssZ")
+			self.label_take_off_lat = QtWidgets.QLabel("Takeoff latitude : ")
+			self.take_off_lat = QtWidgets.QLabel("")
+			self.label_take_off_lon = QtWidgets.QLabel("Takeoff longitude : ")
+			self.take_off_lon = QtWidgets.QLabel("")
+			self.label_min_alt_agl = QtWidgets.QLabel("Minimum altitude AGL : ")
+			self.min_alt_agl = QtWidgets.QLineEdit("0")
+			self.label_max_alt_agl = QtWidgets.QLabel("Maximum altitude AGL : ")
+			self.max_alt_agl = QtWidgets.QLineEdit("")
+			self.label_buffer = QtWidgets.QLabel("Buffer : ")
+			self.buffer = QtWidgets.QLineEdit("")
+			self.label_flight_description = QtWidgets.QLabel("Flight description : ")
+			self.flight_description = QtWidgets.QLineEdit("")
+
+			self.label_wps = QtWidgets.QLabel("Waypoints : ")
+			self.wps = QtWidgets.QLabel("")
+			self.label_sorted_wps = QtWidgets.QLabel("Sorted Waypoints : ")
+			self.sorted_wps = QtWidgets.QLineEdit("")
+
+			self.compute_am_flight_plan_button = QtWidgets.QPushButton("Compute Flight Geometry")
+			self.compute_am_flight_plan_button.setFixedWidth(150)
+			self.compute_am_flight_plan_button.clicked.connect(self.compute_flight_geometry)
+
+			self.delete_flight_button = QtWidgets.QPushButton("Delete Flight")
+			self.delete_flight_button.setFixedWidth(150)
+			self.delete_flight_button.clicked.connect(self.delete_flight)
+
+			self.submit_flight_plan_button = QtWidgets.QPushButton("Submit Flight Plan")
+			self.submit_flight_plan_button.setFixedWidth(150)
+			self.submit_flight_plan_button.clicked.connect(self.submit_flight_plan)
+
+			self.mid_layout.addRow(self.label_flight_id, self.flight_id)
+			self.mid_layout.addRow(self.label_flight_plan_id, self.flight_plan_id)
+			self.mid_layout.addRow(self.label_pilot_id, self.pilot_id)
+			self.mid_layout.addRow(self.label_pprz_flight_plan, self.pprz_flight_plan)
+			self.mid_layout.addRow(self.change_pprz_flight_plan_button)
+			self.mid_layout.addRow(self.label_start_time, self.start_time)
+			self.mid_layout.addRow(self.label_end_time, self.end_time)
+			self.mid_layout.addRow(self.label_take_off_lat, self.take_off_lat)
+			self.mid_layout.addRow(self.label_take_off_lon, self.take_off_lon)
+			self.mid_layout.addRow(self.label_min_alt_agl, self.min_alt_agl)
+			self.mid_layout.addRow(self.label_max_alt_agl, self.max_alt_agl)
+			self.mid_layout.addRow(self.label_buffer, self.buffer)
+			self.mid_layout.addRow(self.label_flight_description, self.flight_description)
+
+			self.mid_layout.addRow(self.label_wps, self.wps)
+			self.mid_layout.addRow(self.label_sorted_wps, self.sorted_wps)
+			self.mid_layout.addRow(self.compute_am_flight_plan_button)
+			self.mid_layout.addRow(self.delete_flight_button)
+			self.mid_layout.addRow(self.submit_flight_plan_button)
+
+		else:
+
+			# flight information window == view mode
+			self.label_flight_id_view_mode = QtWidgets.QLabel("Flight ID : ")
+			self.flight_id_view_mode = QtWidgets.QLabel("")
+			self.label_flight_plan_id_view_mode = QtWidgets.QLabel("Flight Plan ID : ")
+			self.flight_plan_id_view_mode = QtWidgets.QLabel("")
+			self.label_pilot_id_view_mode = QtWidgets.QLabel("Pilot ID : ")
+			self.pilot_id_view_mode = QtWidgets.QLabel("")
+			self.label_pprz_flight_plan_view_mode = QtWidgets.QLabel("Paparazzi flight plan : ")
+			self.pprz_flight_plan_view_mode = QtWidgets.QLabel("")
+			self.change_pprz_flight_plan_button_view_mode = QtWidgets.QPushButton("Change PPRZ Flight Plan")
+			self.change_pprz_flight_plan_button_view_mode.setFixedWidth(150)
+			self.change_pprz_flight_plan_button_view_mode.clicked.connect(self.change_pprz_flight_plan)
+			self.label_start_time_view_mode = QtWidgets.QLabel("Start time : ")
+			self.start_time_view_mode = QtWidgets.QLabel("YYYY-MM-DDThh:mm:ss.sssZ")
+			self.label_end_time_view_mode = QtWidgets.QLabel("End time : ")
+			self.end_time_view_mode = QtWidgets.QLabel("YYYY-MM-DDThh:mm:ss.sssZ")
+			self.label_take_off_lat_view_mode = QtWidgets.QLabel("Takeoff latitude : ")
+			self.take_off_lat_view_mode = QtWidgets.QLabel("")
+			self.label_take_off_lon_view_mode = QtWidgets.QLabel("Takeoff longitude : ")
+			self.take_off_lon_view_mode = QtWidgets.QLabel("")
+			self.label_min_alt_agl_view_mode = QtWidgets.QLabel("Minimum altitude AGL : ")
+			self.min_alt_agl_view_mode = QtWidgets.QLabel("0")
+			self.label_max_alt_agl_view_mode = QtWidgets.QLabel("Maximum altitude AGL : ")
+			self.max_alt_agl_view_mode = QtWidgets.QLabel("")
+			self.label_buffer_view_mode = QtWidgets.QLabel("Buffer : ")
+			self.buffer_view_mode = QtWidgets.QLabel("")
+			self.label_flight_description_view_mode = QtWidgets.QLabel("Flight description : ")
+			self.flight_description_view_mode = QtWidgets.QLabel("")
+
+			self.label_wps_view_mode = QtWidgets.QLabel("Waypoints : ")
+			self.wps_view_mode = QtWidgets.QLabel("")
+			self.label_sorted_wps_view_mode = QtWidgets.QLabel("Sorted Waypoints : ")
+			self.sorted_wps_view_mode = QtWidgets.QLabel("")
+
+			self.compute_am_flight_plan_button_view_mode = QtWidgets.QPushButton("Compute Flight Geometry")
+			self.compute_am_flight_plan_button_view_mode.setFixedWidth(150)
+			self.compute_am_flight_plan_button_view_mode.clicked.connect(self.compute_flight_geometry)
+
+			self.delete_flight_button_view_mode = QtWidgets.QPushButton("Delete Flight")
+			self.delete_flight_button_view_mode.setFixedWidth(150)
+			self.delete_flight_button_view_mode.clicked.connect(self.onDeleteFlight)
+
+			self.submit_flight_plan_button_view_mode = QtWidgets.QPushButton("Submit Flight Plan")
+			self.submit_flight_plan_button_view_mode.setFixedWidth(150)
+			self.submit_flight_plan_button_view_mode.clicked.connect(self.submit_flight_plan)
+
+			self.mid_layout.addRow(self.label_flight_id_view_mode, self.flight_id_view_mode)
+			self.mid_layout.addRow(self.label_flight_plan_id_view_mode, self.flight_plan_id_view_mode)
+			self.mid_layout.addRow(self.label_pilot_id_view_mode, self.pilot_id_view_mode)
+			self.mid_layout.addRow(self.label_pprz_flight_plan_view_mode, self.pprz_flight_plan_view_mode)
+			self.mid_layout.addRow(self.change_pprz_flight_plan_button_view_mode)
+			self.mid_layout.addRow(self.label_start_time_view_mode, self.start_time_view_mode)
+			self.mid_layout.addRow(self.label_end_time_view_mode, self.end_time_view_mode)
+			self.mid_layout.addRow(self.label_take_off_lat_view_mode, self.take_off_lat_view_mode)
+			self.mid_layout.addRow(self.label_take_off_lon_view_mode, self.take_off_lon_view_mode)
+			self.mid_layout.addRow(self.label_min_alt_agl_view_mode, self.min_alt_agl_view_mode)
+			self.mid_layout.addRow(self.label_max_alt_agl_view_mode, self.max_alt_agl_view_mode)
+			self.mid_layout.addRow(self.label_buffer_view_mode, self.buffer_view_mode)
+			self.mid_layout.addRow(self.label_flight_description_view_mode, self.flight_description_view_mode)
+
+			self.mid_layout.addRow(self.label_wps_view_mode, self.wps_view_mode)
+			self.mid_layout.addRow(self.label_sorted_wps_view_mode, self.sorted_wps_view_mode)
+			self.mid_layout.addRow(self.compute_am_flight_plan_button_view_mode)
+			self.mid_layout.addRow(self.delete_flight_button_view_mode)
+			self.mid_layout.addRow(self.submit_flight_plan_button_view_mode)
+
+
+
+	def populate_flight_param_window(self, flight, edit = True):
+
+		if edit:
+
+			# print("\nPopulating flight window with flight : " + flight.flight_id)
+			self.flight_id.setText(flight.flight_id)
+			self.flight_plan_id.setText(flight.flight_plan_id)
+			self.pilot_id.setText(flight.pilot_id)
+			self.start_time.setText(flight.start_time)
+			self.end_time.setText(flight.end_time)
+			self.take_off_lat.setText(str(flight.lat))
+			self.take_off_lon.setText(str(flight.lon))
+			self.min_alt_agl.setText(str(flight.min_altitude))
+			self.max_alt_agl.setText(str(flight.max_altitude))
+			self.buffer.setText(str(flight.buffer))
+			self.flight_description.setText(flight.description)
+
+			pprz_flight_plan_path = tools.get_pprz_fp_path_from_flight_id("airmap.flights.json", flight.flight_id)
+			self.flight_plan_path = pprz_flight_plan_path
+
+			self.pprz_fp_info = self.pprz_request_manager.open_and_parse(pprz_flight_plan_path)
+
+			self.pprz_flight_plan.setText(self.flight_plan_path)
+
+			self.take_off_lon.setText(self.pprz_fp_info["lon0"])
+			self.take_off_lat.setText(self.pprz_fp_info["lat0"])
+			self.max_alt_agl.setText(self.pprz_fp_info["alt"])
+			self.wps.setText(str([wp.name for wp in self.pprz_fp_info["waypoints"] if wp.name[0] != "_"]))
+			self.sorted_wps.setText(str([wp.name for wp in self.pprz_fp_info["waypoints"] if wp.name[0] != "_"]))
+
+		else :
+
+			# print("\nPopulating flight window with flight : " + flight.flight_id)
+			self.flight_id_view_mode.setText(flight.flight_id)
+			self.flight_plan_id_view_mode.setText(flight.flight_plan_id)
+			self.pilot_id_view_mode.setText(flight.pilot_id)
+			self.start_time_view_mode.setText(flight.start_time)
+			self.end_time_view_mode.setText(flight.end_time)
+			self.take_off_lat_view_mode.setText(str(flight.lat))
+			self.take_off_lon_view_mode.setText(str(flight.lon))
+			self.min_alt_agl_view_mode.setText(str(flight.min_altitude))
+			self.max_alt_agl_view_mode.setText(str(flight.max_altitude))
+			self.buffer_view_mode.setText(str(flight.buffer))
+			self.flight_description_view_mode.setText(flight.description)
+
+			pprz_flight_plan_path = tools.get_pprz_fp_path_from_flight_id("airmap.flights.json", flight.flight_id)
+			self.flight_plan_path = pprz_flight_plan_path
+
+			self.pprz_fp_info = self.pprz_request_manager.open_and_parse(pprz_flight_plan_path)
+
+			self.pprz_flight_plan_view_mode.setText(self.flight_plan_path)
+
+			self.take_off_lon_view_mode.setText(self.pprz_fp_info["lon0"])
+			self.take_off_lat_view_mode.setText(self.pprz_fp_info["lat0"])
+			self.max_alt_agl_view_mode.setText(self.pprz_fp_info["alt"])
+			self.wps_view_mode.setText(str([wp.name for wp in self.pprz_fp_info["waypoints"] if wp.name[0] != "_"]))
+			self.sorted_wps_view_mode.setText(str([wp.name for wp in self.pprz_fp_info["waypoints"] if wp.name[0] != "_"]))
 
 
 
@@ -336,47 +506,24 @@ class UI(QtWidgets.QWidget):
 		# delete current list items
 		self.flight_plan_list.clear()
 		# populate with updated flights
-		self.populate_flight_list()
+		flights = self.airmap_request_manager.load_flight_plans()
+		self.populate_flight_list(flights)
 
 
-	# list item clicked function
-	def onListItemClicked(self, item):
 
-		self.flight_selected = self.flight_plan_list.itemWidget(item)
-		# print("\nItem clicked : " + self.flight_selected.flight_id)
-		self.mid_group_box.setEnabled(True)
+	def deletion_confirmation_dialog(self):
 
-		self.populate_flight_information_window(self.flight_selected)
+		dialog = FlightDeletionConfirmationDialog(self.flight_selected.flight_id)
+
+		if dialog.exec_():
+			return True
+		else:
+			return False
 
 
-	# on flight selected, populate flight information window
-	def populate_flight_information_window(self, flight):
 
-		# print("\nPopulating flight window with flight : " + flight.flight_id)
-		self.flight_id.setText(flight.flight_id)
-		self.flight_plan_id.setText(flight.flight_plan_id)
-		self.pilot_id.setText(flight.pilot_id)
-		self.start_time.setText(flight.start_time)
-		self.end_time.setText(flight.end_time)
-		self.take_off_lat.setText(str(flight.lat))
-		self.take_off_lon.setText(str(flight.lon))
-		self.min_alt_agl.setText(str(flight.min_altitude))
-		self.max_alt_agl.setText(str(flight.max_altitude))
-		self.buffer.setText(str(flight.buffer))
-		self.flight_description.setText(flight.description)
 
-		pprz_flight_plan_path = tools.get_pprz_fp_path_from_flight_id("airmap.flights.json", flight.flight_id)
-		self.flight_plan_path = pprz_flight_plan_path
-
-		self.pprz_fp_info = self.pprz_request_manager.open_and_parse(pprz_flight_plan_path)
-
-		self.pprz_flight_plan.setText(self.flight_plan_path)
-
-		self.take_off_lon.setText(self.pprz_fp_info["lon0"])
-		self.take_off_lat.setText(self.pprz_fp_info["lat0"])
-		self.max_alt_agl.setText(self.pprz_fp_info["alt"])
-		self.wps.setText(str([wp.name for wp in self.pprz_fp_info["waypoints"] if wp.name[0] != "_"]))
-		self.sorted_wps.setText(str([wp.name for wp in self.pprz_fp_info["waypoints"] if wp.name[0] != "_"]))
+# former stuff ============================================== #
 
 
 	# on change pprz flight plan button clicked
