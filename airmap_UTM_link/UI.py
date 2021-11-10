@@ -223,6 +223,8 @@ class UI(QtWidgets.QWidget):
 			
 			self.update_flight_list()
 
+			self.clear_flight_param_window()
+
 		else:
 
 			print("Deletion rejected")
@@ -300,8 +302,7 @@ class UI(QtWidgets.QWidget):
 
 		self.mid_group_box.setEnabled(True)
 
-		for i in reversed(range(self.mid_layout.count())): 
-			self.mid_layout.itemAt(i).widget().deleteLater()
+		self.clear_flight_param_window()
 
 		if edit:
 
@@ -520,6 +521,11 @@ class UI(QtWidgets.QWidget):
 		else:
 			return False
 
+
+
+	def clear_flight_param_window(self):
+		for i in reversed(range(self.mid_layout.count())): 
+			self.mid_layout.itemAt(i).widget().deleteLater()
 
 
 
