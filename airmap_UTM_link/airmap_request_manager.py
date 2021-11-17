@@ -186,6 +186,8 @@ class AirmapRequestManager():
 		# rewind coordinates (put them in order according to right hand rule)
 		mission_airspace_rewound = rewind(mission_airspace)
 
+
+		## !!!! ADDED RULESET FOR TESTING PURPOSES !!! ##
 		payload = {
 			"pilot_id": self.pilot_id,
 			"aircraft_id": self.aircrafts[0]["id"],
@@ -197,7 +199,8 @@ class AirmapRequestManager():
 			"max_altitude_agl": max_altitude_agl,
 			"buffer": buffer,
 			"geometry": mission_airspace_rewound,
-			"flight_description": flight_description
+			"flight_description": flight_description,
+			"rulesets": ["custom_2j5oleowxdnrpf5ob6y8mnynbeu8ggqypzznzdoury5o7ld553nl_drone_rules"]
 		}
 
 		# create flight plan
@@ -205,20 +208,26 @@ class AirmapRequestManager():
 		response = requests.post(url, json = payload, headers = self.headers)
 		print(response.text)
 
-		self.flight_plan = response.json()["data"]
-
-		# submit flight plan
-		url = "https://api.airmap.com/flight/v2/plan/" + self.flight_plan["id"] + "/submit"
-		response = requests.post(url, headers = self.headers)
-		print(response.text)
-
 		if response.status_code == 200:
 
-			return response.json()["data"]["flight_id"]
+			self.flight_plan = response.json()["data"]
+
+			# submit flight plan
+			url = "https://api.airmap.com/flight/v2/plan/" + self.flight_plan["id"] + "/submit"
+			response = requests.post(url, headers = self.headers)
+			# print(response.text)
+
+			if response.status_code == 200:
+
+				return response.json()["data"]["flight_id"], True, None
+
+			else:
+
+				return None, False, response.text
 
 		else:
 
-			return None
+			return None, False, response.text
 
 
 	# get airspaces near pprz flight plan geometry
@@ -266,3 +275,45 @@ class AirmapRequestManager():
 
 
 
+
+	def get_rules_for_ruleset(self, ruleset):
+
+		print("getting rules for ruleset")
+
+		url = "https://api.airmap.com/rules/v1/rule"
+
+		querystring = {"rulesets": ruleset}
+
+		response = requests.get(url, headers=self.headers, params=querystring)
+
+		print(response.text)
+
+
+
+
+	def get_evaluation_for_flight_plan(self, fp_id):
+
+		url = "https://api.airmap.com/flight/v2/plan/" + fp_id + "/briefing"
+
+		response = requests.get(url, headers=self.headers)
+
+		print(response)
+		print(response.text)
+
+
+
+	def search_for_rulesets(self, fp_id):
+
+		url = "https://api.airmap.com/flight/v2/plan/" + fp_id
+		response = requests.get(url, headers = self.headers)
+		flight_plan = response.json()["data"]
+		
+		geometry = flight_plan["geometry"]
+
+		url = "https://api.airmap.com/rules/v1/"
+
+		payload = {'geometry': geometry}
+
+		response = requests.post(url, json=payload, headers=self.headers)
+
+		print(response.text)

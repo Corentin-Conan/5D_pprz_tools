@@ -1,6 +1,7 @@
 #!/usr/bin/python3
 
 import sys
+import re
 
 import tools
 
@@ -264,6 +265,33 @@ class UI(QtWidgets.QWidget):
 			return
 
 
+	# on submit flight plan button clicked
+	def onSubmitFlightPlan(self):
+
+		completion_status = self.check_flight_creation_completion()
+
+		# check if completion statu dict is empty, which means completion
+		if not bool(completion_status):
+
+			flight_id, submit_success, error_code = self.submit_flight_plan()
+
+			if submit_success:
+
+				tools.write_in_json("airmap.flights.json", self.flight_plan_path, flight_id)
+
+				self.clear_flight_param_window()
+
+				# update flight list to show newly created flight
+				self.update_flight_list()
+
+			else :
+
+				print(error_code)
+		else :
+
+			print(completion_status)
+
+
 
 	# ========= UI FUNCTIONS =================== #
 
@@ -341,9 +369,9 @@ class UI(QtWidgets.QWidget):
 			self.pilot_id = QtWidgets.QLabel("")
 			self.label_pprz_flight_plan = QtWidgets.QLabel("Paparazzi flight plan : ")
 			self.pprz_flight_plan = QtWidgets.QLabel("")
-			self.change_pprz_flight_plan_button = QtWidgets.QPushButton("Change PPRZ Flight Plan")
-			self.change_pprz_flight_plan_button.setFixedWidth(150)
-			self.change_pprz_flight_plan_button.clicked.connect(self.change_pprz_flight_plan)
+			# self.change_pprz_flight_plan_button = QtWidgets.QPushButton("Change PPRZ Flight Plan")
+			# self.change_pprz_flight_plan_button.setFixedWidth(150)
+			# self.change_pprz_flight_plan_button.clicked.connect(self.change_pprz_flight_plan)
 			self.label_start_time = QtWidgets.QLabel("Start time : ")
 			self.start_time = QtWidgets.QLineEdit("YYYY-MM-DDThh:mm:ss.sssZ")
 			self.label_end_time = QtWidgets.QLabel("End time : ")
@@ -366,9 +394,9 @@ class UI(QtWidgets.QWidget):
 			self.label_sorted_wps = QtWidgets.QLabel("Sorted Waypoints : ")
 			self.sorted_wps = QtWidgets.QLineEdit("")
 
-			self.compute_am_flight_plan_button = QtWidgets.QPushButton("Compute Flight Geometry")
-			self.compute_am_flight_plan_button.setFixedWidth(150)
-			self.compute_am_flight_plan_button.clicked.connect(self.compute_flight_geometry)
+			# self.compute_am_flight_plan_button = QtWidgets.QPushButton("Compute Flight Geometry")
+			# self.compute_am_flight_plan_button.setFixedWidth(150)
+			# self.compute_am_flight_plan_button.clicked.connect(self.compute_flight_geometry)
 
 			self.cancel_flight_creation_button = QtWidgets.QPushButton("Cancel Flight Creation")
 			self.cancel_flight_creation_button.setFixedWidth(150)
@@ -376,13 +404,13 @@ class UI(QtWidgets.QWidget):
 
 			self.submit_flight_plan_button = QtWidgets.QPushButton("Submit Flight Plan")
 			self.submit_flight_plan_button.setFixedWidth(150)
-			self.submit_flight_plan_button.clicked.connect(self.submit_flight_plan)
+			self.submit_flight_plan_button.clicked.connect(self.onSubmitFlightPlan)
 
 			self.mid_layout.addRow(self.label_flight_id, self.flight_id)
 			self.mid_layout.addRow(self.label_flight_plan_id, self.flight_plan_id)
 			self.mid_layout.addRow(self.label_pilot_id, self.pilot_id)
 			self.mid_layout.addRow(self.label_pprz_flight_plan, self.pprz_flight_plan)
-			self.mid_layout.addRow(self.change_pprz_flight_plan_button)
+			# self.mid_layout.addRow(self.change_pprz_flight_plan_button)
 			self.mid_layout.addRow(self.label_start_time, self.start_time)
 			self.mid_layout.addRow(self.label_end_time, self.end_time)
 			self.mid_layout.addRow(self.label_take_off_lat, self.take_off_lat)
@@ -394,7 +422,7 @@ class UI(QtWidgets.QWidget):
 
 			self.mid_layout.addRow(self.label_wps, self.wps)
 			self.mid_layout.addRow(self.label_sorted_wps, self.sorted_wps)
-			self.mid_layout.addRow(self.compute_am_flight_plan_button)
+			# self.mid_layout.addRow(self.compute_am_flight_plan_button)
 			self.mid_layout.addRow(self.cancel_flight_creation_button)
 			self.mid_layout.addRow(self.submit_flight_plan_button)
 
@@ -409,9 +437,9 @@ class UI(QtWidgets.QWidget):
 			self.pilot_id_view_mode = QtWidgets.QLabel("")
 			self.label_pprz_flight_plan_view_mode = QtWidgets.QLabel("Paparazzi flight plan : ")
 			self.pprz_flight_plan_view_mode = QtWidgets.QLabel("")
-			self.change_pprz_flight_plan_button_view_mode = QtWidgets.QPushButton("Change PPRZ Flight Plan")
-			self.change_pprz_flight_plan_button_view_mode.setFixedWidth(150)
-			self.change_pprz_flight_plan_button_view_mode.clicked.connect(self.change_pprz_flight_plan)
+			# self.change_pprz_flight_plan_button_view_mode = QtWidgets.QPushButton("Change PPRZ Flight Plan")
+			# self.change_pprz_flight_plan_button_view_mode.setFixedWidth(150)
+			# self.change_pprz_flight_plan_button_view_mode.clicked.connect(self.change_pprz_flight_plan)
 			self.label_start_time_view_mode = QtWidgets.QLabel("Start time : ")
 			self.start_time_view_mode = QtWidgets.QLabel("YYYY-MM-DDThh:mm:ss.sssZ")
 			self.label_end_time_view_mode = QtWidgets.QLabel("End time : ")
@@ -434,23 +462,28 @@ class UI(QtWidgets.QWidget):
 			self.label_sorted_wps_view_mode = QtWidgets.QLabel("Sorted Waypoints : ")
 			self.sorted_wps_view_mode = QtWidgets.QLabel("")
 
-			self.compute_am_flight_plan_button_view_mode = QtWidgets.QPushButton("Compute Flight Geometry")
-			self.compute_am_flight_plan_button_view_mode.setFixedWidth(150)
-			self.compute_am_flight_plan_button_view_mode.clicked.connect(self.compute_flight_geometry)
+			# self.compute_am_flight_plan_button_view_mode = QtWidgets.QPushButton("Compute Flight Geometry")
+			# self.compute_am_flight_plan_button_view_mode.setFixedWidth(150)
+			# self.compute_am_flight_plan_button_view_mode.clicked.connect(self.compute_flight_geometry)
+
+			self.open_fp_in_gcs_button_view_mode = QtWidgets.QPushButton("Open Flight Plan In GCS")
+			self.open_fp_in_gcs_button_view_mode.setFixedWidth(150)
+			self.open_fp_in_gcs_button_view_mode.clicked.connect(self.open_current_fp)
+
+			self.get_rules_button_view_mode = QtWidgets.QPushButton("Get Rules For Flight Plan")
+			self.get_rules_button_view_mode.setFixedWidth(150)
+			self.get_rules_button_view_mode.clicked.connect(self.get_evaluation_for_flight_plan)
 
 			self.delete_flight_button_view_mode = QtWidgets.QPushButton("Delete Flight")
 			self.delete_flight_button_view_mode.setFixedWidth(150)
 			self.delete_flight_button_view_mode.clicked.connect(self.onDeleteFlight)
 
-			self.submit_flight_plan_button_view_mode = QtWidgets.QPushButton("Submit Flight Plan")
-			self.submit_flight_plan_button_view_mode.setFixedWidth(150)
-			self.submit_flight_plan_button_view_mode.clicked.connect(self.submit_flight_plan)
-
 			self.mid_layout.addRow(self.label_flight_id_view_mode, self.flight_id_view_mode)
 			self.mid_layout.addRow(self.label_flight_plan_id_view_mode, self.flight_plan_id_view_mode)
 			self.mid_layout.addRow(self.label_pilot_id_view_mode, self.pilot_id_view_mode)
 			self.mid_layout.addRow(self.label_pprz_flight_plan_view_mode, self.pprz_flight_plan_view_mode)
-			self.mid_layout.addRow(self.change_pprz_flight_plan_button_view_mode)
+			# self.mid_layout.addRow(self.change_pprz_flight_plan_button_view_mode)
+			self.mid_layout.addRow(self.open_fp_in_gcs_button_view_mode)
 			self.mid_layout.addRow(self.label_start_time_view_mode, self.start_time_view_mode)
 			self.mid_layout.addRow(self.label_end_time_view_mode, self.end_time_view_mode)
 			self.mid_layout.addRow(self.label_take_off_lat_view_mode, self.take_off_lat_view_mode)
@@ -462,9 +495,9 @@ class UI(QtWidgets.QWidget):
 
 			self.mid_layout.addRow(self.label_wps_view_mode, self.wps_view_mode)
 			self.mid_layout.addRow(self.label_sorted_wps_view_mode, self.sorted_wps_view_mode)
-			self.mid_layout.addRow(self.compute_am_flight_plan_button_view_mode)
+			# self.mid_layout.addRow(self.compute_am_flight_plan_button_view_mode)
+			self.mid_layout.addRow(self.get_rules_button_view_mode)
 			self.mid_layout.addRow(self.delete_flight_button_view_mode)
-			self.mid_layout.addRow(self.submit_flight_plan_button_view_mode)
 
 
 
@@ -561,6 +594,8 @@ class UI(QtWidgets.QWidget):
 			"/home/corentin/paparazzi/conf/flight_plans", "XML Files (*.xml)")[0]
 		print(self.flight_plan_path)
 
+		self.pprz_flight_plan.setText(flight_plan_path)
+
 		if flight_plan_path == None:
 			return None
 
@@ -592,62 +627,29 @@ class UI(QtWidgets.QWidget):
 
 
 
+	def check_flight_creation_completion(self):
 
-# former stuff ============================================== #
+		completion_status = {}
+
+		# check all fields against regexps
+		# self.end_time // "YYYY-MM-DDThh:mm:ss.sssZ" ou "YYYY-MM-DDThh:mm:ssZ"
+		# self.min_alt_agl // [0-9]+\.?[0-9]*
+		# self.max_alt_agl // [0-9]+\.?[0-9]*
+		# self.buffer // [0-9]+\.?[0-9]*
+		# self.flight_description // .*
+
+		iso_date_time_regex = re.compile("^[0-9]{4}-[0-9]{2}-[0-9]{2}T[0-9]{2}:[0-9]{2}:[0-9]{2}(\\.[0-9]{3})?Z")
+
+		# self.start_time // "YYYY-MM-DDThh:mm:ss.sssZ" ou "YYYY-MM-DDThh:mm:ssZ"
+		if self.start_time.text() == "":
+			completion_status["start_time"] = "empty"
+		elif not iso_date_time_regex.match(self.start_time.text()):
+			print("\nSTART TIME DOES NOT MATCH REGEX")
+			completion_status["start_time"] = "bad format ; please match YYYY-MM-DDThh:mm:ss.sssZ or YYYY-MM-DDThh:mm:ssZ format"
 
 
-	# on change pprz flight plan button clicked
-	def change_pprz_flight_plan(self):
+		return completion_status
 
-		self.flight_plan_path = QtWidgets.QFileDialog.getOpenFileName(self, "Select flight plan",
-			"/home/corentin/paparazzi/conf/flight_plans", "XML Files (*.xml)")
-		print(self.flight_plan_path)
-
-		self.pprz_flight_plan.setText(self.flight_plan_path)
-
-
-	# on compute flight geometry button clicked
-	def compute_flight_geometry(self):
-
-		self.pprz_request_manager.get_lat_lon_of_waypoints(self.pprz_fp_info["waypoints"], self.pprz_fp_info["lat0"], self.pprz_fp_info["lon0"])
-
-		self.pprz_request_manager.compute_airmap_flight_plan_geometry(self.pprz_fp_info["waypoints"] ,self.sorted_wps.text())
-
-
-	# on create new flight button clicked
-	def create_new_flight(self):
-
-		print("\nCreate new flight")
-		self.flight_plan_path = QtWidgets.QFileDialog.getOpenFileName(self, "Select flight plan",
-			"/home/corentin/paparazzi/conf/flight_plans", "XML Files (*.xml)")[0]
-		print(self.flight_plan_path)
-
-		if self.flight_plan_path == None:
-
-			return
-
-		self.mid_group_box.setEnabled(True)
-
-		self.pprz_flight_plan.setText(self.flight_plan_path)
-		self.flight_id.setText("")
-		self.flight_plan_id.setText("")
-		self.pilot_id.setText("")
-		self.start_time.setText("YYYY-MM-DDThh:mm:ss.sssZ")
-		self.end_time.setText("YYYY-MM-DDThh:mm:ss.sssZ")
-		self.take_off_lat.setText("")
-		self.take_off_lon.setText("")
-		self.max_alt_agl.setText("")
-		self.buffer.setText("")
-		self.flight_description.setText("")
-
-		self.pprz_fp_info = self.pprz_request_manager.open_and_parse(self.flight_plan_path[0])
-		print(self.pprz_fp_info)
-
-		self.take_off_lon.setText(self.pprz_fp_info["lon0"])
-		self.take_off_lat.setText(self.pprz_fp_info["lat0"])
-		self.max_alt_agl.setText(self.pprz_fp_info["alt"])
-		self.wps.setText(str([wp.name for wp in self.pprz_fp_info["waypoints"] if wp.name[0] != "_"]))
-		self.sorted_wps.setText(str([wp.name for wp in self.pprz_fp_info["waypoints"] if wp.name[0] != "_"]))
 
 
 	# on submit flight plan button clicked
@@ -657,19 +659,39 @@ class UI(QtWidgets.QWidget):
 
 		buffer = self.pprz_request_manager.compute_airmap_flight_plan_geometry(self.pprz_fp_info["waypoints"] ,self.sorted_wps.text())
 
-		flight_id = self.airmap_request_manager.create_flight_plan(None, None,
+		flight_id, success, error_code = self.airmap_request_manager.create_flight_plan(None, None,
 			self.start_time.text(), self.end_time.text(), None, None,
 			self.min_alt_agl.text(), self.max_alt_agl.text(), self.buffer.text(),
 			buffer, self.flight_description.text())
 
-		print("OTHER FP PATH : " + str(self.flight_plan_path))
+		# print("OTHER FP PATH : " + str(self.flight_plan_path))
 
 		# write association of flight id and pprz flight plan in json file
-		if flight_id is not None:
-			tools.write_in_json("airmap.flights.json", self.flight_plan_path, flight_id)
+		# if success:
+		# 	tools.write_in_json("airmap.flights.json", self.flight_plan_path, flight_id)
 		
-		# update flight list to show newly created flight
-		self.update_flight_list()
+		return flight_id, success, error_code
+
+
+
+	def compute_flight_geometry(self):
+
+		self.pprz_request_manager.get_lat_lon_of_waypoints(self.pprz_fp_info["waypoints"], self.pprz_fp_info["lat0"], self.pprz_fp_info["lon0"])
+
+		self.pprz_request_manager.compute_airmap_flight_plan_geometry(self.pprz_fp_info["waypoints"] ,self.sorted_wps.text())
+
+
+
+	# on change pprz flight plan button clicked
+	# not used ?? #
+	def change_pprz_flight_plan(self):
+
+		self.flight_plan_path = QtWidgets.QFileDialog.getOpenFileName(self, "Select flight plan",
+			"/home/corentin/paparazzi/conf/flight_plans", "XML Files (*.xml)")
+		print(self.flight_plan_path)
+
+		self.pprz_flight_plan.setText(self.flight_plan_path)
+
 
 
 	# on delete flight button clicked
@@ -684,6 +706,7 @@ class UI(QtWidgets.QWidget):
 		self.update_flight_list()
 
 
+
 	# on get airspaces button clicked
 	def get_airspaces(self):
 
@@ -693,9 +716,10 @@ class UI(QtWidgets.QWidget):
 		
 		airspace_type_widgets = self.airmap_request_manager.get_airspaces_in_geometry(mission_geometry)
 		
-		self.pprz_request_manager.show_airspaces_on_gcs(airspace_type_widgets)
+		# self.pprz_request_manager.show_airspaces_on_gcs(airspace_type_widgets)
 		
 		self.show_airspaces_in_airspace_list(airspace_type_widgets)
+
 
 
 	# called on get airspace
@@ -708,9 +732,28 @@ class UI(QtWidgets.QWidget):
 			item = QtWidgets.QListWidgetItem(self.displayed_airspace_list)
 			self.displayed_airspace_list.addItem(item)
 			item.setSizeHint(airspace_type_widget.minimumSizeHint())
+			item.setFlags(item.flags() & ~QtCore.Qt.ItemIsSelectable)
 
 			self.displayed_airspace_list.setItemWidget(item, airspace_type_widget)
 
 
 
+	def open_current_fp(self):
 
+		self.pprz_request_manager.open_current_fp(self.pprz_flight_plan_view_mode.text())
+
+
+
+	def get_evaluation_for_flight_plan(self):
+
+		fp_id = self.flight_plan_id_view_mode.text()
+
+		self.airmap_request_manager.get_evaluation_for_flight_plan(fp_id)
+
+
+	## not used // replaced by get_evaluation_for_flight_plan ##
+	def search_for_rulesets(self):
+
+		fp_id = self.flight_plan_id_view_mode.text()
+
+		self.airmap_request_manager.search_for_rulesets(fp_id)

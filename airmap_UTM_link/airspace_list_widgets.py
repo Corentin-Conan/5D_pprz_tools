@@ -24,6 +24,30 @@ class AirspaceWidget(QtWidgets.QWidget):
 		self.checkbox = QtWidgets.QCheckBox(self.name)
 		self.main_layout.addWidget(self.checkbox)
 		
+		self.checkbox.stateChanged.connect(self.show_or_del_shape)
+		# self.checkbox.stateChanged.connect(self.print_rules)
+
+
+	def show_or_del_shape(self):
+
+		# TODO get ui cleaner way
+		ui = self.parent().parent().parent().parent().parent().parent().parent().parent()
+
+		pprz_req_manager = ui.pprz_request_manager
+
+		pprz_req_manager.show_airspace_on_gcs(self)
+
+
+	# # for testing purposes, to rework
+	# def print_rules(self):
+
+	# 	ui = self.parent().parent().parent().parent().parent().parent().parent().parent()
+
+	# 	airmap_request_manager = ui.airmap_request_manager
+
+	# 	# airmap_request_manager.get_rules_for_ruleset("5D AeroSafe")
+
+
 
 
 class AirspaceTypeWidget(QtWidgets.QWidget):
@@ -51,6 +75,8 @@ class AirspaceTypeWidget(QtWidgets.QWidget):
 		self.main_chkbox = QtWidgets.QCheckBox("")
 		self.main_layout.addRow(self.label_type, self.main_chkbox)
 
+		self.main_chkbox.stateChanged.connect(self.state_changed)
+
 		self.main_box = QtWidgets.QGroupBox()
 		self.main_layout.addRow(self.main_box)
 		self.layout = QtWidgets.QVBoxLayout(self.main_box)
@@ -68,3 +94,16 @@ class AirspaceTypeWidget(QtWidgets.QWidget):
 
 
 
+	def state_changed(self, int):
+
+		if self.main_chkbox.isChecked():
+
+			for child in self.children:
+
+				child.checkbox.setChecked(True)
+
+		else:
+
+			for child in self.children:
+
+				child.checkbox.setChecked(False)
