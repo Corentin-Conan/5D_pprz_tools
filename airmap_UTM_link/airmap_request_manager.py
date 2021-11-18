@@ -212,8 +212,18 @@ class AirmapRequestManager():
 
 			self.flight_plan = response.json()["data"]
 
+			return self.flight_plan["id"], True, None
+
+		else:
+
+			return None, False, response.text
+
+
+
+	def submit_flight_plan(self, fp_id):
+
 			# submit flight plan
-			url = "https://api.airmap.com/flight/v2/plan/" + self.flight_plan["id"] + "/submit"
+			url = "https://api.airmap.com/flight/v2/plan/" + fp_id + "/submit"
 			response = requests.post(url, headers = self.headers)
 			# print(response.text)
 
@@ -225,9 +235,6 @@ class AirmapRequestManager():
 
 				return None, False, response.text
 
-		else:
-
-			return None, False, response.text
 
 
 	# get airspaces near pprz flight plan geometry
@@ -299,6 +306,8 @@ class AirmapRequestManager():
 
 		print(response)
 		print(response.text)
+
+		return(response)
 
 
 

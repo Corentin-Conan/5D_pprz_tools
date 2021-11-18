@@ -27,6 +27,7 @@ class UI(QtWidgets.QWidget):
 		self.flight_selected = None
 		self.flight_plan_path = None
 		self.pprz_fp_info = None
+		self.fp_id = None
 
 		# UI creation
 		self.setWindowTitle("Airmap Information Manager")
@@ -248,6 +249,44 @@ class UI(QtWidgets.QWidget):
 		self.fill_flight_param_window_from_ppz_flight_plan(self.pprz_fp_info)
 
 
+	def onCreateFlightPlan(self):
+
+		completion_status = self.check_flight_creation_completion()
+
+		# check if completion statu dict is empty, which means completion
+		if not bool(completion_status):
+
+			fp_id, success, error_code = self.create_flight_plan()
+
+			if success:
+
+				self.fp_id = fp_id
+
+				# keeps the fp params but switches from text edits to labels
+				self.switch_from_edit_to_view()
+
+				rules = self.airmap_request_manager.get_evaluation_for_flight_plan(fp_id)
+
+				# TO IMPLEMENT #
+				self.display_rules(rules)
+
+				# patch flight plan according to rules
+
+				# now allow flight plan submission
+
+				# END TO IMPLEMENT #
+
+			else:
+
+				# manage errors here
+				print(error_code)
+				return
+
+		else :
+
+			print(completion_status)
+
+
 	# on cancel flight creation button pressed
 	def onCancelFlightCreation(self):
 
@@ -268,28 +307,20 @@ class UI(QtWidgets.QWidget):
 	# on submit flight plan button clicked
 	def onSubmitFlightPlan(self):
 
-		completion_status = self.check_flight_creation_completion()
+		flight_id, submit_success, error_code = self.submit_flight_plan(self.fp_id)
 
-		# check if completion statu dict is empty, which means completion
-		if not bool(completion_status):
+		if submit_success:
 
-			flight_id, submit_success, error_code = self.submit_flight_plan()
+			tools.write_in_json("airmap.flights.json", self.flight_plan_path, flight_id)
 
-			if submit_success:
+			self.clear_flight_param_window()
 
-				tools.write_in_json("airmap.flights.json", self.flight_plan_path, flight_id)
+			# update flight list to show newly created flight
+			self.update_flight_list()
 
-				self.clear_flight_param_window()
-
-				# update flight list to show newly created flight
-				self.update_flight_list()
-
-			else :
-
-				print(error_code)
 		else :
 
-			print(completion_status)
+			print(error_code)
 
 
 
@@ -352,6 +383,43 @@ class UI(QtWidgets.QWidget):
 
 
 
+	def switch_from_edit_to_view(self):
+
+			# get current information
+			flight_plan_id = self.fp_id
+			pilot_id = self.airmap_request_manager.pilot_id
+			start_time = self.start_time.text()
+			end_time = self.end_time.text()
+			take_off_lat = self.take_off_lat.text()
+			take_off_lon = self.take_off_lon.text()
+			min_alt_agl = self.min_alt_agl.text()
+			max_alt_agl = self.max_alt_agl.text()
+			buffer = self.buffer.text()
+			flight_description = self.flight_description.text()
+			flight_plan_path = self.pprz_flight_plan.text()
+			wps = self.wps.text()
+			sorted_wps = self.sorted_wps.text()
+
+			self.enable_flight_param_window(edit = False)
+			self.delete_flight_button_view_mode.setEnabled(False)
+			
+			self.flight_id_view_mode.setText("Flight plan not submitted yet")
+			self.flight_plan_id_view_mode.setText(flight_plan_id)
+			self.pilot_id_view_mode.setText(pilot_id)
+			self.start_time_view_mode.setText(start_time)
+			self.end_time_view_mode.setText(end_time)
+			self.take_off_lat_view_mode.setText(str(take_off_lat))
+			self.take_off_lon_view_mode.setText(str(take_off_lon))
+			self.min_alt_agl_view_mode.setText(str(min_alt_agl))
+			self.max_alt_agl_view_mode.setText(str(max_alt_agl))
+			self.buffer_view_mode.setText(str(buffer))
+			self.flight_description_view_mode.setText(flight_description)
+			self.pprz_flight_plan_view_mode.setText(flight_plan_path)
+			self.wps_view_mode.setText(str(wps))
+			self.sorted_wps_view_mode.setText(str(wps))
+
+
+
 	def enable_flight_param_window(self, edit = True):
 
 		self.mid_group_box.setEnabled(True)
@@ -402,9 +470,9 @@ class UI(QtWidgets.QWidget):
 			self.cancel_flight_creation_button.setFixedWidth(150)
 			self.cancel_flight_creation_button.clicked.connect(self.onCancelFlightCreation)
 
-			self.submit_flight_plan_button = QtWidgets.QPushButton("Submit Flight Plan")
-			self.submit_flight_plan_button.setFixedWidth(150)
-			self.submit_flight_plan_button.clicked.connect(self.onSubmitFlightPlan)
+			self.create_flight_plan_button = QtWidgets.QPushButton("Create Flight Plan")
+			self.create_flight_plan_button.setFixedWidth(150)
+			self.create_flight_plan_button.clicked.connect(self.onCreateFlightPlan)
 
 			self.mid_layout.addRow(self.label_flight_id, self.flight_id)
 			self.mid_layout.addRow(self.label_flight_plan_id, self.flight_plan_id)
@@ -424,7 +492,7 @@ class UI(QtWidgets.QWidget):
 			self.mid_layout.addRow(self.label_sorted_wps, self.sorted_wps)
 			# self.mid_layout.addRow(self.compute_am_flight_plan_button)
 			self.mid_layout.addRow(self.cancel_flight_creation_button)
-			self.mid_layout.addRow(self.submit_flight_plan_button)
+			self.mid_layout.addRow(self.create_flight_plan_button)
 
 		else:
 
@@ -470,13 +538,13 @@ class UI(QtWidgets.QWidget):
 			self.open_fp_in_gcs_button_view_mode.setFixedWidth(150)
 			self.open_fp_in_gcs_button_view_mode.clicked.connect(self.open_current_fp)
 
-			self.get_rules_button_view_mode = QtWidgets.QPushButton("Get Rules For Flight Plan")
-			self.get_rules_button_view_mode.setFixedWidth(150)
-			self.get_rules_button_view_mode.clicked.connect(self.get_evaluation_for_flight_plan)
-
 			self.delete_flight_button_view_mode = QtWidgets.QPushButton("Delete Flight")
 			self.delete_flight_button_view_mode.setFixedWidth(150)
 			self.delete_flight_button_view_mode.clicked.connect(self.onDeleteFlight)
+
+			self.submit_flight_plan_button = QtWidgets.QPushButton("Submit Flight Plan")
+			self.submit_flight_plan_button.setFixedWidth(150)
+			self.submit_flight_plan_button.clicked.connect(self.onSubmitFlightPlan)
 
 			self.mid_layout.addRow(self.label_flight_id_view_mode, self.flight_id_view_mode)
 			self.mid_layout.addRow(self.label_flight_plan_id_view_mode, self.flight_plan_id_view_mode)
@@ -496,8 +564,8 @@ class UI(QtWidgets.QWidget):
 			self.mid_layout.addRow(self.label_wps_view_mode, self.wps_view_mode)
 			self.mid_layout.addRow(self.label_sorted_wps_view_mode, self.sorted_wps_view_mode)
 			# self.mid_layout.addRow(self.compute_am_flight_plan_button_view_mode)
-			self.mid_layout.addRow(self.get_rules_button_view_mode)
 			self.mid_layout.addRow(self.delete_flight_button_view_mode)
+			self.mid_layout.addRow(self.submit_flight_plan_button)
 
 
 
@@ -651,24 +719,25 @@ class UI(QtWidgets.QWidget):
 		return completion_status
 
 
-
-	# on submit flight plan button clicked
-	def submit_flight_plan(self):
+	# on create flight plan button clicked
+	def create_flight_plan(self):
 
 		self.compute_flight_geometry()
 
 		buffer = self.pprz_request_manager.compute_airmap_flight_plan_geometry(self.pprz_fp_info["waypoints"] ,self.sorted_wps.text())
 
-		flight_id, success, error_code = self.airmap_request_manager.create_flight_plan(None, None,
+		fp_id, success, error_code = self.airmap_request_manager.create_flight_plan(None, None,
 			self.start_time.text(), self.end_time.text(), None, None,
 			self.min_alt_agl.text(), self.max_alt_agl.text(), self.buffer.text(),
 			buffer, self.flight_description.text())
 
-		# print("OTHER FP PATH : " + str(self.flight_plan_path))
+		return fp_id, success, error_code
 
-		# write association of flight id and pprz flight plan in json file
-		# if success:
-		# 	tools.write_in_json("airmap.flights.json", self.flight_plan_path, flight_id)
+
+	# on submit flight plan button clicked
+	def submit_flight_plan(self, fp_id):
+
+		flight_id, success, error_code = self.airmap_request_manager.submit_flight_plan(fp_id)
 		
 		return flight_id, success, error_code
 
@@ -757,3 +826,15 @@ class UI(QtWidgets.QWidget):
 		fp_id = self.flight_plan_id_view_mode.text()
 
 		self.airmap_request_manager.search_for_rulesets(fp_id)
+
+
+
+	def display_rules(self, rules):
+
+		advisories = rules.json()["data"]["airspace"]["advisories"]
+
+		for adv in advisories:
+
+			print("\n")
+			print(adv)
+

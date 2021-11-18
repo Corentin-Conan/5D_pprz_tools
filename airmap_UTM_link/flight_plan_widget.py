@@ -12,7 +12,10 @@ class FlightPlanWidget(QtWidgets.QWidget):
 		super().__init__()
 
 		# flight plan params
-		self.flight_id = flight["id"]
+		try :
+			self.flight_id = flight["id"]
+		except KeyError:
+			self.flight_id = None
 		self.flight_plan_id = flight["flight_plan_id"]
 		self.pilot_id = flight["pilot_id"]
 		self.lat = flight["latitude"]
