@@ -60,7 +60,7 @@ def trial1_1_1_init():
 	def move_wp(wp_id, coord):
 		msg_mv_wp = PprzMessage("datalink", "MOVE_WP")
 		msg_mv_wp["wp_id"] = wp_id
-		msg_mv_wp["ac_id"] = 41
+		msg_mv_wp["ac_id"] = 4
 		msg_mv_wp["lon"] = int(coord[0] * 10000000)
 		msg_mv_wp["lat"] = int(coord[1] * 10000000)
 		msg_mv_wp["alt"] = 150000

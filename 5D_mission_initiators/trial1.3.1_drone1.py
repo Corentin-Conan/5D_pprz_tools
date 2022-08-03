@@ -55,7 +55,11 @@ def trial1_2_1_init():
 	# called when pprz is running
 	def update_config(config):
 
-		if int(config.id) == 4:
+		print("update_config")
+
+		if int(config.id) == 102:
+
+			print("config id found")
 
 			# get flight plan
 			flight_plan = FlightPlan.parse(config.flight_plan)
@@ -77,7 +81,7 @@ def trial1_2_1_init():
 	def move_wp(wp_id, coord):
 		msg_mv_wp = PprzMessage("datalink", "MOVE_WP")
 		msg_mv_wp["wp_id"] = wp_id
-		msg_mv_wp["ac_id"] = 4
+		msg_mv_wp["ac_id"] = 102
 		msg_mv_wp["lon"] = int(coord[0] * 10000000)
 		msg_mv_wp["lat"] = int(coord[1] * 10000000)
 		msg_mv_wp["alt"] = 150000
@@ -108,7 +112,7 @@ def trial1_2_1_init():
 	# function meant to update wp in different sector lists to get their lon and lat
 	def update_wp_list(msg_id, msg):
 
-		if int(msg.ac_id) == 4:
+		if int(msg.ac_id) == 102:
 
 			wp = Waypoint(None, None, None, msg["lat"], msg["long"], msg["alt"], msg["ground_alt"], msg["wp_id"])
 
@@ -215,18 +219,18 @@ def trial1_2_1_init():
 				show_shape_on_gcs(buffer_sect_3_cont_coords, 6, "blue")
 
 				# sect 4
-				line_sect_4 = shapely.geometry.LineString([(float(wp.lon), float(wp.lat)) for wp in sorted_sect_4_wp])
-				buffer_sect_4_cont = line_sect_4.buffer(0.0003, resolution = 1, cap_style = 1, join_style = 1)
-				buffer_sect_4_emer = line_sect_4.buffer(0.001, resolution = 1, cap_style = 1, join_style = 1)
+				# line_sect_4 = shapely.geometry.LineString([(float(wp.lon), float(wp.lat)) for wp in sorted_sect_4_wp])
+				# buffer_sect_4_cont = line_sect_4.buffer(0.0003, resolution = 1, cap_style = 1, join_style = 1)
+				# buffer_sect_4_emer = line_sect_4.buffer(0.001, resolution = 1, cap_style = 1, join_style = 1)
 
-				buffer_sect_4_cont_coords = list(buffer_sect_4_cont.exterior.coords)
-				buffer_sect_4_emer_coords = list(buffer_sect_4_emer.exterior.coords)
+				# buffer_sect_4_cont_coords = list(buffer_sect_4_cont.exterior.coords)
+				# buffer_sect_4_emer_coords = list(buffer_sect_4_emer.exterior.coords)
 
-				print("sect 4 cont : " + str(buffer_sect_4_cont_coords))
-				print("sect 4 emer : " + str(buffer_sect_4_emer_coords))
+				# print("sect 4 cont : " + str(buffer_sect_4_cont_coords))
+				# print("sect 4 emer : " + str(buffer_sect_4_emer_coords))
 
-				show_shape_on_gcs(buffer_sect_4_emer_coords, 7, "red")
-				show_shape_on_gcs(buffer_sect_4_cont_coords, 8, "blue")
+				# show_shape_on_gcs(buffer_sect_4_emer_coords, 7, "red")
+				# show_shape_on_gcs(buffer_sect_4_cont_coords, 8, "blue")
 
 				id = 29
 
@@ -260,15 +264,15 @@ def trial1_2_1_init():
 					id += 1
 					time.sleep(0.1)
 
-				for coord in buffer_sect_4_cont_coords[0:-1]:
-					move_wp(id, coord)
-					id += 1
-					time.sleep(0.1)
+				# for coord in buffer_sect_4_cont_coords[0:-1]:
+				# 	move_wp(id, coord)
+				# 	id += 1
+				# 	time.sleep(0.1)
 
-				for coord in buffer_sect_4_emer_coords[0:-1]:
-					move_wp(id, coord)
-					id += 1
-					time.sleep(0.1)
+				# for coord in buffer_sect_4_emer_coords[0:-1]:
+				# 	move_wp(id, coord)
+				# 	id += 1
+				# 	time.sleep(0.1)
 
 				print("UNSUBSCRIBE !!!")
 				interface.unsubscribe_all()

@@ -56,28 +56,30 @@ def trial1_2_1_init():
 	# called when pprz is running
 	def update_config(config):
 
-		# get flight plan
-		flight_plan = FlightPlan.parse(config.flight_plan)
+		if int(config.id) == 103:
 
-		# get flight plan and define params for the operation (eg the waypoint for the diff sectors)
-		wp_list = flight_plan.waypoints
+			# get flight plan
+			flight_plan = FlightPlan.parse(config.flight_plan)
 
-		for wp in wp_list:
-			print(wp.name)
-			if wp.name in sect_1_wp_names:
-				sect_1_wp.append(wp)
-			if wp.name in sect_2_wp_names:
-				sect_2_wp.append(wp)
-			if wp.name in sect_3_wp_names:
-				sect_3_wp.append(wp)
-			if wp.name in sect_4_wp_names:
-				sect_4_wp.append(wp)
+			# get flight plan and define params for the operation (eg the waypoint for the diff sectors)
+			wp_list = flight_plan.waypoints
+
+			for wp in wp_list:
+				print(wp.name)
+				if wp.name in sect_1_wp_names:
+					sect_1_wp.append(wp)
+				if wp.name in sect_2_wp_names:
+					sect_2_wp.append(wp)
+				if wp.name in sect_3_wp_names:
+					sect_3_wp.append(wp)
+				if wp.name in sect_4_wp_names:
+					sect_4_wp.append(wp)
 
 
 	def move_wp(wp_id, coord):
 		msg_mv_wp = PprzMessage("datalink", "MOVE_WP")
 		msg_mv_wp["wp_id"] = wp_id
-		msg_mv_wp["ac_id"] = 43
+		msg_mv_wp["ac_id"] = 103
 		msg_mv_wp["lon"] = int(coord[0] * 10000000)
 		msg_mv_wp["lat"] = int(coord[1] * 10000000)
 		msg_mv_wp["alt"] = 150000
