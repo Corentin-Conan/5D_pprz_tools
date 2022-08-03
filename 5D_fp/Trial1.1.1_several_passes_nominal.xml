@@ -1,0 +1,126 @@
+<?xml version="1.0"?>
+<!DOCTYPE flight_plan SYSTEM "flight_plan.dtd">
+<flight_plan alt="5" ground_alt="0" lat0="51 28 04" lon0="0 29 21 W" max_dist_from_home="1200" name="Rotorcraft Basic (Enac)" security_height="2" wp_frame="LTP">
+  <header>
+#include "autopilot.h"
+</header>
+  <waypoints>
+    <waypoint name="HOME" x="0.0" y="0.0"/>
+    <waypoint alt="5" name="CLIMB" x="0" y="0"/>
+    <waypoint alt="5" name="STDBY" x="0" y="0"/>
+    <waypoint alt="5" name="stand_1" x="2.04" y="133.625"/>
+    <waypoint alt="5" name="stand_2" x="267.273" y="133.373"/>
+    <waypoint alt="5" name="stand_3" x="267.149" y="117.313"/>
+    <waypoint alt="5" name="stand_4" x="21.634" y="116.806"/>
+    <waypoint alt="5" name="stand_5" x="21.519" y="96.37"/>
+    <waypoint alt="5" name="stand_6" x="267.952" y="98.447"/>
+    <waypoint alt="5" name="stand_7" x="268.631" y="81.166"/>
+    <waypoint alt="5" name="stand_8" x="115.491" y="81.772"/>
+    <waypoint name="stand_9" x="115.891" y="13.043"/>
+    <waypoint alt="5" name="tax_1" x="116.153" y="-9.58"/>
+    <waypoint alt="5" name="tax_2" x="668.8" y="-6.991"/>
+    <waypoint alt="5" name="tax_3" x="670.375" y="-33.658"/>
+    <waypoint name="tax_4" x="116.031" y="-38.156"/>
+    <waypoint name="tax_5" x="116.38" y="-65.812"/>
+    <waypoint alt="5" name="tax_6" x="669.663" y="-63.591"/>
+    <waypoint alt="5" name="tax_7" x="670.771" y="-91.503"/>
+    <waypoint name="tax_8" x="116.536" y="-93.018"/>
+    <waypoint name="TD" x="0" y="0"/>
+  </waypoints>
+  <blocks>
+    <block name="Wait GPS">
+      <call_once fun="NavKillThrottle()"/>
+      <while cond="!GpsFixValid()"/>
+    </block>
+    <block name="Geo init">
+      <while cond="LessThan(NavBlockTime(), 10)"/>
+      <call_once fun="NavSetGroundReferenceHere()"/>
+    </block>
+    <block name="Holding point">
+      <call_once fun="NavKillThrottle()"/>
+      <attitude pitch="0" roll="0" throttle="0" until="FALSE" vmode="throttle"/>
+    </block>
+    <block name="Start Engine">
+      <call_once fun="NavResurrect()"/>
+      <attitude pitch="0" roll="0" throttle="0" until="FALSE" vmode="throttle"/>
+    </block>
+    <block name="Takeoff" strip_button="Takeoff" strip_icon="takeoff.png">
+      <exception cond="stateGetPositionEnu_f() @DEREF z @GT 2.0" deroute="Standby"/>
+      <call_once fun="NavSetWaypointHere(WP_CLIMB)"/>
+      <stay climb="nav_climb_vspeed" vmode="climb" wp="CLIMB"/>
+    </block>
+    <block name="Standby" strip_button="Standby" strip_icon="home.png">
+      <stay wp="STDBY"/>
+    </block>
+    <block name="go_to_stand_1">
+      <call_once fun="guidance_h_SetMaxSpeed(5)"/>
+      <go wp="stand_1"/>
+    </block>
+    <block name="go_to_stand_2">
+      <go wp="stand_2"/>
+    </block>
+    <block name="go_to_stand_3">
+      <go wp="stand_3"/>
+    </block>
+    <block name="go_to_stand_4">
+      <go wp="stand_4"/>
+    </block>
+    <block name="go_to_stand_5">
+      <go wp="stand_5"/>
+    </block>
+    <block name="go_to_stand_6">
+      <go wp="stand_6"/>
+    </block>
+    <block name="go_to_stand_7">
+      <go wp="stand_7"/>
+    </block>
+    <block name="go_to_stand_8">
+      <go wp="stand_8"/>
+    </block>
+    <block name="go_to_stand_9">
+      <go wp="stand_9"/>
+    </block>
+    <block name="go_to_tax_1">
+      <go wp="tax_1"/>
+    </block>
+    <block name="go_to_tax_2">
+      <go wp="tax_2"/>
+    </block>
+    <block name="go_to_tax_3">
+      <go wp="tax_3"/>
+    </block>
+    <block name="go_to_tax_4">
+      <go wp="tax_4"/>
+    </block>
+    <block name="go_to_tax_5">
+      <go wp="tax_5"/>
+    </block>
+    <block name="go_to_tax_6">
+      <go wp="tax_6"/>
+    </block>
+    <block name="go_to_tax_7">
+      <go wp="tax_7"/>
+    </block>
+    <block name="go_to_tax_8">
+      <go wp="tax_8"/>
+    </block>
+    <block name="go_to_TD">
+      <go wp="TD"/>
+    </block>
+    <block name="land here" strip_button="Land Here" strip_icon="land-right.png">
+      <call_once fun="NavSetWaypointHere(WP_TD)"/>
+    </block>
+    <block name="land">
+      <go wp="TD"/>
+    </block>
+    <block name="flare">
+      <exception cond="NavDetectGround()" deroute="Holding point"/>
+      <exception cond="!nav_is_in_flight()" deroute="landed"/>
+      <call_once fun="NavStartDetectGround()"/>
+      <stay climb="nav_descend_vspeed" vmode="climb" wp="TD"/>
+    </block>
+    <block name="landed">
+      <attitude pitch="0" roll="0" throttle="0" until="FALSE" vmode="throttle"/>
+    </block>
+  </blocks>
+</flight_plan>

@@ -1,0 +1,198 @@
+<?xml version="1.0"?>
+<!DOCTYPE flight_plan SYSTEM "flight_plan.dtd">
+<flight_plan alt="152" ground_alt="147" lat0="39 37 59.2 N" lon0="19 54 34.9 E" max_dist_from_home="15000" name="Rotorcraft Basic (Enac)" security_height="2">
+  <header>
+#include "autopilot.h"
+</header>
+  <waypoints>
+    <waypoint name="HOME" x="0" y="0"/>
+    <waypoint name="CLIMB" x="0" y="0"/>
+    <waypoint name="STDBY" x="0" y="0"/>
+    <waypoint name="ENTRY WW2" x="-100.9" y="358.7"/>
+    <waypoint name="OUT WW2" x="593.3" y="-11.9"/>
+    <waypoint name="ENTRY WW1" x="481.9" y="-120.2"/>
+    <waypoint name="OUT WW1" x="1230.2" y="23.3"/>
+    <waypoint name="ENTRY WW3" x="1305.9" y="356.1"/>
+    <waypoint name="OUT WW3" x="553.1" y="622.5"/>
+    <waypoint name="LAND" x="0" y="0"/>
+    <waypoint name="EMER_LAND_1" x="0" y="0"/>
+    <waypoint name="EMER_LAND_2" x="803.775" y="830.385"/>
+    <waypoint name="TD" x="0" y="0"/>
+    <waypoint name="_CONT_1_1" x="624.9" y="456.5"/>
+    <waypoint name="_CONT_1_2" x="624.9" y="456.5"/>
+    <waypoint name="_CONT_1_3" x="624.9" y="456.5"/>
+    <waypoint name="_CONT_1_4" x="624.9" y="456.5"/>
+    <waypoint name="_CONT_1_5" x="624.9" y="456.5"/>
+    <waypoint name="_CONT_1_6" x="624.9" y="456.5"/>
+    <waypoint name="_CONT_1_7" x="624.9" y="456.5"/>
+    <waypoint name="_CONT_1_8" x="624.9" y="456.5"/>
+    <waypoint name="_CONT_1_9" x="624.9" y="456.5"/>
+    <waypoint name="_CONT_1_10" x="624.9" y="456.5"/>
+    <waypoint name="_CONT_1_11" x="624.9" y="456.5"/>
+    <waypoint name="_CONT_1_12" x="624.9" y="456.5"/>
+    <waypoint name="_CONT_1_13" x="624.9" y="456.5"/>
+    <waypoint name="_CONT_1_14" x="624.9" y="456.5"/>
+    <waypoint name="_CONT_1_15" x="624.9" y="456.5"/>
+    <waypoint name="_CONT_1_16" x="624.9" y="456.5"/>
+    <waypoint name="_CONT_1_17" x="624.9" y="456.5"/>
+    <waypoint name="_CONT_1_18" x="624.9" y="456.5"/>
+    <waypoint name="_CONT_1_19" x="624.9" y="456.5"/>
+    <waypoint name="_CONT_1_20" x="624.9" y="456.5"/>
+    <waypoint name="_CONT_1_21" x="624.9" y="456.5"/>
+    <waypoint name="_EMER_1_1" x="624.9" y="456.5"/>
+    <waypoint name="_EMER_1_2" x="624.9" y="456.5"/>
+    <waypoint name="_EMER_1_3" x="624.9" y="456.5"/>
+    <waypoint name="_EMER_1_4" x="624.9" y="456.5"/>
+    <waypoint name="_EMER_1_5" x="624.9" y="456.5"/>
+    <waypoint name="_EMER_1_6" x="624.9" y="456.5"/>
+    <waypoint name="_EMER_1_7" x="624.9" y="456.5"/>
+    <waypoint name="_EMER_1_8" x="624.9" y="456.5"/>
+    <waypoint name="_EMER_1_9" x="624.9" y="456.5"/>
+    <waypoint name="_EMER_1_10" x="624.9" y="456.5"/>
+    <waypoint name="_EMER_1_11" x="624.9" y="456.5"/>
+    <waypoint name="_EMER_1_12" x="624.9" y="456.5"/>
+    <waypoint name="_EMER_1_13" x="624.9" y="456.5"/>
+    <waypoint name="_EMER_1_14" x="624.9" y="456.5"/>
+    <waypoint name="_EMER_1_15" x="624.9" y="456.5"/>
+    <waypoint name="_EMER_1_16" x="624.9" y="456.5"/>
+    <waypoint name="_EMER_1_17" x="624.9" y="456.5"/>
+    <waypoint name="_EMER_1_18" x="624.9" y="456.5"/>
+    <waypoint name="_EMER_1_19" x="624.9" y="456.5"/>
+    <waypoint name="_EMER_1_20" x="624.9" y="456.5"/>
+  </waypoints>
+  <sectors>
+    <sector color="ORANGE" name="CONT_1">
+      <corner name="_CONT_1_1"/>
+      <corner name="_CONT_1_2"/>
+      <corner name="_CONT_1_3"/>
+      <corner name="_CONT_1_4"/>
+      <corner name="_CONT_1_5"/>
+      <corner name="_CONT_1_6"/>
+      <corner name="_CONT_1_7"/>
+      <corner name="_CONT_1_8"/>
+      <corner name="_CONT_1_9"/>
+      <corner name="_CONT_1_10"/>
+      <corner name="_CONT_1_11"/>
+      <corner name="_CONT_1_12"/>
+      <corner name="_CONT_1_13"/>
+      <corner name="_CONT_1_14"/>
+      <corner name="_CONT_1_15"/>
+      <corner name="_CONT_1_16"/>
+      <corner name="_CONT_1_17"/>
+      <corner name="_CONT_1_18"/>
+      <corner name="_CONT_1_19"/>
+      <corner name="_CONT_1_20"/>
+      <corner name="_CONT_1_21"/>
+    </sector>
+    <sector color="RED" name="EMER_1">
+      <corner name="_EMER_1_1"/>
+      <corner name="_EMER_1_2"/>
+      <corner name="_EMER_1_3"/>
+      <corner name="_EMER_1_4"/>
+      <corner name="_EMER_1_5"/>
+      <corner name="_EMER_1_6"/>
+      <corner name="_EMER_1_7"/>
+      <corner name="_EMER_1_8"/>
+      <corner name="_EMER_1_9"/>
+      <corner name="_EMER_1_10"/>
+      <corner name="_EMER_1_11"/>
+      <corner name="_EMER_1_12"/>
+      <corner name="_EMER_1_13"/>
+      <corner name="_EMER_1_14"/>
+      <corner name="_EMER_1_15"/>
+      <corner name="_EMER_1_16"/>
+      <corner name="_EMER_1_17"/>
+      <corner name="_EMER_1_18"/>
+      <corner name="_EMER_1_19"/>
+      <corner name="_EMER_1_20"/>
+    </sector>
+  </sectors>
+  <exceptions>
+     <exception cond="(! InsideCONT_1(GetPosX(), GetPosY()) @AND !(nav_block == IndexOfBlock('land')) @AND !(nav_block == IndexOfBlock('flare')) @AND !(nav_block == IndexOfBlock('land here')) @AND !(nav_block == IndexOfBlock('landed')) @AND !(nav_block == IndexOfBlock('go_to_EMER_LAND_1')) @AND !(nav_block == IndexOfBlock('go_to_EMER_LAND_2')))" deroute="land here"/>
+   <exception cond="(! InsideEMER_1(GetPosX(), GetPosY()) @AND !(nav_block == IndexOfBlock('land')) @AND !(nav_block == IndexOfBlock('flare')) @AND !(nav_block == IndexOfBlock('land here')) @AND !(nav_block == IndexOfBlock('landed')) @AND !(nav_block == IndexOfBlock('go_to_EMER_LAND_1')) @AND !(nav_block == IndexOfBlock('go_to_EMER_LAND_2')))" deroute="kill"/>
+  </exceptions>
+  <blocks>
+    <block name="Wait GPS">
+      <call_once fun="NavKillThrottle()"/>
+      <while cond="!GpsFixValid()"/>
+    </block>
+    <block name="Geo init">
+      <while cond="LessThan(NavBlockTime(), 10)"/>
+      <call_once fun="NavSetGroundReferenceHere()"/>
+    </block>
+    <block name="Holding point">
+      <call_once fun="NavKillThrottle()"/>
+      <attitude pitch="0" roll="0" throttle="0" until="FALSE" vmode="throttle"/>
+    </block>
+    <block name="Start Engine">
+      <call_once fun="NavResurrect()"/>
+      <attitude pitch="0" roll="0" throttle="0" until="FALSE" vmode="throttle"/>
+    </block>
+    <block name="Takeoff" strip_button="Takeoff" strip_icon="takeoff.png">
+      <exception cond="stateGetPositionEnu_f() @DEREF z @GT 2.0" deroute="Standby"/>
+      <call_once fun="NavSetWaypointHere(WP_CLIMB)"/>
+      <stay climb="nav_climb_vspeed" vmode="climb" wp="CLIMB"/>
+    </block>
+    <block name="Standby" strip_button="Standby" strip_icon="home.png">
+      <stay wp="STDBY"/>
+    </block>
+    <block name="Go_to_WW2_entry">
+      <go wp="ENTRY WW2"/>
+    </block>
+    <block name="Go_to_WW2_out">
+      <go wp="OUT WW2"/>
+    </block>
+    <block name="Go_to_WW1_entry">
+      <go wp="ENTRY WW1"/>
+    </block>
+    <block name="Go_to_WW1_out">
+      <go wp="OUT WW1"/>
+    </block>
+    <block name="Go_to_WW3_entry">
+      <go wp="ENTRY WW3"/>
+    </block>
+    <block name="Go_to_WW3_out">
+      <go wp="OUT WW3"/>
+    </block>
+    <block name="Go_to_landing_area">
+      <go wp="LAND"/>
+    </block>
+    <block name="land here" strip_button="Land Here" strip_icon="land-right.png">
+      <call_once fun="NavSetWaypointHere(WP_TD)"/>
+    </block>
+    <block name="land">
+      <go wp="TD"/>
+    </block>
+    <block name="flare">
+      <exception cond="NavDetectGround()" deroute="Holding point"/>
+      <exception cond="!nav_is_in_flight()" deroute="landed"/>
+      <call_once fun="NavStartDetectGround()"/>
+      <stay climb="nav_descend_vspeed" vmode="climb" wp="TD"/>
+    </block>
+    <block name="landed">
+      <attitude pitch="0" roll="0" throttle="0" until="FALSE" vmode="throttle"/>
+    </block>
+    <block name="emergency_landing_point">
+      <exception cond="(((GetPosX() - WaypointX(WP_EMER_LAND_2))*(GetPosX() - WaypointX(WP_EMER_LAND_2)) + (GetPosY() - WaypointY(WP_EMER_LAND_2))*(GetPosY() - WaypointY(WP_EMER_LAND_2))) @GT ((GetPosX() - WaypointX(WP_EMER_LAND_1))*(GetPosX() - WaypointX(WP_EMER_LAND_1)) + (GetPosY() - WaypointY(WP_EMER_LAND_1))*(GetPosY() - WaypointY(WP_EMER_LAND_1))))" deroute="go_to_EMER_LAND_1"/>
+      <exception cond="(((GetPosX() - WaypointX(WP_EMER_LAND_1))*(GetPosX() - WaypointX(WP_EMER_LAND_1)) + (GetPosY() - WaypointY(WP_EMER_LAND_1))*(GetPosY() - WaypointY(WP_EMER_LAND_1))) @GT ((GetPosX() - WaypointX(WP_EMER_LAND_2))*(GetPosX() - WaypointX(WP_EMER_LAND_2)) + (GetPosY() - WaypointY(WP_EMER_LAND_2))*(GetPosY() - WaypointY(WP_EMER_LAND_2))))" deroute="go_to_EMER_LAND_2"/>
+      </block>
+    <block name="kill">
+      <call_once fun="NavKillThrottle()"/>
+      <attitude pitch="0" roll="0" throttle="0" until="FALSE" vmode="throttle"/>
+    </block>
+    <block name="go_to_EMER_LAND_1">
+      <go wp="EMER_LAND_1"/>
+      <call_once fun="NavSetWaypointHere(WP_TD)"/>
+      <exception cond="NavDetectGround()" deroute="landed"/>
+      <exception cond="!nav_is_in_flight()" deroute="Holding point"/>
+        <stay climb="nav_descend_vspeed" vmode="climb" wp="TD"/>
+    </block>
+    <block name="go_to_EMER_LAND_2">
+      <go wp="EMER_LAND_2"/>
+      <call_once fun="NavSetWaypointHere(WP_TD)"/>
+      <exception cond="NavDetectGround()" deroute="landed"/>
+      <exception cond="!nav_is_in_flight()" deroute="Holding point"/>
+      <stay climb="nav_descend_vspeed" vmode="climb" wp="TD"/>
+    </block>
+  </blocks>
+</flight_plan>

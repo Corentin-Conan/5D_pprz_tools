@@ -1,0 +1,411 @@
+<?xml version="1.0"?>
+<!DOCTYPE flight_plan SYSTEM "flight_plan.dtd">
+<flight_plan alt="150" ground_alt="0" lat0="36.410433" lon0="28.103468" max_dist_from_home="15000" name="Rotorcraft Basic (Enac)" security_height="5">
+  <header>
+#include "autopilot.h"
+</header>
+  <waypoints>
+    <waypoint name="HOME" y="0" x="0"/>
+    <waypoint alt="150.0" name="CLIMB" y="0" x="0"/>
+    <waypoint alt="150.0" name="STDBY" y="0" x="0"/>
+    <waypoint alt="150.0" name="O.M_70" y="-2168.05" x="-5278.06"/>
+    <waypoint alt="150.0" name="I.M_70" y="-1868.73" x="-4553.09"/>
+    <waypoint alt="150.0" name="WP9" y="-2196.24" x="-3833.66"/>
+    <waypoint alt="150.0" name="WP10" y="-1963.64" x="-4161.26"/>
+    <waypoint alt="150.0" name="WP11" y="-1642.43" x="-4382"/>
+    <waypoint alt="150.0" name="WP12" y="-1261.57" x="-4462.4"/>
+    <waypoint alt="150.0" name="WP13" y="-879.141" x="-4390.34"/>
+    <waypoint alt="150.0" name="WP14" y="-553.041" x="-4173.2"/>
+    <waypoint alt="150.0" name="WP15" y="-333.318" x="-3854.21"/>
+    <waypoint alt="150.0" name="WP0" y="-253.224" x="-3471.72"/>
+    <waypoint alt="150.0" name="WP1" y="-324.861" x="-3087.56"/>
+    <waypoint alt="150.0" name="WP2" y="-537.454" x="-2760.12"/>
+    <waypoint alt="150.0" name="WP3" y="-858.727" x="-2539.43"/>
+    <waypoint alt="150.0" name="WP4" y="-1239.47" x="-2458.96"/>
+    <waypoint alt="150.0" name="WP5" y="-1622.02" x="-2531.02"/>
+    <waypoint alt="150.0" name="WP6" y="-1948.01" x="-2744.63"/>
+    <waypoint alt="150.0" name="WP7" y="-2174.42" x="-2970.85"/>
+    <waypoint alt="150.0" name="WP8" y="-2247.93" x="-3449.72"/>
+    <waypoint alt="150.0" name="I.M_250" y="-641.12" x="-1780.82"/>    
+    <waypoint name="LAND" x="-5278.06" y="-2168.05"/>
+    <waypoint name="TD" x="-5278.06" y="-2168.05"/>
+    <waypoint alt="150.0" name="EMER LAND 1" x="-4394.88" y="-1647.99"/>
+    <waypoint alt="150.0" name="EMER LAND 2" x="-2596.44" y="-852.393"/>
+    <waypoint alt="150.0" name="EMER LAND 3" x="-982.281" y="-259.161"/>
+    <waypoint alt="150.0" name="EMER LAND 4" x="-2988.11" y="-2262.93"/>
+    <waypoint name="CONT_1_1_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_1_2_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_1_3_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_1_4_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_1_5_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_1_6_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_1_7_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_1_8_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_1_9_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_1_10_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_1_11_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_1_12_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_1_13_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_1_14_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_1_15_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_1_16_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_1_17_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_1_18_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_1_19_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_1_1_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_1_2_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_1_3_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_1_4_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_1_5_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_1_6_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_1_7_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_1_8_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_1_9_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_1_10_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_1_11_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_1_12_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_1_13_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_1_14_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_1_15_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_1_16_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_1_17_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_2_1_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_2_2_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_2_3_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_2_4_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_2_5_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_2_6_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_2_7_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_2_8_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_2_9_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_2_10_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_2_11_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_2_12_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_2_13_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_2_14_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_2_15_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_2_16_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_2_1_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_2_2_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_2_3_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_2_4_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_2_5_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_2_6_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_2_7_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_2_8_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_2_9_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_2_10_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_2_11_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_2_12_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_2_13_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_2_14_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_2_15_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_2_16_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_3_1_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_3_2_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_3_3_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_3_4_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_3_5_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_3_6_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_3_1_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_3_2_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_3_3_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_3_4_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_3_5_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_3_6_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_4_1_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_4_2_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_4_3_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_4_4_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_4_5_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_4_6_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_4_7_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_4_8_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_4_9_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_4_10_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_4_11_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_4_12_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_4_13_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_4_14_d2" x="624.9" y="456.5"/>
+    <waypoint name="CONT_4_15_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_4_1_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_4_2_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_4_3_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_4_4_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_4_5_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_4_6_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_4_7_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_4_8_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_4_9_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_4_10_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_4_11_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_4_12_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_4_13_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_4_14_d2" x="624.9" y="456.5"/>
+    <waypoint name="EMER_4_15_d2" x="624.9" y="456.5"/>
+  </waypoints>
+  <sectors>
+    <sector color="BLUE" name="CONT_1_d2">
+      <corner name="CONT_1_1_d2"/>
+      <corner name="CONT_1_2_d2"/>
+      <corner name="CONT_1_3_d2"/>
+      <corner name="CONT_1_4_d2"/>
+      <corner name="CONT_1_5_d2"/>
+      <corner name="CONT_1_6_d2"/>
+      <corner name="CONT_1_7_d2"/>
+      <corner name="CONT_1_8_d2"/>
+      <corner name="CONT_1_9_d2"/>
+      <corner name="CONT_1_10_d2"/>
+      <corner name="CONT_1_11_d2"/>
+      <corner name="CONT_1_12_d2"/>
+      <corner name="CONT_1_13_d2"/>
+      <corner name="CONT_1_14_d2"/>
+      <corner name="CONT_1_15_d2"/>
+      <corner name="CONT_1_16_d2"/>
+      <corner name="CONT_1_17_d2"/>
+      <corner name="CONT_1_18_d2"/>
+      <corner name="CONT_1_19_d2"/>
+    </sector>
+    <sector color="RED" name="EMER_1_d2">
+      <corner name="EMER_1_1_d2"/>
+      <corner name="EMER_1_2_d2"/>
+      <corner name="EMER_1_3_d2"/>
+      <corner name="EMER_1_4_d2"/>
+      <corner name="EMER_1_5_d2"/>
+      <corner name="EMER_1_6_d2"/>
+      <corner name="EMER_1_7_d2"/>
+      <corner name="EMER_1_8_d2"/>
+      <corner name="EMER_1_9_d2"/>
+      <corner name="EMER_1_10_d2"/>
+      <corner name="EMER_1_11_d2"/>
+      <corner name="EMER_1_12_d2"/>
+      <corner name="EMER_1_13_d2"/>
+      <corner name="EMER_1_14_d2"/>
+      <corner name="EMER_1_15_d2"/>
+      <corner name="EMER_1_16_d2"/>
+      <corner name="EMER_1_17_d2"/>
+    </sector>
+    <sector color="BLUE" name="CONT_2_d2">
+      <corner name="CONT_2_1_d2"/>
+      <corner name="CONT_2_2_d2"/>
+      <corner name="CONT_2_3_d2"/>
+      <corner name="CONT_2_4_d2"/>
+      <corner name="CONT_2_5_d2"/>
+      <corner name="CONT_2_6_d2"/>
+      <corner name="CONT_2_7_d2"/>
+      <corner name="CONT_2_8_d2"/>
+      <corner name="CONT_2_9_d2"/>
+      <corner name="CONT_2_10_d2"/>
+      <corner name="CONT_2_11_d2"/>
+      <corner name="CONT_2_12_d2"/>
+      <corner name="CONT_2_13_d2"/>
+      <corner name="CONT_2_14_d2"/>
+      <corner name="CONT_2_15_d2"/>
+      <corner name="CONT_2_16_d2"/>
+    </sector>
+    <sector color="RED" name="EMER_2_d2">
+      <corner name="EMER_2_1_d2"/>
+      <corner name="EMER_2_2_d2"/>
+      <corner name="EMER_2_3_d2"/>
+      <corner name="EMER_2_4_d2"/>
+      <corner name="EMER_2_5_d2"/>
+      <corner name="EMER_2_6_d2"/>
+      <corner name="EMER_2_7_d2"/>
+      <corner name="EMER_2_8_d2"/>
+      <corner name="EMER_2_9_d2"/>
+      <corner name="EMER_2_10_d2"/>
+      <corner name="EMER_2_11_d2"/>
+      <corner name="EMER_2_12_d2"/>
+      <corner name="EMER_2_13_d2"/>
+      <corner name="EMER_2_14_d2"/>
+      <corner name="EMER_2_15_d2"/>
+      <corner name="EMER_2_16_d2"/>
+    </sector>
+     <sector color="BLUE" name="CONT_3_d2">
+      <corner name="CONT_3_1_d2"/>
+      <corner name="CONT_3_2_d2"/>
+      <corner name="CONT_3_3_d2"/>
+      <corner name="CONT_3_4_d2"/>
+      <corner name="CONT_3_5_d2"/>
+      <corner name="CONT_3_6_d2"/>
+     </sector>
+     <sector color="RED" name="EMER_3_d2">
+      <corner name="EMER_3_1_d2"/>
+      <corner name="EMER_3_2_d2"/>
+      <corner name="EMER_3_3_d2"/>
+      <corner name="EMER_3_4_d2"/>
+      <corner name="EMER_3_5_d2"/>
+      <corner name="EMER_3_6_d2"/>
+     </sector>
+     <sector color="BLUE" name="CONT_4_d2">
+      <corner name="CONT_4_1_d2"/>
+      <corner name="CONT_4_2_d2"/>
+      <corner name="CONT_4_3_d2"/>
+      <corner name="CONT_4_4_d2"/>
+      <corner name="CONT_4_5_d2"/>
+      <corner name="CONT_4_6_d2"/>
+      <corner name="CONT_4_7_d2"/>
+      <corner name="CONT_4_8_d2"/>
+      <corner name="CONT_4_9_d2"/>
+      <corner name="CONT_4_10_d2"/>
+      <corner name="CONT_4_11_d2"/>
+      <corner name="CONT_4_12_d2"/>
+      <corner name="CONT_4_13_d2"/>
+      <corner name="CONT_4_14_d2"/>
+      <corner name="CONT_4_15_d2"/>
+     </sector>
+     <sector color="RED" name="EMER_4_d2">
+      <corner name="EMER_4_1_d2"/>
+      <corner name="EMER_4_2_d2"/>
+      <corner name="EMER_4_3_d2"/>
+      <corner name="EMER_4_4_d2"/>
+      <corner name="EMER_4_5_d2"/>
+      <corner name="EMER_4_6_d2"/>
+      <corner name="EMER_4_7_d2"/>
+      <corner name="EMER_4_8_d2"/>
+      <corner name="EMER_4_9_d2"/>
+      <corner name="EMER_4_10_d2"/>
+      <corner name="EMER_4_11_d2"/>
+      <corner name="EMER_4_12_d2"/>
+      <corner name="EMER_4_13_d2"/>
+      <corner name="EMER_4_14_d2"/>
+      <corner name="EMER_4_15_d2"/>
+     </sector>
+  </sectors>
+  <blocks>
+    <block name="Wait GPS">
+      <call_once fun="NavKillThrottle()"/>
+      <while cond="!GpsFixValid()"/>
+    </block>
+    <block name="Geo init">
+      <while cond="LessThan(NavBlockTime(), 10)"/>
+      <call_once fun="NavSetGroundReferenceHere()"/>
+    </block>
+    <block name="Holding point">
+      <call_once fun="NavKillThrottle()"/>
+      <attitude pitch="0" roll="0" throttle="0" until="FALSE" vmode="throttle"/>
+    </block>
+    <block name="Start Engine">
+      <call_once fun="NavResurrect()"/>
+      <attitude pitch="0" roll="0" throttle="0" until="FALSE" vmode="throttle"/>
+    </block>
+    <block name="Takeoff" strip_button="Takeoff" strip_icon="takeoff.png">
+      <exception cond="stateGetPositionEnu_f() @DEREF z @GT 2.0" deroute="Standby"/>
+      <call_once fun="NavSetWaypointHere(WP_CLIMB)"/>
+      <stay climb="nav_climb_vspeed" vmode="climb" wp="CLIMB"/>
+    </block>
+    <block name="Standby" strip_button="Standby" strip_icon="home.png">
+      <stay wp="STDBY"/>
+    </block>
+    <block name="go_to_IM250">
+      <call_once fun="guidance_h_SetMaxSpeed(15)"/>
+      <go wp="I.M_250"/>
+    </block>
+    <block name="go_to_WP2">
+      <go wp="WP2"/>
+      <stay until="stage_time @GT 3" wp="WP2"/>
+    </block>
+    <block name="go_to_WP3">
+      <go wp="WP3"/>
+      <stay until="stage_time @GT 3" wp="WP3"/>
+    </block>
+    <block name="go_to_WP4">
+      <go wp="WP4"/>
+      <stay until="stage_time @GT 3" wp="WP4"/> 
+    </block>
+    <block name="go_to_WP5">
+      <go wp="WP5"/>
+      <stay until="stage_time @GT 3" wp="WP5"/>
+    </block>
+    <block name="go_to_WP6">
+      <go wp="WP6"/>
+      <stay until="stage_time @GT 3" wp="WP6"/>
+    </block>
+    <block name="go_to_WP7">
+      <go wp="WP7"/>
+      <stay until="stage_time @GT 3" wp="WP7"/>
+    </block>
+    <block name="go_to_WP8">
+      <go wp="WP8"/>
+      <stay until="stage_time @GT 3" wp="WP8"/>
+    </block>
+    <block name="go_to_WP9">
+      <go wp="WP9"/>
+      <stay until="stage_time @GT 3" wp="WP9"/>
+    </block>
+    <block name="go_to_WP10">
+      <go wp="WP10"/>
+      <stay until="stage_time @GT 3" wp="WP10"/>
+    </block>
+    <block name="go_to_WP11">
+      <go wp="WP11"/>
+      <stay until="stage_time @GT 3" wp="WP11"/>
+    </block>
+    <block name="go_to_WP12">
+      <go wp="WP12"/>
+      <stay until="stage_time @GT 3" wp="WP12"/>
+    </block>
+    <block name="go_to_IM70">
+      <go wp="I.M_70"/>
+    </block>
+    <block name="go_to_OM70">
+      <go wp="O.M_70"/>
+    </block>
+    <block name="Go_to_landing_area">
+      <go wp="LAND"/>
+    </block>
+    <block name="land here" strip_button="Land Here" strip_icon="land-right.png">
+      <call_once fun="NavSetWaypointHere(WP_TD)"/>
+    </block>
+    <block name="land">
+      <go wp="TD"/>
+    </block>
+    <block name="flare">
+      <exception cond="NavDetectGround()" deroute="Holding point"/>
+      <exception cond="!nav_is_in_flight()" deroute="landed"/>
+      <call_once fun="NavStartDetectGround()"/>
+      <stay climb="nav_descend_vspeed" vmode="climb" wp="TD"/>
+    </block>
+    <block name="landed">
+      <attitude pitch="0" roll="0" throttle="0" until="FALSE" vmode="throttle"/>
+    </block>
+<block name="land emergency point">
+      <exception cond="( InsideEMER_1_d2(GetPosX(), GetPosY()))" deroute="land emergency point 1"/>
+      <exception cond="( InsideEMER_2_d2(GetPosX(), GetPosY()))" deroute="land emergency point 2"/>
+      <exception cond="( InsideEMER_3_d2(GetPosX(), GetPosY()))" deroute="land emergency point 3"/>
+      <exception cond="( InsideEMER_4_d2(GetPosX(), GetPosY()))" deroute="land emergency point 4"/>
+    </block>
+    <block name="kill">
+      <call_once fun="NavKillThrottle()"/>
+      <attitude pitch="0" roll="0" throttle="0" until="FALSE" vmode="throttle"/>
+    </block>
+    <block name="land emergency point 1">
+    	<go wp="EMER LAND 1"/>
+    	<call_once fun="NavSetWaypointHere(WP_TD)"/>
+    	<exception cond="NavDetectGround()" deroute="landed"/>
+        <exception cond="!nav_is_in_flight()" deroute="Holding point"/>
+        <stay climb="nav_descend_vspeed" vmode="climb" wp="TD"/>
+    </block>
+    <block name="land emergency point 2">
+    	<go wp="EMER LAND 2"/>
+    	<call_once fun="NavSetWaypointHere(WP_TD)"/>
+    	<exception cond="NavDetectGround()" deroute="landed"/>
+        <exception cond="!nav_is_in_flight()" deroute="Holding point"/>
+        <stay climb="nav_descend_vspeed" vmode="climb" wp="TD"/>
+    </block>
+    <block name="land emergency point 3">
+    	<go wp="EMER LAND 3"/>
+    	<call_once fun="NavSetWaypointHere(WP_TD)"/>
+    	<exception cond="NavDetectGround()" deroute="landed"/>
+        <exception cond="!nav_is_in_flight()" deroute="Holding point"/>
+        <stay climb="nav_descend_vspeed" vmode="climb" wp="TD"/>
+    </block>
+    <block name="land emergency point 4">
+    	<go wp="EMER LAND 4"/>
+    	<call_once fun="NavSetWaypointHere(WP_TD)"/>
+    	<exception cond="NavDetectGround()" deroute="landed"/>
+        <exception cond="!nav_is_in_flight()" deroute="Holding point"/>
+        <stay climb="nav_descend_vspeed" vmode="climb" wp="TD"/>
+    </block>
+  </blocks>
+</flight_plan>
